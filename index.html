@@ -200,7 +200,7 @@
   .logo{ font-weight:800; font-size:20px; letter-spacing:0.01em; }
   .nav-links{ display:flex; align-items:center; gap:26px; font-size:14px; }
   .nav-links a{ color:var(--text-dim); transition:color .2s ease; }
-  .nav-links a:hover, .nav-links a.is-active{ color:var(--text); }
+  .nav-links a:hover{ color:var(--text); }
   .nav-links a.is-active{ color:var(--accent); }
   .logo-avatar-wrap{ position:relative; width:28px; height:28px; flex-shrink:0; }
   .logo-avatar{ width:28px; height:28px; border-radius:50%; object-fit:cover; border:1px solid var(--line); display:block; background:var(--bg-elev-2); }
@@ -560,6 +560,7 @@
     border-bottom:1px solid transparent;
     transition:border-color .18s ease;
     word-break:break-all;
+    overflow-wrap:anywhere;
   }
   .contact-email:hover{ border-color:var(--accent); }
   .contact-sub{ color:var(--text-dim); margin:18px 0 32px; max-width:46ch; }
@@ -576,6 +577,7 @@
 
   footer{ border-top:1px solid var(--line); padding:28px 0; }
   footer .wrap{ display:flex; justify-content:space-between; font-family:'JetBrains Mono', monospace; font-size:12px; color:var(--text-dim); flex-wrap:wrap; gap:8px; }
+  @media (max-width:640px){ footer .wrap{ padding-right:64px; } }
 </style>
 </head>
 <body>
@@ -907,7 +909,7 @@
   </div>
 </footer>
 
-<div class="lightbox" id="videoLightbox" aria-hidden="true">
+<div class="lightbox" id="videoLightbox" role="dialog" aria-modal="true" aria-label="Video ukážka" aria-hidden="true">
   <div class="lightbox-inner">
     <button class="lightbox-close" id="lightboxClose" aria-label="Zatvoriť">✕</button>
     <div class="lightbox-video" id="lightboxVideo"></div>
@@ -963,6 +965,7 @@
 
     function openLightbox(videoId){
       lightbox.classList.add('is-open');
+      lightbox.setAttribute('aria-hidden', 'false');
       document.body.style.overflow = 'hidden';
       if (ytApiReady){
         createPlayer(videoId);
@@ -970,17 +973,30 @@
         pendingVideoId = videoId;
         loadYouTubeApi();
       }
-      // Keep keyboard focus on our own page (not inside the YouTube iframe)
-      // so the Escape key keeps working until the user directly clicks the video.
       setTimeout(function(){ closeBtn.focus(); }, 50);
     }
 
     function closeLightbox(){
       lightbox.classList.remove('is-open');
+      lightbox.setAttribute('aria-hidden', 'true');
       document.body.style.overflow = '';
       if (currentPlayer && currentPlayer.destroy){ currentPlayer.destroy(); currentPlayer = null; }
       videoSlot.innerHTML = '';
     }
+
+    // Basic focus trap: Tab cycles only within the lightbox while open
+    document.addEventListener('keydown', function(e){
+      if (e.key !== 'Tab' || !lightbox.classList.contains('is-open')) return;
+      var focusable = Array.from(lightbox.querySelectorAll('button, iframe, [tabindex]:not([tabindex="-1"])'));
+      if (!focusable.length) return;
+      var first = focusable[0], last = focusable[focusable.length - 1];
+      var active = document.activeElement;
+      if (e.shiftKey){
+        if (active === first || !lightbox.contains(active)){ e.preventDefault(); last.focus(); }
+      } else {
+        if (active === last || !lightbox.contains(active)){ e.preventDefault(); first.focus(); }
+      }
+    });
 
     document.querySelectorAll('.reel-thumb').forEach(function(btn){
       btn.addEventListener('click', function(){

@@ -14,12 +14,12 @@ jobs:
         uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          accountId: 635b7170a1825dd97be07855b4c84d10
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           command: pages deploy . --project-name=peet-portfolio --branch=main
 
       - name: Purge Cloudflare cache for donovanpeet.com
         run: |
-          curl -s -X POST "https://api.cloudflare.com/client/v4/zones/0dbabfb190f88dc21d7d5c5221f8b127/purge_cache" \
+          curl -s -X POST "https://api.cloudflare.com/client/v4/zones/${{ secrets.CLOUDFLARE_ZONE_ID }}/purge_cache" \
             -H "Authorization: Bearer ${{ secrets.CLOUDFLARE_API_TOKEN }}" \
             -H "Content-Type: application/json" \
             --data '{"purge_everything":true}' | tee purge_result.json
