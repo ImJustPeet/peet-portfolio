@@ -1223,6 +1223,18 @@
     });
   })();
 
+  // ---------- Easter egg: type "hesoyam" anywhere ----------
+  (function(){
+    var buffer = '';
+    window.addEventListener('keydown', function(e){
+      if (e.key && e.key.length === 1){ buffer = (buffer + e.key.toLowerCase()).slice(-10); }
+      if (buffer.indexOf('hesoyam') !== -1){
+        buffer = '';
+        showToast('🏆 Achievement unlocked: hesoyam. Ah s#!t, here we go again.');
+      }
+    });
+  })();
+
   // ---------- Easter egg: Konami code ----------
   (function(){
     var seq = ['arrowup','arrowup','arrowdown','arrowdown','arrowleft','arrowright','arrowleft','arrowright','b','a'];
