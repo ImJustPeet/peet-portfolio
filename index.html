@@ -161,32 +161,6 @@
   }
   .egg-toast.is-visible{ opacity:1; transform:translate(-50%, 0); }
 
-  /* Custom cursor only on fine pointers, only if motion is allowed */
-  html.has-cursor, html.has-cursor *{ cursor:none; }
-  .cursor-stylus{ display:none; }
-  html.has-cursor .cursor-stylus{ display:flex; }
-
-  .cursor-stylus{
-    position:fixed; top:0; left:0;
-    align-items:center;
-    pointer-events:none;
-    z-index:999999;
-    will-change:transform;
-    transition:opacity .15s ease;
-  }
-  .cursor-stylus svg{ display:block; }
-  .cs-tip{ transition:fill .15s ease; }
-  .cursor-stylus.cursor-grow .cs-tip,
-  .cursor-stylus.cursor-play .cs-tip{ fill:var(--accent); }
-  .cs-glow{ transition:opacity .2s ease; }
-  .cursor-stylus.cursor-play .cs-glow{ opacity:0.3; }
-  .cursor-label{
-    font-family:'JetBrains Mono', monospace; font-size:11px; color:var(--accent);
-    margin-left:10px;
-    opacity:0; white-space:nowrap; transition:opacity .15s ease;
-  }
-  .cursor-stylus.cursor-play .cursor-label{ opacity:1; }
-
   .wrap{ max-width:1080px; margin:0 auto; padding:0 28px; }
 
   /* ---------- NAV ---------- */
@@ -605,7 +579,7 @@
   }
 
   @media print{
-    .cursor-stylus, .scroll-progress, .back-to-top, .click-ripple,
+    .scroll-progress, .back-to-top, .click-ripple,
     .paw-rain, .confetti-piece, .egg-toast, .intro-loader,
     .hamburger, .mobile-menu, .reel-grid, .lightbox,
     .privacy-notice, .marquee, .hero-paths { display:none !important; }
@@ -632,17 +606,6 @@
     <path d="M12 4 L18 12 L14 12 L14 20 L10 20 L10 12 L6 12 Z" fill="var(--bg)" stroke="var(--accent)" stroke-width="2" stroke-linejoin="round"/>
   </svg>
 </button>
-
-<div class="cursor-stylus" aria-hidden="true">
-  <svg width="40" height="58" viewBox="0 0 40 58">
-    <circle class="cs-glow" cx="4" cy="18" r="9" fill="var(--accent)" opacity="0"/>
-    <g transform="rotate(55 4 18)">
-      <path class="cs-tip" d="M 4 18 L 17 10 L 17 26 Z" fill="#c9c5bd" stroke="#0c0b0a" stroke-width="2" stroke-linejoin="round"/>
-      <rect x="15" y="9" width="25" height="18" rx="9" fill="#f3efe9" stroke="#0c0b0a" stroke-width="2"/>
-    </g>
-  </svg>
-  <span class="cursor-label"></span>
-</div>
 
 <header>
   <div class="wrap nav">
@@ -841,7 +804,7 @@
         </a>
       </div>
       <div class="reel-grid" style="margin-top:40px;">
-        <div class="reel-frame size-lg reveal" data-cursor="play" data-cursor-label="▶ Play">
+        <div class="reel-frame size-lg reveal">
           <button class="reel-thumb" data-video-id="FjbvvVQ1J3U" aria-label="Prehrať ukážku — Tary">
             <img src="https://i.ytimg.com/vi/FjbvvVQ1J3U/hqdefault.jpg" alt="Náhľad videa — Tary, Poprvé v životě s rodinou v Londýně" fetchpriority="high" decoding="async">
             <span class="reel-play-icon">▶</span>
@@ -849,7 +812,7 @@
           <span class="reel-tag mono">Tary</span>
           <span class="reel-views mono">👁 95 tis.</span>
         </div>
-        <div class="reel-frame size-md reveal" data-cursor="play" data-cursor-label="▶ Play">
+        <div class="reel-frame size-md reveal">
           <button class="reel-thumb" data-video-id="K8DPDth6yp0" aria-label="Prehrať ukážku — Duklock">
             <img src="https://i.ytimg.com/vi/K8DPDth6yp0/hqdefault.jpg" alt="Náhľad videa — Duklock, herný stream" loading="lazy" decoding="async">
             <span class="reel-play-icon">▶</span>
@@ -857,7 +820,7 @@
           <span class="reel-tag mono">Duklock</span>
           <span class="reel-views mono">👁 731 tis.</span>
         </div>
-        <div class="reel-frame size-sm reveal" data-cursor="play" data-cursor-label="▶ Play">
+        <div class="reel-frame size-sm reveal">
           <button class="reel-thumb" data-video-id="tgVPTnPNkCk" aria-label="Prehrať ukážku — Tary">
             <img src="https://i.ytimg.com/vi/tgVPTnPNkCk/hqdefault.jpg" alt="Náhľad videa — Tary vs. Jay" loading="lazy" decoding="async">
             <span class="reel-play-icon">▶</span>
@@ -1357,21 +1320,9 @@
   var fine = window.matchMedia('(pointer: fine)').matches;
   var liveMotion = fine && !reducedGlobal;
 
-  // ---------- Custom cursor + parallax + magnetic buttons (single rAF loop) ----------
+  // ---------- Parallax + magnetic buttons + 3D tilt (single rAF loop) ----------
   if (liveMotion){
-    document.documentElement.classList.add('has-cursor');
-    var cursorEl = document.querySelector('.cursor-stylus');
-    var cursorLabel = cursorEl.querySelector('.cursor-label');
     var mx = 0, my = 0, lastMx = -1, lastMy = -1;
-
-    // Hide our fake cursor whenever it would freeze over content we don't control:
-    // iframes (YouTube player) or native OS dialogs (e.g. mailto "open with" prompt).
-    document.querySelectorAll('.lightbox-video').forEach(function(el){
-      el.addEventListener('mouseenter', function(){ cursorEl.style.opacity = '0'; });
-      el.addEventListener('mouseleave', function(){ cursorEl.style.opacity = '1'; });
-    });
-    window.addEventListener('blur', function(){ cursorEl.style.opacity = '0'; });
-    window.addEventListener('focus', function(){ cursorEl.style.opacity = '1'; });
 
     var heroEl = document.getElementById('hero');
     var heroRect = heroEl ? heroEl.getBoundingClientRect() : null;
@@ -1425,8 +1376,6 @@
       var moved = (mx !== lastMx || my !== lastMy);
 
       if (moved){
-        cursorEl.style.transform = 'translate(' + mx + 'px,' + my + 'px) translate(-4px,-18px)';
-
         if (heroRect && chips.length && my >= heroRect.top && my <= heroRect.bottom){
           var px = (mx - heroRect.left) / heroRect.width - 0.5;
           var py = (my - heroRect.top) / heroRect.height - 0.5;
@@ -1465,17 +1414,6 @@
       requestAnimationFrame(loop);
     }
     requestAnimationFrame(loop);
-
-    document.querySelectorAll('[data-cursor]').forEach(function(el){
-      el.addEventListener('mouseenter', function(){
-        cursorEl.classList.add('cursor-' + el.dataset.cursor);
-        if (el.dataset.cursorLabel){ cursorLabel.textContent = el.dataset.cursorLabel; }
-      });
-      el.addEventListener('mouseleave', function(){
-        cursorEl.classList.remove('cursor-' + el.dataset.cursor);
-        cursorLabel.textContent = '';
-      });
-    });
   }
 
   // ---------- Privacy notice banner ----------
