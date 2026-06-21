@@ -10,6 +10,16 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Minify HTML
+        run: |
+          npx html-minifier-terser --collapse-whitespace --remove-comments --minify-css true --minify-js true --output index.html index.html
+          npx html-minifier-terser --collapse-whitespace --remove-comments --minify-css true --output 404.html 404.html
+
       - name: Deploy to Cloudflare Pages
         uses: cloudflare/wrangler-action@v3
         with:

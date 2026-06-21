@@ -578,6 +578,16 @@
   footer{ border-top:1px solid var(--line); padding:28px 0; }
   footer .wrap{ display:flex; justify-content:space-between; font-family:'JetBrains Mono', monospace; font-size:12px; color:var(--text-dim); flex-wrap:wrap; gap:8px; }
   @media (max-width:640px){ footer .wrap{ padding-right:64px; } }
+
+  @media print{
+    .cursor-stylus, .scroll-progress, .back-to-top, .click-ripple,
+    .paw-rain, .confetti-piece, .egg-toast, .intro-loader,
+    .hamburger, .mobile-menu, .reel-grid, .lightbox,
+    .marquee, .hero-paths { display:none !important; }
+    body{ background:#fff !important; color:#000 !important; }
+    * { color:#000 !important; background:transparent !important; box-shadow:none !important; text-shadow:none !important; }
+    a{ color:#000 !important; text-decoration:underline !important; }
+  }
 </style>
 </head>
 <body>
