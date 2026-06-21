@@ -26,7 +26,23 @@
 </head>
 <body>
   <h1>404</h1>
-  <p>Táto stránka bola vystrihnutá. Skús sa vrátiť na časovú os.</p>
+  <p id="msg404">🎬 404 — táto časť sa nezmestila do finálneho strihu.</p>
   <a href="/">← Späť domov</a>
+<script>
+  var messages404 = [
+    "",
+    "",
+    "🏠 Oni volajú ma na-",
+    "⏱️ UŽ BYLO 10 HODIN? Neblázni, choď -",
+    "🙋‍♂️ Raz, dva, tri. Ja som vždy okay ako bastardi. Ale táto stránka nie, choď radšej -",
+    "🎬 404 — táto časť sa nezmestila do finálneho strihu.",
+    "🎬 Render tejto stránky zlyhal. Skús to znova neskôr.",
+    "🗑️ Táto stránka skončila v koši, presne ako tých 50 pokusov pred ňou.",
+    "📱 New phone, who dis?",
+    "🤸🦘🏃🤸‍♀️ Ospravedlňujeme sa, no tejto stránke je hodně."
+  ];
+  var pool = messages404.filter(function(m){ return m.trim() !== ''; });
+  document.getElementById('msg404').textContent = pool[Math.floor(Math.random() * pool.length)];
+</script>
 </body>
 </html>
