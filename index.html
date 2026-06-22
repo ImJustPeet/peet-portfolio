@@ -63,8 +63,9 @@
   @media (prefers-reduced-motion: reduce){
     html{ scroll-behavior:auto; }
     *, *::before, *::after{ animation-duration:0.001ms !important; animation-iteration-count:1 !important; transition-duration:0.001ms !important; }
-    /* Marquee is slow, linear, and pauses on hover — safe to keep looping even with reduced motion */
+    /* Marquee and video belt are slow, linear, and pause on hover — safe to keep looping even with reduced motion */
     .marquee-inner{ animation-duration:20s !important; animation-iteration-count:infinite !important; animation-name:marqueeScroll !important; }
+    .video-belt-inner{ animation-iteration-count:infinite !important; }
   }
 
   body{
@@ -409,23 +410,16 @@
   @keyframes marqueeScroll{ from{ transform:translateX(0); } to{ transform:translateX(-50%); } }
 
   /* video belt (full-bleed running sushi carousel) */
-  .video-belt{
-    position:relative; overflow:hidden; margin-top:40px;
-  }
+  .video-belt{ overflow:hidden; white-space:nowrap; display:flex; position:relative; width:100vw; margin-left:calc(-50vw + 50%); margin-top:40px; }
   .video-belt::before,
   .video-belt::after{
     content:''; position:absolute; top:0; bottom:0; width:120px; z-index:2; pointer-events:none;
   }
   .video-belt::before{ left:0; background:linear-gradient(to right, var(--bg), transparent); }
   .video-belt::after{ right:0; background:linear-gradient(to left, var(--bg), transparent); }
-  .video-belt-track{ display:flex; }
-  .video-belt-set{
-    display:flex; flex-shrink:0; gap:16px;
-    animation:videoBeltScroll 20s linear infinite;
-    list-style:none; margin:0; padding:0;
-  }
-  .video-belt:hover .video-belt-set{ animation-play-state:paused; }
-  @keyframes videoBeltScroll{ from{ transform:translateX(0); } to{ transform:translateX(-100%); } }
+  .video-belt-inner{ display:flex; gap:16px; animation:videoBeltScroll linear infinite; }
+  .video-belt:hover .video-belt-inner{ animation-play-state:paused; }
+  @keyframes videoBeltScroll{ from{transform:translateX(0);} to{transform:translateX(-50%);} }
   .video-card{
     position:relative; width:360px; aspect-ratio:16/9;
     border-radius:6px; overflow:hidden;
@@ -815,59 +809,31 @@
       </div>
     </div>
   <div class="video-belt reveal">
-    <div class="video-belt-track">
-      <ul class="video-belt-set">
-        <li class="video-card">
-          <button class="reel-thumb" data-video-id="FjbvvVQ1J3U" aria-label="Prehrať ukážku: Tary">
-            <img src="https://i.ytimg.com/vi/FjbvvVQ1J3U/hqdefault.jpg" alt="Náhľad videa: Tary, Poprvé v životě s rodinou v Londýně" fetchpriority="high" decoding="async">
-            <span class="reel-play-icon">▶</span>
-          </button>
-          <span class="reel-tag mono">Tary</span>
-          <span class="reel-views mono">👁 95 tis.</span>
-        </li>
-        <li class="video-card">
-          <button class="reel-thumb" data-video-id="K8DPDth6yp0" aria-label="Prehrať ukážku: Duklock">
-            <img src="https://i.ytimg.com/vi/K8DPDth6yp0/hqdefault.jpg" alt="Náhľad videa: Duklock, herný stream" loading="lazy" decoding="async">
-            <span class="reel-play-icon">▶</span>
-          </button>
-          <span class="reel-tag mono">Duklock</span>
-          <span class="reel-views mono">👁 731 tis.</span>
-        </li>
-        <li class="video-card">
-          <button class="reel-thumb" data-video-id="tgVPTnPNkCk" aria-label="Prehrať ukážku: Tary">
-            <img src="https://i.ytimg.com/vi/tgVPTnPNkCk/hqdefault.jpg" alt="Náhľad videa: Tary vs. Jay" loading="lazy" decoding="async">
-            <span class="reel-play-icon">▶</span>
-          </button>
-          <span class="reel-tag mono">Tary</span>
-          <span class="reel-views mono">👁 128 tis.</span>
-        </li>
-      </ul>
-      <ul class="video-belt-set" aria-hidden="true">
-        <li class="video-card">
-          <button class="reel-thumb" data-video-id="FjbvvVQ1J3U" aria-label="" tabindex="-1">
-            <img src="https://i.ytimg.com/vi/FjbvvVQ1J3U/hqdefault.jpg" alt="" loading="lazy" decoding="async">
-            <span class="reel-play-icon">▶</span>
-          </button>
-          <span class="reel-tag mono">Tary</span>
-          <span class="reel-views mono">👁 95 tis.</span>
-        </li>
-        <li class="video-card">
-          <button class="reel-thumb" data-video-id="K8DPDth6yp0" aria-label="" tabindex="-1">
-            <img src="https://i.ytimg.com/vi/K8DPDth6yp0/hqdefault.jpg" alt="" loading="lazy" decoding="async">
-            <span class="reel-play-icon">▶</span>
-          </button>
-          <span class="reel-tag mono">Duklock</span>
-          <span class="reel-views mono">👁 731 tis.</span>
-        </li>
-        <li class="video-card">
-          <button class="reel-thumb" data-video-id="tgVPTnPNkCk" aria-label="" tabindex="-1">
-            <img src="https://i.ytimg.com/vi/tgVPTnPNkCk/hqdefault.jpg" alt="" loading="lazy" decoding="async">
-            <span class="reel-play-icon">▶</span>
-          </button>
-          <span class="reel-tag mono">Tary</span>
-          <span class="reel-views mono">👁 128 tis.</span>
-        </li>
-      </ul>
+    <div class="video-belt-inner" id="videoBeltScroller">
+      <div class="video-card">
+        <button class="reel-thumb" data-video-id="FjbvvVQ1J3U" aria-label="Prehrať ukážku: Tary">
+          <img src="https://i.ytimg.com/vi/FjbvvVQ1J3U/hqdefault.jpg" alt="Náhľad videa: Tary, Poprvé v životě s rodinou v Londýně" fetchpriority="high" decoding="async">
+          <span class="reel-play-icon">▶</span>
+        </button>
+        <span class="reel-tag mono">Tary</span>
+        <span class="reel-views mono">👁 95 tis.</span>
+      </div>
+      <div class="video-card">
+        <button class="reel-thumb" data-video-id="K8DPDth6yp0" aria-label="Prehrať ukážku: Duklock">
+          <img src="https://i.ytimg.com/vi/K8DPDth6yp0/hqdefault.jpg" alt="Náhľad videa: Duklock, herný stream" loading="lazy" decoding="async">
+          <span class="reel-play-icon">▶</span>
+        </button>
+        <span class="reel-tag mono">Duklock</span>
+        <span class="reel-views mono">👁 731 tis.</span>
+      </div>
+      <div class="video-card">
+        <button class="reel-thumb" data-video-id="tgVPTnPNkCk" aria-label="Prehrať ukážku: Tary">
+          <img src="https://i.ytimg.com/vi/tgVPTnPNkCk/hqdefault.jpg" alt="Náhľad videa: Tary vs. Jay" loading="lazy" decoding="async">
+          <span class="reel-play-icon">▶</span>
+        </button>
+        <span class="reel-tag mono">Tary</span>
+        <span class="reel-views mono">👁 128 tis.</span>
+      </div>
     </div>
   </div>
 </section>
@@ -1049,11 +1015,7 @@
       }
     });
 
-    document.querySelectorAll('.reel-thumb').forEach(function(btn){
-      btn.addEventListener('click', function(){
-        openLightbox(btn.dataset.videoId);
-      });
-    });
+    window.openLightbox = openLightbox;
 
     closeBtn.addEventListener('click', closeLightbox);
     lightbox.addEventListener('click', function(e){
@@ -1107,6 +1069,29 @@
     var distanceToScroll = scroller.offsetWidth / 2;
     var calculatedDuration = distanceToScroll / speedPixelsPerSecond;
     scroller.style.animationDuration = calculatedDuration + 's';
+  })();
+
+  // ---------- Video belt dynamic duplication ----------
+  (function(){
+    var scroller = document.getElementById('videoBeltScroller');
+    if (!scroller) return;
+    var originalHTML = scroller.innerHTML;
+
+    while (scroller.offsetWidth < window.innerWidth * 2.5){
+      scroller.innerHTML += originalHTML;
+    }
+    scroller.innerHTML += scroller.innerHTML;
+
+    var speedPixelsPerSecond = 60;
+    var distanceToScroll = scroller.offsetWidth / 2;
+    var calculatedDuration = distanceToScroll / speedPixelsPerSecond;
+    scroller.style.animationDuration = calculatedDuration + 's';
+
+    scroller.querySelectorAll('.reel-thumb').forEach(function(btn){
+      btn.addEventListener('click', function(){
+        openLightbox(btn.dataset.videoId);
+      });
+    });
   })();
 
   // ---------- Mobile hamburger menu ----------
