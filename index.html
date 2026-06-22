@@ -64,7 +64,7 @@
     html{ scroll-behavior:auto; }
     *, *::before, *::after{ animation-duration:0.001ms !important; animation-iteration-count:1 !important; transition-duration:0.001ms !important; }
     /* Marquee is slow, linear, and pauses on hover — safe to keep looping even with reduced motion */
-    .marquee-set{ animation-duration:25s !important; animation-iteration-count:infinite !important; animation-name:marqueeScroll !important; }
+    .marquee-inner{ animation-duration:20s !important; animation-iteration-count:infinite !important; animation-name:marqueeScroll !important; }
   }
 
   body{
@@ -394,14 +394,14 @@
   @media (max-width:600px){ .work-grid{ grid-template-columns:1fr; } }
 
   /* marquee */
-  .marquee-wrap{ position:relative; overflow:hidden; display:flex; flex-wrap:nowrap; border-top:1px solid var(--line); border-bottom:1px solid var(--line); padding:22px 0; }
-  .marquee-wrap::before, .marquee-wrap::after{ content:''; position:absolute; top:0; bottom:0; width:80px; z-index:2; pointer-events:none; }
-  .marquee-wrap::before{ left:0; background:linear-gradient(to right, var(--bg), transparent); }
-  .marquee-wrap::after{ right:0; background:linear-gradient(to left, var(--bg), transparent); }
-  .marquee-wrap:hover .marquee-set{ animation-play-state:paused; }
-  .marquee-set{ display:flex; flex-shrink:0; gap:14px; list-style:none; margin:0; padding:0; animation:marqueeScroll 25s linear infinite; }
-  .marquee-set li{ font-family:'JetBrains Mono', monospace; font-size:13px; color:var(--text-dim); border:1px solid var(--line); border-radius:20px; padding:8px 18px; white-space:nowrap; }
-  @keyframes marqueeScroll{ from{ transform:translateX(0); } to{ transform:translateX(-100%); } }
+  .marquee{ position:relative; overflow:hidden; white-space:nowrap; display:flex; border-top:1px solid var(--line); border-bottom:1px solid var(--line); padding:22px 0; }
+  .marquee::before, .marquee::after{ content:''; position:absolute; top:0; bottom:0; width:80px; z-index:2; pointer-events:none; }
+  .marquee::before{ left:0; background:linear-gradient(to right, var(--bg), transparent); }
+  .marquee::after{ right:0; background:linear-gradient(to left, var(--bg), transparent); }
+  .marquee-inner{ display:flex; gap:14px; animation:marqueeScroll linear infinite; }
+  .marquee:hover .marquee-inner{ animation-play-state:paused; }
+  .chip.marquee-item{ border-radius:20px; padding:8px 18px; white-space:nowrap; }
+  @keyframes marqueeScroll{ from{ transform:translateX(0); } to{ transform:translateX(-50%); } }
 
   /* reel */
   .reel-grid{
@@ -832,13 +832,10 @@
     </div>
   </section>
 
-  <div class="marquee-wrap reveal">
-    <ul class="marquee-set">
-      <li>Vlogy</li><li>Tutoriály</li><li>Rozhovory</li><li>Shorts</li><li>Reakcie</li><li>Gaming</li><li>Cestovanie</li><li>Recenzie</li><li>Podcasty</li><li>Unboxing</li>
-    </ul>
-    <ul class="marquee-set" aria-hidden="true">
-      <li>Vlogy</li><li>Tutoriály</li><li>Rozhovory</li><li>Shorts</li><li>Reakcie</li><li>Gaming</li><li>Cestovanie</li><li>Recenzie</li><li>Podcasty</li><li>Unboxing</li>
-    </ul>
+  <div class="marquee reveal">
+    <div class="marquee-inner" id="marqueeScroller">
+      <span class="chip marquee-item">Vlogy</span><span class="chip marquee-item">Tutoriály</span><span class="chip marquee-item">Rozhovory</span><span class="chip marquee-item">Shorts</span><span class="chip marquee-item">Reakcie</span><span class="chip marquee-item">Gaming</span><span class="chip marquee-item">Cestovanie</span><span class="chip marquee-item">Recenzie</span><span class="chip marquee-item">Podcasty</span><span class="chip marquee-item">Unboxing</span>
+    </div>
   </div>
 
   <section id="about">
@@ -1038,6 +1035,23 @@
   } else {
     revealEls.forEach(function(el){ el.classList.add('is-visible'); });
   }
+
+  // ---------- Marquee dynamic duplication ----------
+  (function(){
+    var scroller = document.getElementById('marqueeScroller');
+    if (!scroller) return;
+    var originalHTML = scroller.innerHTML;
+
+    while (scroller.offsetWidth < window.innerWidth * 2.5){
+      scroller.innerHTML += originalHTML;
+    }
+    scroller.innerHTML += scroller.innerHTML;
+
+    var speedPixelsPerSecond = 60;
+    var distanceToScroll = scroller.offsetWidth / 2;
+    var calculatedDuration = distanceToScroll / speedPixelsPerSecond;
+    scroller.style.animationDuration = calculatedDuration + 's';
+  })();
 
   // ---------- Mobile hamburger menu ----------
   (function(){
