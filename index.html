@@ -417,7 +417,7 @@
   }
   .video-belt::before{ left:0; background:linear-gradient(to right, var(--bg), transparent); }
   .video-belt::after{ right:0; background:linear-gradient(to left, var(--bg), transparent); }
-  .video-belt-inner{ display:flex; gap:16px; animation:videoBeltScroll linear infinite; }
+  .video-belt-inner{ display:flex; gap:16px; align-items:center; animation:videoBeltScroll linear infinite; }
   .video-belt:hover .video-belt-inner{ animation-play-state:paused; }
   @keyframes videoBeltScroll{ from{transform:translateX(0);} to{transform:translateX(-50%);} }
   .video-card{
