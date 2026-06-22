@@ -421,9 +421,12 @@
   .video-belt-track{ display:flex; }
   .video-belt-set{
     display:flex; flex-shrink:0; list-style:none; margin:0; padding:6px 0;
-    animation:videoBeltScroll 19s linear infinite;
+    animation:videoBeltScroll linear infinite;
+    animation-play-state:paused;
+    will-change:transform;
   }
-  .video-belt:hover .video-belt-set{ animation-play-state:paused; }
+  .video-belt.is-running .video-belt-set{ animation-play-state:running; }
+  .video-belt.is-running:hover .video-belt-set{ animation-play-state:paused; }
   @keyframes videoBeltScroll{ from{ transform:translateX(0); } to{ transform:translateX(-100%); } }
   .video-card{
     position:relative; width:360px; aspect-ratio:16/9;
@@ -1003,7 +1006,7 @@
       currentPlayer = new YT.Player('ytLightboxPlayer', {
         host: 'https://www.youtube-nocookie.com',
         videoId: videoId,
-        playerVars: { autoplay: 1, rel: 0 },
+        playerVars: { autoplay: 1, rel: 0, origin: window.location.origin },
         events: {
           onReady: function(e){
             e.target.setVolume(25);
@@ -1092,16 +1095,24 @@
   })();
 
   // ---------- Video belt speed ----------
-  (function(){
-    var firstSet = document.querySelector('.video-belt-set');
-    if (!firstSet) return;
-    var setWidth = firstSet.offsetWidth;
-    if (!setWidth) return;
-    var duration = setWidth / 60;
-    document.querySelectorAll('.video-belt-set').forEach(function(s){
-      s.style.animationDuration = duration + 's';
+  function initVideoBelt(){
+    requestAnimationFrame(function(){
+      var belt = document.querySelector('.video-belt');
+      var firstSet = document.querySelector('.video-belt-set');
+      if (!belt || !firstSet) return;
+      var setWidth = firstSet.offsetWidth;
+      if (!setWidth) return;
+      document.querySelectorAll('.video-belt-set').forEach(function(s){
+        s.style.animationDuration = (setWidth / 60).toFixed(2) + 's';
+      });
+      belt.classList.add('is-running');
     });
-  })();
+  }
+  if (document.readyState === 'complete'){
+    initVideoBelt();
+  } else {
+    window.addEventListener('load', initVideoBelt);
+  }
 
   // ---------- Marquee dynamic duplication ----------
   (function(){
