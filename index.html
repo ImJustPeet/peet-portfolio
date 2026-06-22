@@ -420,19 +420,17 @@
   .video-belt::after{ right:0; background:linear-gradient(to left, var(--bg), transparent); }
   .video-belt-track{ display:flex; }
   .video-belt-set{
-    display:flex; flex-shrink:0; list-style:none; margin:0; padding:6px 0;
-    animation:videoBeltScroll linear infinite;
-    animation-play-state:paused;
-    will-change:transform;
+    display:flex; flex-shrink:0; gap:16px;
+    animation:videoBeltScroll 20s linear infinite;
+    list-style:none; margin:0; padding:0;
   }
-  .video-belt.is-running .video-belt-set{ animation-play-state:running; }
-  .video-belt.is-running:hover .video-belt-set{ animation-play-state:paused; }
+  .video-belt:hover .video-belt-set{ animation-play-state:paused; }
   @keyframes videoBeltScroll{ from{ transform:translateX(0); } to{ transform:translateX(-100%); } }
   .video-card{
     position:relative; width:360px; aspect-ratio:16/9;
     border-radius:6px; overflow:hidden;
     border:1px solid var(--line); background:#000;
-    flex-shrink:0; margin-right:16px;
+    flex-shrink:0;
     transition:transform .3s ease, box-shadow .3s ease, border-color .3s ease;
   }
   .video-card:hover{
@@ -1093,26 +1091,6 @@
       dot.classList.add('offline'); txt.textContent = 'Offline';
     }
   })();
-
-  // ---------- Video belt speed ----------
-  function initVideoBelt(){
-    requestAnimationFrame(function(){
-      var belt = document.querySelector('.video-belt');
-      var firstSet = document.querySelector('.video-belt-set');
-      if (!belt || !firstSet) return;
-      var setWidth = firstSet.offsetWidth;
-      if (!setWidth) return;
-      document.querySelectorAll('.video-belt-set').forEach(function(s){
-        s.style.animationDuration = (setWidth / 60).toFixed(2) + 's';
-      });
-      belt.classList.add('is-running');
-    });
-  }
-  if (document.readyState === 'complete'){
-    initVideoBelt();
-  } else {
-    window.addEventListener('load', initVideoBelt);
-  }
 
   // ---------- Marquee dynamic duplication ----------
   (function(){
