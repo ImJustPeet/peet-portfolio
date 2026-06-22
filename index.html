@@ -188,6 +188,8 @@
   .logo-avatar-wrap.is-fallback .logo-avatar-fallback{ display:flex; }
   .status{ display:flex; align-items:center; gap:8px; font-family:'JetBrains Mono', monospace; font-size:12px; color:var(--text-dim); }
   .dot{ width:7px; height:7px; border-radius:50%; background:var(--accent-2); box-shadow:0 0 0 3px var(--accent-2-soft); }
+  .dot.online{ background:#4ade80; box-shadow:0 0 0 3px rgba(74,222,128,0.2); }
+  .dot.offline{ background:#f87171; box-shadow:0 0 0 3px rgba(248,113,113,0.2); }
   @media (max-width:640px){ .nav-links a:not(.status){ display:none; } }
 
   .hamburger{
@@ -332,6 +334,9 @@
   section{ padding:84px 0; border-top:1px solid var(--line); }
   h2{ font-weight:700; font-size:clamp(26px, 3.6vw, 38px); margin:0 0 36px; max-width:20ch; }
   .work-intro{ font-size:14px; color:var(--text-dim); margin:-22px 0 32px; max-width:48ch; }
+  .work-group-label{ font-family:'JetBrains Mono', monospace; font-size:11px; color:var(--text-dim); letter-spacing:0.06em; text-transform:uppercase; margin:0 0 10px; }
+  .work-group-label + .work-grid{ margin-top:0; }
+  .work-group + .work-group{ margin-top:28px; }
   .reveal{ opacity:0; transform:translateY(16px); transition:opacity .6s ease, transform .6s ease; }
   .reveal.is-visible{ opacity:1; transform:none; }
 
@@ -406,7 +411,7 @@
   /* reel */
   .reel-grid{
     display:grid;
-    grid-template-columns:repeat(6, 1fr);
+    grid-template-columns:repeat(3, 1fr);
     grid-auto-rows:60px;
     gap:14px;
   }
@@ -421,9 +426,9 @@
     border-color:var(--accent-2);
     box-shadow:0 16px 40px rgba(0,0,0,0.55);
   }
-  .reel-frame.size-lg{ grid-column:1 / 5; grid-row:1 / 8; }
-  .reel-frame.size-md{ grid-column:5 / 7; grid-row:1 / 5; }
-  .reel-frame.size-sm{ grid-column:5 / 7; grid-row:5 / 8; }
+  .reel-frame.size-lg{ aspect-ratio:3/4; }
+  .reel-frame.size-md{ aspect-ratio:4/3; margin-top:48px; }
+  .reel-frame.size-sm{ aspect-ratio:16/10; margin-top:24px; }
   .reel-thumb{
     position:absolute; inset:0; width:100%; height:100%;
     border:0; padding:0; margin:0; overflow:hidden;
@@ -471,8 +476,8 @@
     z-index:1;
   }
   @media (max-width:880px){
-    .reel-grid{ grid-template-columns:1fr; grid-auto-rows:auto; gap:12px; }
-    .reel-frame.size-lg, .reel-frame.size-md, .reel-frame.size-sm{ grid-column:auto; grid-row:auto; aspect-ratio:16/9; }
+    .reel-grid{ grid-template-columns:1fr; gap:12px; }
+    .reel-frame.size-lg, .reel-frame.size-md, .reel-frame.size-sm{ aspect-ratio:16/9; margin-top:0; }
     .reel-frame:hover{ transform:none; }
   }
 
@@ -621,7 +626,7 @@
       <a href="#work" data-nav>Pracoval som na</a>
       <a href="#about" data-nav>O mne</a>
       <a href="#contact" data-nav>Kontakt</a>
-      <span class="status"><span class="dot"></span> K dispozícii</span>
+      <span class="status"><span class="dot" id="statusDot"></span> <span id="statusText">K dispozícii</span></span>
     </nav>
     <button class="hamburger" id="hamburgerBtn" aria-label="Otvoriť menu" aria-expanded="false">
       <span></span><span></span><span></span>
@@ -653,12 +658,12 @@
     <span class="chip-float c4" data-depth="14" data-rot="-4">export_4k.mp4</span>
 
     <div class="wrap">
-      <div class="eyebrow reveal">Video editor — obmedzená kapacita, pár voľných slotov</div>
+      <div class="eyebrow reveal">Video editor</div>
       <h1 class="reveal">Z tvojich záberov vyťažím príbeh, ktorý si ľudia pozrú do konca.</h1>
-      <p class="lead reveal">Strihám pre YouTuberov — rýchlo, s citom pre tempo a bez kompromisov v kvalite.</p>
+      <p class="lead reveal">Strihám pre YouTuberov, rýchlo, s citom pre tempo a bez kompromisov v kvalite.</p>
       <div class="cta-row reveal">
         <a href="#work" class="btn btn-primary magnetic" data-cursor="grow">▶ Pozrieť ukážky</a>
-        <a href="#contact" class="btn btn-ghost magnetic" data-cursor="grow">Napísať mi</a>
+        <a href="#contact" class="btn btn-ghost magnetic" data-cursor="grow">Kontaktuj ma</a>
       </div>
     </div>
   </section>
@@ -679,8 +684,8 @@
           <span class="stat-label">odstrihaných long form videí</span>
         </div>
         <div class="stat reveal">
-          <span class="stat-num mono" data-count="30.9" data-suffix=" mil.+" data-decimals="1">0</span>
-          <span class="stat-label">zhliadnutí na long form videách — a stále rastie</span>
+          <span class="stat-num mono" data-count="30" data-suffix=" mil.+">0</span>
+          <span class="stat-label">zhliadnutí na long form videách, a stále rastie</span>
         </div>
       </div>
     </div>
@@ -696,8 +701,8 @@
           <p>Od surových záberov k hotovému videu, ktoré sedí v rytme a udrží pozornosť.</p>
         </div>
         <div class="card reveal">
-          <h3>Miniatúry</h3>
-          <p>Vizuál, ktorý dostane klik — navrhujem ich spolu so strihom, nie ako dodatok.</p>
+          <h3>Thumbnaily</h3>
+          <p>Vizuál, ktorý dostane klik. Navrhujem ich spolu so strihom, nie ako dodatok.</p>
         </div>
         <div class="card reveal">
           <h3>Optimalizácia pre YouTube</h3>
@@ -711,118 +716,124 @@
     <div class="wrap">
       <div class="eyebrow reveal">Pracoval som na:</div>
       <h2 class="reveal">Kanály, projekty a konkrétne ukážky</h2>
-      <p class="work-intro reveal">Kliknutím na kartu sa otvorí príslušný kanál/zoznam na YouTube, kde nájdeš všetku prácu.</p>
-      <div class="work-grid reveal">
-        <!-- Tary -->
-        <a class="work-card" data-cursor="grow" target="_blank" rel="noopener" href="https://www.youtube.com/watch?v=0a8XwbfYLt0&list=PL4bBdTQJ4Z-4F_72jvuYbMYY90vspEv4Q">
-          <span class="work-info">
-            <span class="work-avatar-wrap">
-              <img class="work-avatar" width="42" height="42" decoding="async" src="https://yt3.googleusercontent.com/Cfh9ySkW63tRXQ_UH9N3S4xFyFEzjQtupYF8v0mOcyIuT-Z8to5L3G4Bu0s0hYlW5reyO3lpG5U=s160-c-k-c0x00ffffff-no-rj" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.parentElement.classList.add('is-fallback')">
-              <span class="work-avatar-fallback">T</span>
+      <div class="work-group reveal">
+        <p class="work-group-label">Aktuálne spolupracujem s:</p>
+        <div class="work-grid">
+          <!-- Tary -->
+          <a class="work-card" data-cursor="grow" target="_blank" rel="noopener" href="https://www.youtube.com/watch?v=0a8XwbfYLt0&list=PL4bBdTQJ4Z-4F_72jvuYbMYY90vspEv4Q">
+            <span class="work-info">
+              <span class="work-avatar-wrap">
+                <img class="work-avatar" width="42" height="42" decoding="async" src="https://yt3.googleusercontent.com/Cfh9ySkW63tRXQ_UH9N3S4xFyFEzjQtupYF8v0mOcyIuT-Z8to5L3G4Bu0s0hYlW5reyO3lpG5U=s160-c-k-c0x00ffffff-no-rj" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.parentElement.classList.add('is-fallback')">
+                <span class="work-avatar-fallback">T</span>
+              </span>
+              <span class="work-text"><span class="name">Tary</span><span class="subs mono">1,73 mil. odberateľov</span></span>
             </span>
-            <span class="work-text"><span class="name">Tary</span><span class="subs mono">1,73 mil. odberateľov</span></span>
-          </span>
-          <span class="arrow"><svg class="ext-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><path d="M15 3h6v6"/><path d="M10 14L21 3"/></svg></span>
-        </a>
-        <!-- Fortuna -->
-        <a class="work-card" data-cursor="grow" target="_blank" rel="noopener" href="https://www.youtube.com/watch?v=TOqDF6qIt_s&list=PL4bBdTQJ4Z-4DOf31OeIPDE9dq8HEOhft">
-          <span class="work-info">
-            <span class="work-avatar-wrap">
-              <img class="work-avatar" width="42" height="42" decoding="async" src="https://yt3.googleusercontent.com/ytc/AIdro_lLvxogAYGUiT-Cc5AIYM4ErwmuWlrd70Ce9RS20Dyzlw=s160-c-k-c0x00ffffff-no-rj" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.parentElement.classList.add('is-fallback')">
-              <span class="work-avatar-fallback">F</span>
+            <span class="arrow"><svg class="ext-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><path d="M15 3h6v6"/><path d="M10 14L21 3"/></svg></span>
+          </a>
+          <!-- Tak jsme tu! -->
+          <a class="work-card" data-cursor="grow" target="_blank" rel="noopener" href="https://www.youtube.com/@Takjsmetu">
+            <span class="work-info">
+              <span class="work-avatar-wrap">
+                <img class="work-avatar" width="42" height="42" decoding="async" src="https://yt3.googleusercontent.com/RRxn-7SWWfcTKR-D4KE7ETwRaFxOmvHChL13Los-ozcFoSvdaGGGno5emhCFC8fO0QD71y_V5g=s160-c-k-c0x00ffffff-no-rj" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.parentElement.classList.add('is-fallback')">
+                <span class="work-avatar-fallback">T</span>
+              </span>
+              <span class="work-text"><span class="name">Tak jsme tu!</span><span class="subs mono">2,26 tis. odberateľov</span></span>
             </span>
-            <span class="work-text"><span class="name">Fortuna</span><span class="subs mono">14 tis. odberateľov</span></span>
-          </span>
-          <span class="arrow"><svg class="ext-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><path d="M15 3h6v6"/><path d="M10 14L21 3"/></svg></span>
-        </a>
-        <!-- Jesus -->
-        <a class="work-card" data-cursor="grow" target="_blank" rel="noopener" href="https://www.youtube.com/watch?v=1r7XRfIY1Yc&list=PL4bBdTQJ4Z-72Tq7tbO3cm2xHoZUh_ulh">
-          <span class="work-info">
-            <span class="work-avatar-wrap">
-              <img class="work-avatar" width="42" height="42" decoding="async" src="https://yt3.googleusercontent.com/4xdEX1PDVlk1DVUyZNwcIjqviM8ErSE6Q70Pu9TPxLuHbKzg6WX-2Dptc0W0ERAgZcjGVvZQ=s160-c-k-c0x00ffffff-no-rj" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.parentElement.classList.add('is-fallback')">
-              <span class="work-avatar-fallback">J</span>
+            <span class="arrow"><svg class="ext-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><path d="M15 3h6v6"/><path d="M10 14L21 3"/></svg></span>
+          </a>
+        </div>
+      </div>
+      <div class="work-group reveal">
+        <p class="work-group-label">V minulosti som spolupracoval s:</p>
+        <div class="work-grid">
+          <!-- Duklock -->
+          <a class="work-card" data-cursor="grow" target="_blank" rel="noopener" href="https://www.youtube.com/watch?v=iC3j_YdIRLI&list=PL4bBdTQJ4Z-5PqyZIRK1HwoaireivINmm">
+            <span class="work-info">
+              <span class="work-avatar-wrap">
+                <img class="work-avatar" width="42" height="42" decoding="async" src="https://yt3.googleusercontent.com/TCl7u351pzOB9ERvwT6wnXXaRU062UN5lTKyloIQ5X89PBpKhaWNkwq73fKJueHom0YNXSY5Ug=s160-c-k-c0x00ffffff-no-rj" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.parentElement.classList.add('is-fallback')">
+                <span class="work-avatar-fallback">D</span>
+              </span>
+              <span class="work-text"><span class="name">Duklock</span><span class="subs mono">473 tis. odberateľov</span></span>
             </span>
-            <span class="work-text"><span class="name">Jesus</span><span class="subs mono">280 odberateľov</span></span>
-          </span>
-          <span class="arrow"><svg class="ext-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><path d="M15 3h6v6"/><path d="M10 14L21 3"/></svg></span>
-        </a>
-        <!-- Jancucik -->
-        <a class="work-card" data-cursor="grow" target="_blank" rel="noopener" href="https://www.youtube.com/watch?v=ClRGdc6ZxlE&list=PL4bBdTQJ4Z-7YjMPNsAj8Cf67kMPM8XIr">
-          <span class="work-info">
-            <span class="work-avatar-wrap">
-              <img class="work-avatar" width="42" height="42" decoding="async" src="https://yt3.googleusercontent.com/X3Q0nkDnAAwnBWaTLh5gxKY-ywmKzAiIPDWsoJbOxKF5-oAU9dQNxVZJrPmXWzs0J4CDnfkK-Q=s160-c-k-c0x00ffffff-no-rj" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.parentElement.classList.add('is-fallback')">
-              <span class="work-avatar-fallback">J</span>
+            <span class="arrow"><svg class="ext-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><path d="M15 3h6v6"/><path d="M10 14L21 3"/></svg></span>
+          </a>
+          <!-- Fortuna -->
+          <a class="work-card" data-cursor="grow" target="_blank" rel="noopener" href="https://www.youtube.com/watch?v=TOqDF6qIt_s&list=PL4bBdTQJ4Z-4DOf31OeIPDE9dq8HEOhft">
+            <span class="work-info">
+              <span class="work-avatar-wrap">
+                <img class="work-avatar" width="42" height="42" decoding="async" src="https://yt3.googleusercontent.com/ytc/AIdro_lLvxogAYGUiT-Cc5AIYM4ErwmuWlrd70Ce9RS20Dyzlw=s160-c-k-c0x00ffffff-no-rj" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.parentElement.classList.add('is-fallback')">
+                <span class="work-avatar-fallback">F</span>
+              </span>
+              <span class="work-text"><span class="name">Fortuna</span><span class="subs mono">14 tis. odberateľov</span></span>
             </span>
-            <span class="work-text"><span class="name">Jancucik</span><span class="subs mono">109 tis. odberateľov</span></span>
-          </span>
-          <span class="arrow"><svg class="ext-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><path d="M15 3h6v6"/><path d="M10 14L21 3"/></svg></span>
-        </a>
-        <!-- vvudy -->
-        <a class="work-card" data-cursor="grow" target="_blank" rel="noopener" href="https://www.youtube.com/watch?v=fSxOb4X3Mxs&list=PL4bBdTQJ4Z-5GNMIGcVfV49SDWystbJMA">
-          <span class="work-info">
-            <span class="work-avatar-wrap">
-              <img class="work-avatar" width="42" height="42" decoding="async" src="https://yt3.googleusercontent.com/6P-nvfuT2MxorfifAjQwbVGa94bRsLEURofh0CbGtZzltmKCNbvu9nn2shWoHg1Ke3iTwI7r8Q=s160-c-k-c0x00ffffff-no-rj" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.parentElement.classList.add('is-fallback')">
-              <span class="work-avatar-fallback">V</span>
+            <span class="arrow"><svg class="ext-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><path d="M15 3h6v6"/><path d="M10 14L21 3"/></svg></span>
+          </a>
+          <!-- Jancucik -->
+          <a class="work-card" data-cursor="grow" target="_blank" rel="noopener" href="https://www.youtube.com/watch?v=ClRGdc6ZxlE&list=PL4bBdTQJ4Z-7YjMPNsAj8Cf67kMPM8XIr">
+            <span class="work-info">
+              <span class="work-avatar-wrap">
+                <img class="work-avatar" width="42" height="42" decoding="async" src="https://yt3.googleusercontent.com/X3Q0nkDnAAwnBWaTLh5gxKY-ywmKzAiIPDWsoJbOxKF5-oAU9dQNxVZJrPmXWzs0J4CDnfkK-Q=s160-c-k-c0x00ffffff-no-rj" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.parentElement.classList.add('is-fallback')">
+                <span class="work-avatar-fallback">J</span>
+              </span>
+              <span class="work-text"><span class="name">Jancucik</span><span class="subs mono">109 tis. odberateľov</span></span>
             </span>
-            <span class="work-text"><span class="name">vvudy</span><span class="subs mono">183 odberateľov</span></span>
-          </span>
-          <span class="arrow"><svg class="ext-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><path d="M15 3h6v6"/><path d="M10 14L21 3"/></svg></span>
-        </a>
-        <!-- Duklock -->
-        <a class="work-card" data-cursor="grow" target="_blank" rel="noopener" href="https://www.youtube.com/watch?v=iC3j_YdIRLI&list=PL4bBdTQJ4Z-5PqyZIRK1HwoaireivINmm">
-          <span class="work-info">
-            <span class="work-avatar-wrap">
-              <img class="work-avatar" width="42" height="42" decoding="async" src="https://yt3.googleusercontent.com/TCl7u351pzOB9ERvwT6wnXXaRU062UN5lTKyloIQ5X89PBpKhaWNkwq73fKJueHom0YNXSY5Ug=s160-c-k-c0x00ffffff-no-rj" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.parentElement.classList.add('is-fallback')">
-              <span class="work-avatar-fallback">D</span>
+            <span class="arrow"><svg class="ext-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><path d="M15 3h6v6"/><path d="M10 14L21 3"/></svg></span>
+          </a>
+          <!-- vvudy -->
+          <a class="work-card" data-cursor="grow" target="_blank" rel="noopener" href="https://www.youtube.com/watch?v=fSxOb4X3Mxs&list=PL4bBdTQJ4Z-5GNMIGcVfV49SDWystbJMA">
+            <span class="work-info">
+              <span class="work-avatar-wrap">
+                <img class="work-avatar" width="42" height="42" decoding="async" src="https://yt3.googleusercontent.com/6P-nvfuT2MxorfifAjQwbVGa94bRsLEURofh0CbGtZzltmKCNbvu9nn2shWoHg1Ke3iTwI7r8Q=s160-c-k-c0x00ffffff-no-rj" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.parentElement.classList.add('is-fallback')">
+                <span class="work-avatar-fallback">V</span>
+              </span>
+              <span class="work-text"><span class="name">vvudy</span><span class="subs mono">183 odberateľov</span></span>
             </span>
-            <span class="work-text"><span class="name">Duklock</span><span class="subs mono">473 tis. odberateľov</span></span>
-          </span>
-          <span class="arrow"><svg class="ext-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><path d="M15 3h6v6"/><path d="M10 14L21 3"/></svg></span>
-        </a>
-        <!-- Tak jsme tu! -->
-        <a class="work-card" data-cursor="grow" target="_blank" rel="noopener" href="https://www.youtube.com/@Takjsmetu">
-          <span class="work-info">
-            <span class="work-avatar-wrap">
-              <img class="work-avatar" width="42" height="42" decoding="async" src="https://yt3.googleusercontent.com/RRxn-7SWWfcTKR-D4KE7ETwRaFxOmvHChL13Los-ozcFoSvdaGGGno5emhCFC8fO0QD71y_V5g=s160-c-k-c0x00ffffff-no-rj" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.parentElement.classList.add('is-fallback')">
-              <span class="work-avatar-fallback">T</span>
+            <span class="arrow"><svg class="ext-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><path d="M15 3h6v6"/><path d="M10 14L21 3"/></svg></span>
+          </a>
+          <!-- Jesus -->
+          <a class="work-card" data-cursor="grow" target="_blank" rel="noopener" href="https://www.youtube.com/watch?v=1r7XRfIY1Yc&list=PL4bBdTQJ4Z-72Tq7tbO3cm2xHoZUh_ulh">
+            <span class="work-info">
+              <span class="work-avatar-wrap">
+                <img class="work-avatar" width="42" height="42" decoding="async" src="https://yt3.googleusercontent.com/4xdEX1PDVlk1DVUyZNwcIjqviM8ErSE6Q70Pu9TPxLuHbKzg6WX-2Dptc0W0ERAgZcjGVvZQ=s160-c-k-c0x00ffffff-no-rj" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.parentElement.classList.add('is-fallback')">
+                <span class="work-avatar-fallback">J</span>
+              </span>
+              <span class="work-text"><span class="name">Jesus</span><span class="subs mono">280 odberateľov</span></span>
             </span>
-            <span class="work-text"><span class="name">Tak jsme tu!</span><span class="subs mono">2,26 tis. odberateľov</span></span>
-          </span>
-          <span class="arrow"><svg class="ext-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><path d="M15 3h6v6"/><path d="M10 14L21 3"/></svg></span>
-        </a>
-
-        <!-- Show More -->
-        <a class="work-card" data-cursor="grow" target="_blank" rel="noopener" href="https://www.youtube.com/watch?v=OhRTZyk5CoI&list=PL4bBdTQJ4Z-4gRJEVRDI1WJnAesYqVdFc">
-          <span class="work-info">
-            <span class="work-avatar-wrap">
-              <img class="work-avatar" width="42" height="42" decoding="async" src="https://yt3.googleusercontent.com/9rPBFaV-uYZkelm8IgDG338-kBAXR265PZOE4Xoe6sOX_mBRkcGNYjilzIyCQJSByrvnyDP5Xg=s160-c-k-c0x00ffffff-no-rj" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.parentElement.classList.add('is-fallback')">
-              <span class="work-avatar-fallback">S</span>
+            <span class="arrow"><svg class="ext-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><path d="M15 3h6v6"/><path d="M10 14L21 3"/></svg></span>
+          </a>
+          <!-- Show More -->
+          <a class="work-card" data-cursor="grow" target="_blank" rel="noopener" href="https://www.youtube.com/watch?v=OhRTZyk5CoI&list=PL4bBdTQJ4Z-4gRJEVRDI1WJnAesYqVdFc">
+            <span class="work-info">
+              <span class="work-avatar-wrap">
+                <img class="work-avatar" width="42" height="42" decoding="async" src="https://yt3.googleusercontent.com/9rPBFaV-uYZkelm8IgDG338-kBAXR265PZOE4Xoe6sOX_mBRkcGNYjilzIyCQJSByrvnyDP5Xg=s160-c-k-c0x00ffffff-no-rj" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.parentElement.classList.add('is-fallback')">
+                <span class="work-avatar-fallback">S</span>
+              </span>
+              <span class="work-text"><span class="name">Show More</span><span class="subs mono">100 tis. odberateľov</span></span>
             </span>
-            <span class="work-text"><span class="name">Show More</span><span class="subs mono">100 tis. odberateľov</span></span>
-          </span>
-          <span class="arrow"><svg class="ext-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><path d="M15 3h6v6"/><path d="M10 14L21 3"/></svg></span>
-        </a>
+            <span class="arrow"><svg class="ext-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><path d="M15 3h6v6"/><path d="M10 14L21 3"/></svg></span>
+          </a>
+        </div>
       </div>
       <div class="reel-grid" style="margin-top:40px;">
         <div class="reel-frame size-lg reveal">
-          <button class="reel-thumb" data-video-id="FjbvvVQ1J3U" aria-label="Prehrať ukážku — Tary">
-            <img src="https://i.ytimg.com/vi/FjbvvVQ1J3U/hqdefault.jpg" alt="Náhľad videa — Tary, Poprvé v životě s rodinou v Londýně" fetchpriority="high" decoding="async">
+          <button class="reel-thumb" data-video-id="FjbvvVQ1J3U" aria-label="Prehrať ukážku: Tary">
+            <img src="https://i.ytimg.com/vi/FjbvvVQ1J3U/hqdefault.jpg" alt="Náhľad videa: Tary, Poprvé v životě s rodinou v Londýně" fetchpriority="high" decoding="async">
             <span class="reel-play-icon">▶</span>
           </button>
           <span class="reel-tag mono">Tary</span>
           <span class="reel-views mono">👁 95 tis.</span>
         </div>
         <div class="reel-frame size-md reveal">
-          <button class="reel-thumb" data-video-id="K8DPDth6yp0" aria-label="Prehrať ukážku — Duklock">
-            <img src="https://i.ytimg.com/vi/K8DPDth6yp0/hqdefault.jpg" alt="Náhľad videa — Duklock, herný stream" loading="lazy" decoding="async">
+          <button class="reel-thumb" data-video-id="K8DPDth6yp0" aria-label="Prehrať ukážku: Duklock">
+            <img src="https://i.ytimg.com/vi/K8DPDth6yp0/hqdefault.jpg" alt="Náhľad videa: Duklock, herný stream" loading="lazy" decoding="async">
             <span class="reel-play-icon">▶</span>
           </button>
           <span class="reel-tag mono">Duklock</span>
           <span class="reel-views mono">👁 731 tis.</span>
         </div>
         <div class="reel-frame size-sm reveal">
-          <button class="reel-thumb" data-video-id="tgVPTnPNkCk" aria-label="Prehrať ukážku — Tary">
-            <img src="https://i.ytimg.com/vi/tgVPTnPNkCk/hqdefault.jpg" alt="Náhľad videa — Tary vs. Jay" loading="lazy" decoding="async">
+          <button class="reel-thumb" data-video-id="tgVPTnPNkCk" aria-label="Prehrať ukážku: Tary">
+            <img src="https://i.ytimg.com/vi/tgVPTnPNkCk/hqdefault.jpg" alt="Náhľad videa: Tary vs. Jay" loading="lazy" decoding="async">
             <span class="reel-play-icon">▶</span>
           </button>
           <span class="reel-tag mono">Tary</span>
@@ -855,19 +866,19 @@
           </div>
           <p class="reveal">
             Video strihu sa venujem dlhodobo a aktuálne pravidelne strihám pre etablovaného YouTubera.
-            Rozumiem tomu, prečo divák niekde odpadne — a ako to opraviť ešte v strižni, nie až v analytike po publikovaní.
+            Rozumiem tomu, prečo divák niekde odpadne, a viem to opraviť ešte v strižni, nie až v analytike po publikovaní.
           </p>
         </div>
         <div class="chips reveal">
+          <div class="eyebrow" style="width:100%;margin-bottom:6px;">Skills</div>
           <span class="chip">Premiere Pro</span>
-          <span class="chip">Miniatúry</span>
+          <span class="chip">Thumbnaily</span>
           <span class="chip">Pacing &amp; retention</span>
           <span class="chip">Sound design</span>
           <span class="chip">Color grading</span>
           <span class="chip">Storytelling</span>
           <span class="chip">Titulky &amp; captions</span>
           <span class="chip">Optimalizácia pre YouTube</span>
-          <a href="https://www.youtube.com/@ImJustPeet" class="chip" target="_blank" rel="noopener">@ImJustPeet<svg class="ext-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;margin-left:4px;vertical-align:middle;" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><path d="M15 3h6v6"/><path d="M10 14L21 3"/></svg></a>
         </div>
       </div>
     </div>
@@ -880,7 +891,7 @@
       <div class="steps">
         <div class="steps-line reveal"></div>
         <div class="step reveal"><span class="num mono">01</span><h3>Brief</h3><p>Pošleš mi zábery a popíšeš, akým smerom sa má video uberať.</p></div>
-        <div class="step reveal"><span class="num mono">02</span><h3>Strih</h3><p>Pripravím prvý strih — štruktúra, tempo, výber najlepších momentov.</p></div>
+        <div class="step reveal"><span class="num mono">02</span><h3>Strih</h3><p>Pripravím prvý strih: štruktúra, tempo, výber najlepších momentov.</p></div>
         <div class="step reveal"><span class="num mono">03</span><h3>Revízie</h3><p>Doladíme detaily podľa tvojej spätnej väzby.</p></div>
         <div class="step reveal"><span class="num mono">04</span><h3>Export</h3><p>Dostaneš hotové video vo formáte, ktorý potrebuješ.</p></div>
       </div>
@@ -892,7 +903,7 @@
       <div class="eyebrow reveal">Kontakt</div>
       <h2 class="reveal">Poďme na to.</h2>
       <a href="mailto:donovanpeet@gmail.com" class="contact-email reveal magnetic" data-cursor="grow">donovanpeet@gmail.com<svg class="ext-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;margin-left:4px;vertical-align:middle;" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><path d="M15 3h6v6"/><path d="M10 14L21 3"/></svg></a>
-      <p class="contact-sub reveal">Napíš mi pár viet o projekte a dĺžke videa — odpovedám väčšinou do 24 hodín.</p>
+      <p class="contact-sub reveal">Napíš mi pár viet o projekte a dĺžke videa, odpovedám väčšinou do 24 hodín.</p>
       <div class="contact-links reveal">
         <a href="https://www.youtube.com/@ImJustPeet" target="_blank" rel="noopener">YouTube<svg class="ext-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;margin-left:4px;vertical-align:middle;" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><path d="M15 3h6v6"/><path d="M10 14L21 3"/></svg></a>
         <a href="https://www.instagram.com/imjustpeet/" target="_blank" rel="noopener">Instagram<svg class="ext-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;margin-left:4px;vertical-align:middle;" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><path d="M15 3h6v6"/><path d="M10 14L21 3"/></svg></a>
@@ -1035,6 +1046,21 @@
   } else {
     revealEls.forEach(function(el){ el.classList.add('is-visible'); });
   }
+
+  // ---------- Dynamic online status ----------
+  (function(){
+    var dot = document.getElementById('statusDot');
+    var txt = document.getElementById('statusText');
+    if (!dot || !txt) return;
+    var hour = parseInt(new Intl.DateTimeFormat('sk', {
+      timeZone: 'Europe/Bratislava', hour: 'numeric', hour12: false
+    }).format(new Date()), 10);
+    if (hour >= 9 && hour < 15) {
+      dot.classList.add('online'); txt.textContent = 'Online';
+    } else {
+      dot.classList.add('offline'); txt.textContent = 'Offline';
+    }
+  })();
 
   // ---------- Marquee dynamic duplication ----------
   (function(){
