@@ -64,7 +64,7 @@
     html{ scroll-behavior:auto; }
     *, *::before, *::after{ animation-duration:0.001ms !important; animation-iteration-count:1 !important; transition-duration:0.001ms !important; }
     /* Marquee is slow, linear, and pauses on hover — safe to keep looping even with reduced motion */
-    .marquee-track{ animation-duration:26s !important; animation-iteration-count:infinite !important; }
+    .marquee-track{ animation-duration:26s !important; animation-iteration-count:infinite !important; animation-name:marqueeScroll !important; }
   }
 
   body{
@@ -395,13 +395,11 @@
 
   /* marquee */
   .marquee-wrap{ overflow:hidden; border-top:1px solid var(--line); border-bottom:1px solid var(--line); padding:22px 0; }
-  .marquee-track{ display:flex; gap:14px; width:max-content; animation:marquee 26s linear infinite; }
+  .marquee-track{ display:flex; width:max-content; animation:marqueeScroll 26s linear infinite; }
   .marquee-wrap:hover .marquee-track{ animation-play-state:paused; }
-  .marquee-track span{
-    font-family:'JetBrains Mono', monospace; font-size:13px; color:var(--text-dim);
-    border:1px solid var(--line); border-radius:20px; padding:8px 18px; white-space:nowrap;
-  }
-  @keyframes marquee{ 0%{ transform:translateX(0); } 100%{ transform:translateX(calc(-50% - 7px)); } }
+  .marquee-set{ display:flex; gap:14px; flex-shrink:0; padding-right:14px; list-style:none; margin:0; padding-left:0; }
+  .marquee-set li{ font-family:'JetBrains Mono', monospace; font-size:13px; color:var(--text-dim); border:1px solid var(--line); border-radius:20px; padding:8px 18px; white-space:nowrap; }
+  @keyframes marqueeScroll{ from{ transform:translateX(0); } to{ transform:translateX(-50%); } }
 
   /* reel */
   .reel-grid{
@@ -548,16 +546,16 @@
   }
   .contact-email:hover{ border-color:var(--accent); }
   .contact-sub{ color:var(--text-dim); margin:18px 0 32px; max-width:46ch; }
-  .social-row{ display:flex; gap:24px; flex-wrap:wrap; font-family:'JetBrains Mono', monospace; font-size:13px; }
-  .social-row a{ color:var(--text-dim); transition:color .18s ease; }
-  .social-row a:hover{ color:var(--accent-2); }
-  .social-discord{
+  .contact-links{ display:flex; gap:24px; flex-wrap:wrap; font-family:'JetBrains Mono', monospace; font-size:13px; }
+  .contact-links a{ color:var(--text-dim); transition:color .18s ease; }
+  .contact-links a:hover{ color:var(--accent-2); }
+  .discord-copy{
     background:none; border:0; padding:0; margin:0;
     color:var(--text-dim); font-family:'JetBrains Mono', monospace; font-size:13px;
     cursor:pointer; transition:color .18s ease;
   }
-  .social-discord:hover{ color:var(--accent-2); }
-  .social-discord.is-copied{ color:var(--accent); }
+  .discord-copy:hover{ color:var(--accent-2); }
+  .discord-copy.is-copied{ color:var(--accent); }
 
   footer{ border-top:1px solid var(--line); padding:28px 0; }
   footer .wrap{ display:flex; justify-content:space-between; font-family:'JetBrains Mono', monospace; font-size:12px; color:var(--text-dim); flex-wrap:wrap; gap:8px; }
@@ -722,7 +720,7 @@
             </span>
             <span class="work-text"><span class="name">Tary</span><span class="subs mono">1,73 mil. odberateľov</span></span>
           </span>
-          <span class="arrow">↗</span>
+          <span class="arrow"><svg class="ext-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><path d="M15 3h6v6"/><path d="M10 14L21 3"/></svg></span>
         </a>
         <!-- Fortuna -->
         <a class="work-card" data-cursor="grow" target="_blank" rel="noopener" href="https://www.youtube.com/watch?v=TOqDF6qIt_s&list=PL4bBdTQJ4Z-4DOf31OeIPDE9dq8HEOhft">
@@ -733,7 +731,7 @@
             </span>
             <span class="work-text"><span class="name">Fortuna</span><span class="subs mono">14 tis. odberateľov</span></span>
           </span>
-          <span class="arrow">↗</span>
+          <span class="arrow"><svg class="ext-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><path d="M15 3h6v6"/><path d="M10 14L21 3"/></svg></span>
         </a>
         <!-- Jesus -->
         <a class="work-card" data-cursor="grow" target="_blank" rel="noopener" href="https://www.youtube.com/watch?v=1r7XRfIY1Yc&list=PL4bBdTQJ4Z-72Tq7tbO3cm2xHoZUh_ulh">
@@ -744,7 +742,7 @@
             </span>
             <span class="work-text"><span class="name">Jesus</span><span class="subs mono">280 odberateľov</span></span>
           </span>
-          <span class="arrow">↗</span>
+          <span class="arrow"><svg class="ext-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><path d="M15 3h6v6"/><path d="M10 14L21 3"/></svg></span>
         </a>
         <!-- Jancucik -->
         <a class="work-card" data-cursor="grow" target="_blank" rel="noopener" href="https://www.youtube.com/watch?v=ClRGdc6ZxlE&list=PL4bBdTQJ4Z-7YjMPNsAj8Cf67kMPM8XIr">
@@ -755,7 +753,7 @@
             </span>
             <span class="work-text"><span class="name">Jancucik</span><span class="subs mono">109 tis. odberateľov</span></span>
           </span>
-          <span class="arrow">↗</span>
+          <span class="arrow"><svg class="ext-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><path d="M15 3h6v6"/><path d="M10 14L21 3"/></svg></span>
         </a>
         <!-- vvudy -->
         <a class="work-card" data-cursor="grow" target="_blank" rel="noopener" href="https://www.youtube.com/watch?v=fSxOb4X3Mxs&list=PL4bBdTQJ4Z-5GNMIGcVfV49SDWystbJMA">
@@ -766,7 +764,7 @@
             </span>
             <span class="work-text"><span class="name">vvudy</span><span class="subs mono">183 odberateľov</span></span>
           </span>
-          <span class="arrow">↗</span>
+          <span class="arrow"><svg class="ext-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><path d="M15 3h6v6"/><path d="M10 14L21 3"/></svg></span>
         </a>
         <!-- Duklock -->
         <a class="work-card" data-cursor="grow" target="_blank" rel="noopener" href="https://www.youtube.com/watch?v=iC3j_YdIRLI&list=PL4bBdTQJ4Z-5PqyZIRK1HwoaireivINmm">
@@ -777,7 +775,7 @@
             </span>
             <span class="work-text"><span class="name">Duklock</span><span class="subs mono">473 tis. odberateľov</span></span>
           </span>
-          <span class="arrow">↗</span>
+          <span class="arrow"><svg class="ext-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><path d="M15 3h6v6"/><path d="M10 14L21 3"/></svg></span>
         </a>
         <!-- Tak jsme tu! -->
         <a class="work-card" data-cursor="grow" target="_blank" rel="noopener" href="https://www.youtube.com/@Takjsmetu">
@@ -788,7 +786,7 @@
             </span>
             <span class="work-text"><span class="name">Tak jsme tu!</span><span class="subs mono">2,26 tis. odberateľov</span></span>
           </span>
-          <span class="arrow">↗</span>
+          <span class="arrow"><svg class="ext-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><path d="M15 3h6v6"/><path d="M10 14L21 3"/></svg></span>
         </a>
 
         <!-- Show More -->
@@ -800,7 +798,7 @@
             </span>
             <span class="work-text"><span class="name">Show More</span><span class="subs mono">100 tis. odberateľov</span></span>
           </span>
-          <span class="arrow">↗</span>
+          <span class="arrow"><svg class="ext-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><path d="M15 3h6v6"/><path d="M10 14L21 3"/></svg></span>
         </a>
       </div>
       <div class="reel-grid" style="margin-top:40px;">
@@ -833,9 +831,13 @@
   </section>
 
   <div class="marquee-wrap reveal">
-    <div class="marquee-track mono">
-      <span>Vlogy</span><span>Tutoriály</span><span>Rozhovory</span><span>Shorts</span><span>Reakcie</span><span>Gaming</span><span>Cestovanie</span><span>Recenzie</span><span>Podcasty</span><span>Unboxing</span>
-      <span>Vlogy</span><span>Tutoriály</span><span>Rozhovory</span><span>Shorts</span><span>Reakcie</span><span>Gaming</span><span>Cestovanie</span><span>Recenzie</span><span>Podcasty</span><span>Unboxing</span>
+    <div class="marquee-track">
+      <ul class="marquee-set">
+        <li>Vlogy</li><li>Tutoriály</li><li>Rozhovory</li><li>Shorts</li><li>Reakcie</li><li>Gaming</li><li>Cestovanie</li><li>Recenzie</li><li>Podcasty</li><li>Unboxing</li>
+      </ul>
+      <ul class="marquee-set" aria-hidden="true">
+        <li>Vlogy</li><li>Tutoriály</li><li>Rozhovory</li><li>Shorts</li><li>Reakcie</li><li>Gaming</li><li>Cestovanie</li><li>Recenzie</li><li>Podcasty</li><li>Unboxing</li>
+      </ul>
     </div>
   </div>
 
@@ -868,6 +870,7 @@
           <span class="chip">Storytelling</span>
           <span class="chip">Titulky &amp; captions</span>
           <span class="chip">Optimalizácia pre YouTube</span>
+          <a href="https://www.youtube.com/@ImJustPeet" class="chip" target="_blank" rel="noopener">@ImJustPeet<svg class="ext-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;margin-left:4px;vertical-align:middle;" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><path d="M15 3h6v6"/><path d="M10 14L21 3"/></svg></a>
         </div>
       </div>
     </div>
@@ -891,12 +894,12 @@
     <div class="wrap">
       <div class="eyebrow reveal">Kontakt</div>
       <h2 class="reveal">Poďme na to.</h2>
-      <a href="mailto:donovanpeet@gmail.com" class="contact-email reveal magnetic" data-cursor="grow">donovanpeet@gmail.com</a>
+      <a href="mailto:donovanpeet@gmail.com" class="contact-email reveal magnetic" data-cursor="grow">donovanpeet@gmail.com<svg class="ext-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;margin-left:4px;vertical-align:middle;" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><path d="M15 3h6v6"/><path d="M10 14L21 3"/></svg></a>
       <p class="contact-sub reveal">Napíš mi pár viet o projekte a dĺžke videa — odpovedám väčšinou do 24 hodín.</p>
-      <div class="social-row reveal">
-        <a href="https://www.youtube.com/@ImJustPeet" target="_blank" rel="noopener">YouTube ↗</a>
-        <a href="https://www.instagram.com/imjustpeet/" target="_blank" rel="noopener">Instagram ↗</a>
-        <button type="button" class="social-discord" data-discord="imjustpeet">Discord: imjustpeet ⧉</button>
+      <div class="contact-links reveal">
+        <a href="https://www.youtube.com/@ImJustPeet" target="_blank" rel="noopener">YouTube<svg class="ext-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;margin-left:4px;vertical-align:middle;" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><path d="M15 3h6v6"/><path d="M10 14L21 3"/></svg></a>
+        <a href="https://www.instagram.com/imjustpeet/" target="_blank" rel="noopener">Instagram<svg class="ext-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;margin-left:4px;vertical-align:middle;" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><path d="M15 3h6v6"/><path d="M10 14L21 3"/></svg></a>
+        <button type="button" class="discord-copy" data-discord="imjustpeet">Discord: imjustpeet ⧉</button>
       </div>
     </div>
   </section>
