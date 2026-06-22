@@ -401,7 +401,7 @@
     font-family:'JetBrains Mono', monospace; font-size:13px; color:var(--text-dim);
     border:1px solid var(--line); border-radius:20px; padding:8px 18px; white-space:nowrap;
   }
-  @keyframes marquee{ 0%{ transform:translateX(0); } 100%{ transform:translateX(-50%); } }
+  @keyframes marquee{ 0%{ transform:translateX(0); } 100%{ transform:translateX(calc(-50% - 7px)); } }
 
   /* reel */
   .reel-grid{
@@ -614,7 +614,7 @@
         <img class="logo-avatar" width="28" height="28" decoding="async" loading="lazy" referrerpolicy="no-referrer" alt="" src="https://yt3.googleusercontent.com/IRe7M6VjSCVH0dbUrsJGeDmC05sErJyWMw0k5yBMvI09WLcFtU4TAxEX2bKYYh9rlmsGD5xB4w=s160-c-k-c0x00ffffff-no-rj" onerror="this.parentElement.classList.add('is-fallback')">
         <span class="logo-avatar-fallback">P</span>
       </span>
-      Peet<span style="color:var(--accent)">.</span>
+      Peet<span style="color:var(--accent);margin-left:-8px">.</span>
     </div>
     <nav class="nav-links">
       <a href="#services" data-nav>Čo robím</a>
