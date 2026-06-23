@@ -42,45 +42,10 @@
 <link rel="preconnect" href="https://www.youtube.com">
 <link rel="preconnect" href="https://i.ytimg.com">
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="shared.css">
 
 <style>
-  :root{
-    --bg:        #0c0b0a;
-    --bg-elev:   #161413;
-    --bg-elev-2: #201d1a;
-    --text:      #f3efe9;
-    --text-dim:  #9b948c;
-    --line:      rgba(243,239,233,0.10);
-    --line-soft: rgba(243,239,233,0.06);
-    --accent:    #ff7a2f;
-    --accent-soft: rgba(255,122,47,0.16);
-    --accent-2:  #57c2c9;
-    --accent-2-soft: rgba(87,194,201,0.16);
-  }
-
-  *{ box-sizing:border-box; }
-  html{ scroll-behavior:smooth; }
-  @media (prefers-reduced-motion: reduce){
-    html{ scroll-behavior:auto; }
-    *, *::before, *::after{ animation-duration:0.001ms !important; animation-iteration-count:1 !important; transition-duration:0.001ms !important; }
-    /* Marquee and video belt are slow, linear, and pause on hover — safe to keep looping even with reduced motion */
-    .marquee-inner{ animation-duration:20s !important; animation-iteration-count:infinite !important; animation-name:marqueeScroll !important; }
-    .video-belt-inner{ animation-iteration-count:infinite !important; }
-  }
-
-  body{
-    margin:0;
-    background:var(--bg);
-    color:var(--text);
-    font-family:'Sora', sans-serif;
-    font-size:16px;
-    line-height:1.65;
-    -webkit-font-smoothing:antialiased;
-  }
-  a{ color:inherit; text-decoration:none; }
-  ::selection{ background:var(--accent-soft); color:var(--text); }
-  :focus-visible{ outline:2px solid var(--accent); outline-offset:3px; border-radius:2px; }
-  .mono{ font-family:'JetBrains Mono', monospace; }
+  /* :root, reset, body, a — now in shared.css */
 
   /* intro loader */
   .intro-loader{
@@ -115,116 +80,13 @@
   .back-to-top svg{ display:block; }
   @media (max-width:640px){ .back-to-top{ bottom:16px; right:16px; width:40px; height:40px; } }
 
-  .click-ripple{
-    position:fixed; top:0; left:0;
-    width:10px; height:10px;
-    border:2px solid var(--accent-2);
-    border-radius:50%;
-    pointer-events:none;
-    z-index:9996;
-    transform:translate(-50%,-50%) scale(0.3);
-    opacity:0.8;
-    animation:rippleExpand 600ms ease-out forwards;
-  }
-  @keyframes rippleExpand{
-    0%{ transform:translate(-50%,-50%) scale(0.3); opacity:0.8; }
-    100%{ transform:translate(-50%,-50%) scale(3.2); opacity:0; }
-  }
+  /* .click-ripple + keyframes — now in shared.css */
 
-  .paw-rain{
-    position:fixed; top:-40px; font-size:22px;
-    pointer-events:none; z-index:9998;
-    animation:pawFall var(--dur) var(--delay) ease-in forwards;
-  }
-  @keyframes pawFall{
-    0%{ transform:translateY(0) rotate(0deg); opacity:0; }
-    10%{ opacity:1; }
-    100%{ transform:translateY(110vh) rotate(var(--rot)); opacity:0; }
-  }
+  /* .paw-rain, .confetti-piece, .egg-toast + keyframes — now in shared.css */
 
-  /* easter egg */
-  .confetti-piece{
-    position:fixed; top:0; left:0; width:7px; height:7px;
-    border-radius:2px; pointer-events:none; z-index:9998;
-    animation:confettiBurst 1100ms ease-out forwards;
-  }
-  @keyframes confettiBurst{
-    0%{ transform:translate(0,0) rotate(0deg); opacity:1; }
-    100%{ transform:translate(var(--tx), var(--ty)) rotate(var(--rot)); opacity:0; }
-  }
-  .egg-toast{
-    position:fixed; bottom:28px; left:50%;
-    transform:translate(-50%, 16px);
-    background:var(--bg-elev); border:1px solid var(--accent); border-radius:6px;
-    padding:13px 20px; font-family:'JetBrains Mono', monospace; font-size:13px; color:var(--text);
-    opacity:0; transition:opacity .3s ease, transform .3s ease;
-    z-index:9999; pointer-events:none; white-space:nowrap;
-  }
-  .egg-toast.is-visible{ opacity:1; transform:translate(-50%, 0); }
+  /* .wrap — now in shared.css */
 
-  .wrap{ max-width:1080px; margin:0 auto; padding:0 28px; }
-
-  /* ---------- NAV ---------- */
-  header{
-    position:sticky; top:0; z-index:50;
-    background:rgba(12,11,10,0.78);
-    backdrop-filter:blur(8px);
-    border-bottom:1px solid var(--line);
-  }
-  .nav{ display:flex; align-items:center; justify-content:space-between; padding:18px 0; }
-  .logo{ font-weight:800; font-size:20px; letter-spacing:0.01em; }
-  .nav-links{ display:flex; align-items:center; gap:26px; font-size:14px; }
-  .nav-links a{ color:var(--text-dim); transition:color .2s ease; }
-  .nav-links a:hover{ color:var(--text); }
-  .nav-links a.is-active{ color:var(--accent); }
-  .logo-avatar-wrap{ position:relative; width:28px; height:28px; flex-shrink:0; }
-  .logo-avatar{ width:28px; height:28px; border-radius:50%; object-fit:cover; border:1px solid var(--line); display:block; background:var(--bg-elev-2); }
-  .logo-avatar-fallback{
-    display:none; position:absolute; inset:0; border-radius:50%;
-    background:var(--bg-elev-2); border:1px solid var(--line);
-    align-items:center; justify-content:center;
-    font-family:'JetBrains Mono', monospace; font-size:12px; color:var(--text-dim);
-  }
-  .logo-avatar-wrap.is-fallback .logo-avatar{ display:none; }
-  .logo-avatar-wrap.is-fallback .logo-avatar-fallback{ display:flex; }
-  .status{ display:flex; align-items:center; gap:8px; font-family:'JetBrains Mono', monospace; font-size:12px; color:var(--text-dim); }
-  .dot{ width:7px; height:7px; border-radius:50%; background:var(--accent-2); box-shadow:0 0 0 3px var(--accent-2-soft); }
-  .dot.online{ background:#4ade80; box-shadow:0 0 0 3px rgba(74,222,128,0.2); }
-  .dot.offline{ background:#f87171; box-shadow:0 0 0 3px rgba(248,113,113,0.2); }
-  @media (max-width:640px){ .nav-links a:not(.status){ display:none; } }
-
-  .hamburger{
-    display:none; flex-direction:column; justify-content:center; gap:5px;
-    width:32px; height:32px; flex-shrink:0;
-    background:none; border:0; padding:0; cursor:pointer;
-  }
-  .hamburger span{
-    display:block; height:2px; width:100%;
-    background:var(--text); border-radius:1px;
-    transition:transform .25s ease, opacity .25s ease;
-  }
-  .hamburger.is-open span:nth-child(1){ transform:translateY(7px) rotate(45deg); }
-  .hamburger.is-open span:nth-child(2){ opacity:0; }
-  .hamburger.is-open span:nth-child(3){ transform:translateY(-7px) rotate(-45deg); }
-
-  .mobile-menu{ display:none; }
-  @media (max-width:640px){
-    .hamburger{ display:flex; }
-    .mobile-menu{
-      display:grid; grid-template-rows:0fr;
-      overflow:hidden;
-      transition:grid-template-rows .3s ease;
-      border-top:1px solid var(--line);
-    }
-    .mobile-menu.is-open{ grid-template-rows:1fr; }
-  }
-  .mobile-menu-inner{ display:flex; flex-direction:column; min-height:0; overflow:hidden; }
-  .mobile-menu-inner a{
-    padding:14px 28px;
-    color:var(--text-dim); font-size:15px;
-    border-bottom:1px solid var(--line-soft);
-  }
-  .mobile-menu-inner a:hover{ color:var(--accent); }
+  /* header/nav/hamburger/mobile-menu — now in shared.css */
 
 
   /* Section-pinned background textures (real Premiere Pro timeline screenshots) */
@@ -580,9 +442,7 @@
   .discord-copy:hover{ color:var(--accent-2); }
   .discord-copy.is-copied{ color:var(--accent); }
 
-  footer{ border-top:1px solid var(--line); padding:28px 0; }
-  footer .wrap{ display:flex; justify-content:space-between; font-family:'JetBrains Mono', monospace; font-size:12px; color:var(--text-dim); flex-wrap:wrap; gap:8px; }
-  @media (max-width:640px){ footer .wrap{ padding-right:64px; } }
+  /* footer — now in shared.css */
 
   .privacy-notice{
     position:fixed; bottom:0; left:0; right:0; z-index:9999;
@@ -641,6 +501,8 @@
       <a href="#services" data-nav>Čo robím</a>
       <a href="#work" data-nav>Pracoval som na</a>
       <a href="#about" data-nav>O mne</a>
+      <a href="blog.html">Blog</a>
+      <a href="spoznaj-svojho-editora.html">Spoznaj ma</a>
       <a href="#contact" data-nav>Kontakt</a>
       <span class="status"><span class="dot" id="statusDot"></span> <span id="statusText">K dispozícii</span></span>
     </nav>
@@ -653,6 +515,8 @@
       <a href="#services">Čo robím</a>
       <a href="#work">Pracoval som na</a>
       <a href="#about">O mne</a>
+      <a href="blog.html">Blog</a>
+      <a href="spoznaj-svojho-editora.html">Spoznaj ma</a>
       <a href="#contact">Kontakt</a>
     </div>
   </nav>
@@ -1107,6 +971,7 @@
   </div>
 </div>
 
+<script src="shared.js"></script>
 <script>
   // ---------- Hidden console message ----------
   console.log('%c🎬 Hej, vidím že pozeráš pod kapotu.', 'color:#ff7a2f; font-size:16px; font-weight:bold;');
@@ -1305,25 +1170,7 @@
     });
   })();
 
-  // ---------- Mobile hamburger menu ----------
-  (function(){
-    var btn = document.getElementById('hamburgerBtn');
-    var menu = document.getElementById('mobileMenu');
-    if (!btn || !menu){ return; }
-    function closeMenu(){
-      btn.classList.remove('is-open');
-      menu.classList.remove('is-open');
-      btn.setAttribute('aria-expanded', 'false');
-    }
-    btn.addEventListener('click', function(){
-      var open = menu.classList.toggle('is-open');
-      btn.classList.toggle('is-open', open);
-      btn.setAttribute('aria-expanded', open ? 'true' : 'false');
-    });
-    menu.querySelectorAll('a').forEach(function(a){
-      a.addEventListener('click', closeMenu);
-    });
-  })();
+  // hamburger menu — now in shared.js
 
   // ---------- Scrollspy nav ----------
   var navLinks = document.querySelectorAll('[data-nav]');
@@ -1341,8 +1188,7 @@
     spySections.forEach(function(s){ spyIo.observe(s); });
   }
 
-  // ---------- Shared reduced-motion check ----------
-  var reducedGlobal = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  // reducedGlobal — now in shared.js
 
   // ---------- Intro loader ----------
   (function(){
@@ -1398,126 +1244,9 @@
     }
   })();
 
-  // ---------- Shared toast + confetti helpers ----------
-  function showToast(text){
-    var toast = document.createElement('div');
-    toast.className = 'egg-toast';
-    toast.textContent = text;
-    document.body.appendChild(toast);
-    requestAnimationFrame(function(){ toast.classList.add('is-visible'); });
-    setTimeout(function(){
-      toast.classList.remove('is-visible');
-      setTimeout(function(){ toast.remove(); }, 350);
-    }, 2800);
-  }
+  // showToast, spawnConfetti, spawnPawRain, click ripple — now in shared.js
 
-  function spawnConfetti(x, y){
-    if (reducedGlobal){ return; }
-    var colors = ['var(--accent)', 'var(--accent-2)'];
-    for (var i = 0; i < 22; i++){
-      var piece = document.createElement('div');
-      piece.className = 'confetti-piece';
-      var angle = Math.random() * Math.PI * 2;
-      var dist = 70 + Math.random() * 130;
-      piece.style.left = x + 'px';
-      piece.style.top = y + 'px';
-      piece.style.background = colors[i % 2];
-      piece.style.setProperty('--tx', (Math.cos(angle) * dist) + 'px');
-      piece.style.setProperty('--ty', (Math.sin(angle) * dist) + 'px');
-      piece.style.setProperty('--rot', (Math.random() * 360) + 'deg');
-      document.body.appendChild(piece);
-      setTimeout(function(p){ return function(){ p.remove(); }; }(piece), 1200);
-    }
-  }
-
-  function spawnPawRain(){
-    if (reducedGlobal){ return; }
-    for (var i = 0; i < 16; i++){
-      var paw = document.createElement('div');
-      paw.className = 'paw-rain';
-      paw.textContent = '🐾';
-      paw.style.left = (Math.random() * 100) + 'vw';
-      paw.style.setProperty('--dur', (2.2 + Math.random() * 1.6) + 's');
-      paw.style.setProperty('--delay', (Math.random() * 0.6) + 's');
-      paw.style.setProperty('--rot', (Math.random() * 60 - 30) + 'deg');
-      document.body.appendChild(paw);
-      setTimeout(function(p){ return function(){ p.remove(); }; }(paw), 4400);
-    }
-  }
-
-  // ---------- Click ripple ----------
-  document.addEventListener('click', function(e){
-    if (reducedGlobal){ return; }
-    var ripple = document.createElement('div');
-    ripple.className = 'click-ripple';
-    ripple.style.left = e.clientX + 'px';
-    ripple.style.top = e.clientY + 'px';
-    document.body.appendChild(ripple);
-    setTimeout(function(){ ripple.remove(); }, 650);
-  });
-
-  // ---------- Easter egg: 5 clicks on logo ----------
-  (function(){
-    var logo = document.querySelector('.logo');
-    if (!logo){ return; }
-    var count = 0, lastClick = 0;
-
-    logo.addEventListener('click', function(e){
-      var now = Date.now();
-      if (now - lastClick > 1400){ count = 0; }
-      lastClick = now;
-      count++;
-      if (count >= 5){
-        count = 0;
-        spawnConfetti(e.clientX, e.clientY);
-        showToast('🏆 Achievement unlocked: 5 klikov na logo. Rešpekt.');
-      }
-    });
-  })();
-
-  // ---------- Easter egg: type "max" anywhere ----------
-  (function(){
-    var buffer = '';
-    window.addEventListener('keydown', function(e){
-      if (e.key && e.key.length === 1){ buffer = (buffer + e.key.toLowerCase()).slice(-10); }
-      if (buffer.indexOf('max') !== -1){
-        buffer = '';
-        spawnPawRain();
-        showToast('🐾 Max ťa zdraví. Najlepší kontrolór kvality strihu.');
-      }
-    });
-  })();
-
-  // ---------- Easter egg: type "hesoyam" anywhere ----------
-  (function(){
-    var buffer = '';
-    window.addEventListener('keydown', function(e){
-      if (e.key && e.key.length === 1){ buffer = (buffer + e.key.toLowerCase()).slice(-10); }
-      if (buffer.indexOf('hesoyam') !== -1){
-        buffer = '';
-        showToast('🏆 Achievement unlocked: hesoyam. Ah s#!t, here we go again.');
-      }
-    });
-  })();
-
-  // ---------- Easter egg: Konami code ----------
-  (function(){
-    var seq = ['arrowup','arrowup','arrowdown','arrowdown','arrowleft','arrowright','arrowleft','arrowright','b','a'];
-    var idx = 0;
-    window.addEventListener('keydown', function(e){
-      var key = e.key.toLowerCase();
-      if (key === seq[idx]){
-        idx++;
-        if (idx === seq.length){
-          idx = 0;
-          spawnConfetti(window.innerWidth / 2, window.innerHeight / 2);
-          showToast('🕹️ Konami kód rozpoznaný. Level up, hráč.');
-        }
-      } else {
-        idx = (key === seq[0]) ? 1 : 0;
-      }
-    });
-  })();
+  // logo egg, max, hesoyam, Konami — now in shared.js
 
   // ---------- Discord ID copy-to-clipboard ----------
   document.querySelectorAll('[data-discord]').forEach(function(btn){
