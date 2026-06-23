@@ -3,4 +3,5 @@
 *.jpeg
 *.jpg
 *.png
+!assets/og-banner.png
 *.zip
