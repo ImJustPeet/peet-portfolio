@@ -355,10 +355,6 @@
     color:#160c05; transform:translate(-50%,-50%) scale(1.08);
   }
   .reel-frame:hover .reel-tag{ opacity:1; }
-  /* lightbox — TikTok vertical (9:16) variant */
-  .lightbox-inner.is-tiktok{ width:min(400px,90vw); }
-  .lightbox-inner.is-tiktok .lightbox-video{ padding-top:177.78%; }
-
   /* video lightbox ("floodlight") */
   .lightbox{
     position:fixed; inset:0; z-index:10001;
@@ -560,7 +556,7 @@
           <span class="stat-label">odstrihaných long form videí</span>
         </div>
         <div class="stat reveal">
-          <span class="stat-num mono" data-count="30" data-suffix=" mil.+">0</span>
+          <span class="stat-num mono" data-count="35" data-suffix=" mil.+">0</span>
           <span class="stat-label">zhliadnutí na long form videách, a&nbsp;stále rastie</span>
         </div>
       </div>
@@ -956,7 +952,7 @@
 </footer>
 
 <div class="privacy-notice" id="privacyNotice">
-  <p>🔒 Táto stránka používa Cloudflare Web Analytics na základnú štatistiku návštevnosti. Spracúva sa len IP adresa (technicky nutné pri pripojení) — žiadne cookies, žiadne sledovanie medzi stránkami, žiadne osobné údaje sa neukladajú. Pri prehratí videa v&nbsp;náhľade sa pripojíš na YouTube (cez privacy-enhanced režim), čo môže nastaviť cookies podľa nastavení Google.</p>
+  <p>🔒 Táto stránka používa Cloudflare Web Analytics na základnú štatistiku návštevnosti. Spracúva sa len IP adresa (technicky nutné pri pripojení) — žiadne cookies, žiadne sledovanie medzi stránkami, žiadne osobné údaje sa neukladajú. Pri prehratí videa v&nbsp;náhľade sa pripojíš na YouTube (cez privacy-enhanced režim), čo môže nastaviť cookies podľa nastavení Google. Kliknutím na TikTok kartu sa otvorí TikTok v novom okne — ich podmienky ochrany súkromia sa riadia platformou TikTok.</p>
   <button id="privacyNoticeClose">Rozumiem</button>
 </div>
 
@@ -989,8 +985,6 @@
     var ytApiReady = false;
     var pendingVideoId = null;
     var currentPlayer = null;
-    var lightboxInner = lightbox.querySelector('.lightbox-inner');
-    var isTikTok = false;
 
     function loadYouTubeApi(){
       if (ytApiLoading || ytApiReady){ return; }
@@ -1041,33 +1035,8 @@
       document.body.style.overflow = '';
       if (currentPlayer && currentPlayer.destroy){ currentPlayer.destroy(); currentPlayer = null; }
       videoSlot.innerHTML = '';
-      if (isTikTok){ lightboxInner.classList.remove('is-tiktok'); isTikTok = false; }
     }
 
-    function openTikTokLightbox(tiktokUrl, videoId){
-      lightbox.classList.add('is-open');
-      lightbox.setAttribute('aria-hidden', 'false');
-      document.body.style.overflow = 'hidden';
-      isTikTok = true;
-      lightboxInner.classList.add('is-tiktok');
-      videoSlot.innerHTML = '';
-      var bq = document.createElement('blockquote');
-      bq.className = 'tiktok-embed';
-      bq.setAttribute('cite', tiktokUrl);
-      bq.setAttribute('data-video-id', videoId);
-      bq.setAttribute('data-embed-from', 'oembed');
-      bq.style.cssText = 'max-width:605px;min-width:325px;';
-      bq.innerHTML = '<section><a target="_blank" title="@fortunasports" href="https://www.tiktok.com/@fortunasports?refer=embed">@fortunasports</a></section>';
-      videoSlot.appendChild(bq);
-      // Remove any prior embed.js so TikTok re-initialises on the new blockquote
-      document.querySelectorAll('script[src*="tiktok.com/embed.js"]').forEach(function(s){ s.remove(); });
-      var script = document.createElement('script');
-      script.src = 'https://www.tiktok.com/embed.js';
-      script.async = true;
-      videoSlot.appendChild(script);
-      setTimeout(function(){ closeBtn.focus(); }, 50);
-    }
-    window.openTikTokLightbox = openTikTokLightbox;
 
     // Basic focus trap: Tab cycles only within the lightbox while open
     document.addEventListener('keydown', function(e){
@@ -1158,7 +1127,7 @@
     scroller.querySelectorAll('.reel-thumb').forEach(function(btn){
       btn.addEventListener('click', function(){
         if (btn.dataset.platform === 'tiktok'){
-          openTikTokLightbox(btn.dataset.tiktokUrl, btn.dataset.tiktokId);
+          window.open(btn.dataset.tiktokUrl, '_blank', 'noopener,noreferrer');
         } else {
           openLightbox(btn.dataset.videoId);
         }
