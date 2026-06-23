@@ -474,8 +474,9 @@
     .video-card:hover{ transform:none; }
   }
 
-  /* Cluster flexbox layout for video belt */
-  .cluster{ display:flex; align-items:flex-end; gap:8px; flex-shrink:0; }
+  /* Cluster 2D grid layout for video belt */
+  .cluster{ display:grid; grid-template-columns:115px 140px; grid-template-rows:170px 170px; gap:8px; flex-shrink:0; }
+  .cluster .tiktok-tall{ grid-row:span 2; }
   .reel-frame{
     position:relative;
     border-radius:6px; overflow:hidden;
@@ -833,9 +834,9 @@
   <div class="video-belt reveal">
     <div class="video-belt-inner" id="videoBeltScroller">
 
-      <!-- Cluster 1: TikTok ATTILA 115×340 | Tary YT 200×250 | TikTok TADEÁŠ 115×340 -->
+      <!-- Cluster 1: TikTok ATTILA (tall, col1) | Tary YT (top-right) | TikTok TADEÁŠ (bottom-right) -->
       <div class="cluster">
-        <div class="reel-frame tiktok-frame" style="width:115px;height:340px;">
+        <div class="reel-frame tiktok-tall">
           <button class="reel-thumb" data-platform="tiktok" data-tiktok-url="https://www.tiktok.com/@fortunasports/video/7369700388997434656" data-tiktok-id="7369700388997434656" aria-label="Prehrať TikTok — ATTILA VS VEMOLA">
             <img src="/assets/tiktok-thumbs/tiktok-1.webp" alt="Náhľad TikTok videa — ATTILA VS VEMOLA" fetchpriority="high" decoding="async">
             <span class="reel-play-icon">▶</span>
@@ -843,7 +844,7 @@
           <span class="reel-tag mono">Fortuna Sports</span>
           <span class="reel-views mono">👁 156 tis.</span>
         </div>
-        <div class="reel-frame" style="width:200px;height:250px;">
+        <div class="reel-frame">
           <button class="reel-thumb" data-video-id="FjbvvVQ1J3U" aria-label="Prehrať ukážku: Tary">
             <img src="https://i.ytimg.com/vi/FjbvvVQ1J3U/hqdefault.jpg" alt="Náhľad videa: Tary, Poprvé v životě s rodinou v Londýně" loading="lazy" decoding="async">
             <span class="reel-play-icon">▶</span>
@@ -851,7 +852,7 @@
           <span class="reel-tag mono">Tary</span>
           <span class="reel-views mono">👁 95 tis.</span>
         </div>
-        <div class="reel-frame tiktok-frame" style="width:115px;height:340px;">
+        <div class="reel-frame">
           <button class="reel-thumb" data-platform="tiktok" data-tiktok-url="https://www.tiktok.com/@fortunasports/video/7355542492906933537" data-tiktok-id="7355542492906933537" aria-label="Prehrať TikTok — TADEÁŠ ZASE VYSTRÁJA">
             <img src="/assets/tiktok-thumbs/tiktok-2.webp" alt="Náhľad TikTok videa — TADEÁŠ ZASE VYSTRÁJA?!" loading="lazy" decoding="async">
             <span class="reel-play-icon">▶</span>
@@ -861,9 +862,9 @@
         </div>
       </div>
 
-      <!-- Cluster 2: TikTok GÁBOR RFA 115×340 | Duklock YT 220×220 | TikTok MAKHACHEV 115×340 -->
+      <!-- Cluster 2: TikTok GÁBOR RFA (tall, col1) | Duklock YT (top-right) | TikTok MAKHACHEV (bottom-right) -->
       <div class="cluster">
-        <div class="reel-frame tiktok-frame" style="width:115px;height:340px;">
+        <div class="reel-frame tiktok-tall">
           <button class="reel-thumb" data-platform="tiktok" data-tiktok-url="https://www.tiktok.com/@fortunasports/video/7318409663601495328" data-tiktok-id="7318409663601495328" aria-label="Prehrať TikTok — OKTAGON PROMOTERI o GÁBOROVI v RFA">
             <img src="/assets/tiktok-thumbs/tiktok-3.webp" alt="Náhľad TikTok videa — GÁBOR v RFA" loading="lazy" decoding="async">
             <span class="reel-play-icon">▶</span>
@@ -871,7 +872,7 @@
           <span class="reel-tag mono">Fortuna Sports</span>
           <span class="reel-views mono">👁 114 tis.</span>
         </div>
-        <div class="reel-frame" style="width:220px;height:220px;">
+        <div class="reel-frame">
           <button class="reel-thumb" data-video-id="K8DPDth6yp0" aria-label="Prehrať ukážku: Duklock">
             <img src="https://i.ytimg.com/vi/K8DPDth6yp0/hqdefault.jpg" alt="Náhľad videa: Duklock, herný stream" loading="lazy" decoding="async">
             <span class="reel-play-icon">▶</span>
@@ -879,7 +880,7 @@
           <span class="reel-tag mono">Duklock</span>
           <span class="reel-views mono">👁 731 tis.</span>
         </div>
-        <div class="reel-frame tiktok-frame" style="width:115px;height:340px;">
+        <div class="reel-frame">
           <button class="reel-thumb" data-platform="tiktok" data-tiktok-url="https://www.tiktok.com/@fortunasports/video/7386367870655073568" data-tiktok-id="7386367870655073568" aria-label="Prehrať TikTok — ISLAM MAKHACHEV sa vysmial CONOROVI">
             <img src="/assets/tiktok-thumbs/tiktok-4.webp" alt="Náhľad TikTok videa — MAKHACHEV vs McGregor" loading="lazy" decoding="async">
             <span class="reel-play-icon">▶</span>
@@ -889,9 +890,9 @@
         </div>
       </div>
 
-      <!-- Cluster 3: TikTok JURÁČEK 115×340 | Tary vs Jay YT 280×160 | TikTok REDFACE 115×340 -->
+      <!-- Cluster 3: TikTok JURÁČEK (tall, col1) | Tary vs Jay YT (top-right) | TikTok REDFACE (bottom-right) -->
       <div class="cluster">
-        <div class="reel-frame tiktok-frame" style="width:115px;height:340px;">
+        <div class="reel-frame tiktok-tall">
           <button class="reel-thumb" data-platform="tiktok" data-tiktok-url="https://www.tiktok.com/@fortunasports/video/7301751402471197984" data-tiktok-id="7301751402471197984" aria-label="Prehrať TikTok — MATÚŠ JURÁČEK na zápase SLAVIA PRAHA">
             <img src="/assets/tiktok-thumbs/tiktok-5.webp" alt="Náhľad TikTok videa — MATÚŠ JURÁČEK na zápase SLAVIA PRAHA" loading="lazy" decoding="async">
             <span class="reel-play-icon">▶</span>
@@ -899,7 +900,7 @@
           <span class="reel-tag mono">Fortuna Sports</span>
           <span class="reel-views mono">👁 79 tis.</span>
         </div>
-        <div class="reel-frame" style="width:280px;height:160px;">
+        <div class="reel-frame">
           <button class="reel-thumb" data-video-id="tgVPTnPNkCk" aria-label="Prehrať ukážku: Tary vs Jay">
             <img src="https://i.ytimg.com/vi/tgVPTnPNkCk/hqdefault.jpg" alt="Náhľad videa: Tary vs. Jay" loading="lazy" decoding="async">
             <span class="reel-play-icon">▶</span>
@@ -907,7 +908,7 @@
           <span class="reel-tag mono">Tary</span>
           <span class="reel-views mono">👁 128 tis.</span>
         </div>
-        <div class="reel-frame tiktok-frame" style="width:115px;height:340px;">
+        <div class="reel-frame">
           <button class="reel-thumb" data-platform="tiktok" data-tiktok-url="https://www.tiktok.com/@fortunasports/video/7311053090298367265" data-tiktok-id="7311053090298367265" aria-label="Prehrať TikTok — REDFACE ide s BIZÁROM ZA HRANU">
             <img src="/assets/tiktok-thumbs/tiktok-6.webp" alt="Náhľad TikTok videa — REDFACE a BIZÁR" loading="lazy" decoding="async">
             <span class="reel-play-icon">▶</span>
@@ -917,9 +918,9 @@
         </div>
       </div>
 
-      <!-- Cluster 4: TikTok RUZICKA 115×340 | TikTok HODNOTA 115×300 | TikTok GÁBOR KONČÍ 115×320 -->
+      <!-- Cluster 4: TikTok RUZICKA (tall, col1) | TikTok HODNOTA (top-right) | TikTok GÁBOR KONČÍ (bottom-right) -->
       <div class="cluster">
-        <div class="reel-frame tiktok-frame" style="width:115px;height:340px;">
+        <div class="reel-frame tiktok-tall">
           <button class="reel-thumb" data-platform="tiktok" data-tiktok-url="https://www.tiktok.com/@fortunasports/video/7352208599436758304" data-tiktok-id="7352208599436758304" aria-label="Prehrať TikTok — ADAM RUZICKA SKONCIL">
             <img src="/assets/tiktok-thumbs/tiktok-7.webp" alt="Náhľad TikTok videa — ADAM RUZICKA SKONCIL?!" loading="lazy" decoding="async">
             <span class="reel-play-icon">▶</span>
@@ -927,7 +928,7 @@
           <span class="reel-tag mono">Fortuna Sports</span>
           <span class="reel-views mono">👁 68 tis.</span>
         </div>
-        <div class="reel-frame tiktok-frame" style="width:115px;height:300px;">
+        <div class="reel-frame">
           <button class="reel-thumb" data-platform="tiktok" data-tiktok-url="https://www.tiktok.com/@fortunasports/video/7356300842753854752" data-tiktok-id="7356300842753854752" aria-label="Prehrať TikTok — AKÁ JE HODNOTA OKTAGONU">
             <img src="/assets/tiktok-thumbs/tiktok-8.webp" alt="Náhľad TikTok videa — HODNOTA OKTAGONU" loading="lazy" decoding="async">
             <span class="reel-play-icon">▶</span>
@@ -935,7 +936,7 @@
           <span class="reel-tag mono">Fortuna Sports</span>
           <span class="reel-views mono">👁 57 tis.</span>
         </div>
-        <div class="reel-frame tiktok-frame" style="width:115px;height:320px;">
+        <div class="reel-frame">
           <button class="reel-thumb" data-platform="tiktok" data-tiktok-url="https://www.tiktok.com/@fortunasports/video/7431262737939909921" data-tiktok-id="7431262737939909921" aria-label="Prehrať TikTok — GÁBOR končí v RFA">
             <img src="/assets/tiktok-thumbs/tiktok-9.webp" alt="Náhľad TikTok videa — GÁBOR končí v RFA" loading="lazy" decoding="async">
             <span class="reel-play-icon">▶</span>
