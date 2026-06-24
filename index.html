@@ -49,7 +49,6 @@
 <link rel="stylesheet" href="shared.css">
 
 <style>
-  /* :root, reset, body, a — now in shared.css */
 
   /* intro loader */
   .intro-loader{
@@ -84,13 +83,9 @@
   .back-to-top svg{ display:block; }
   @media (max-width:640px){ .back-to-top{ bottom:16px; right:16px; width:40px; height:40px; } }
 
-  /* .click-ripple + keyframes — now in shared.css */
 
-  /* .paw-rain, .confetti-piece, .egg-toast + keyframes — now in shared.css */
 
-  /* .wrap — now in shared.css */
 
-  /* header/nav/hamburger/mobile-menu — now in shared.css */
 
 
   /* Section-pinned background textures (real Premiere Pro timeline screenshots) */
@@ -148,18 +143,12 @@
   }
   .hp{ fill:none; stroke-linecap:round; }
   @keyframes heroPathFlow{ to{ stroke-dashoffset:-1200; } }
-  .hp1{ stroke:var(--accent);   stroke-width:1.2; stroke-dasharray:320 880; opacity:.33; animation:heroPathFlow 18s linear infinite; }
-  .hp2{ stroke:var(--accent-2); stroke-width:1.0; stroke-dasharray:260 940; opacity:.27; animation:heroPathFlow 22s linear infinite reverse; animation-delay:-5s; }
-  .hp3{ stroke:var(--accent);   stroke-width:0.8; stroke-dasharray:380 820; opacity:.21; animation:heroPathFlow 16s linear infinite; animation-delay:-8s; }
-  .hp4{ stroke:var(--accent-2); stroke-width:1.1; stroke-dasharray:300 900; opacity:.30; animation:heroPathFlow 20s linear infinite reverse; animation-delay:-3s; }
-  .hp5{ stroke:var(--text-dim); stroke-width:0.7; stroke-dasharray:220 980; opacity:.18; animation:heroPathFlow 24s linear infinite; animation-delay:-11s; }
+  .hp1{ stroke:var(--season-c1); stroke-width:1.2; stroke-dasharray:320 880; opacity:.33; animation:heroPathFlow 18s linear infinite; }
+  .hp2{ stroke:var(--season-c3); stroke-width:1.0; stroke-dasharray:260 940; opacity:.27; animation:heroPathFlow 22s linear infinite reverse; animation-delay:-5s; }
+  .hp3{ stroke:var(--season-c2); stroke-width:0.8; stroke-dasharray:380 820; opacity:.21; animation:heroPathFlow 16s linear infinite; animation-delay:-8s; }
+  .hp4{ stroke:var(--season-c3); stroke-width:1.1; stroke-dasharray:300 900; opacity:.30; animation:heroPathFlow 20s linear infinite reverse; animation-delay:-3s; }
+  .hp5{ stroke:var(--season-c1); stroke-width:0.7; stroke-dasharray:220 980; opacity:.18; animation:heroPathFlow 24s linear infinite; animation-delay:-11s; }
 
-  .eyebrow{
-    font-family:'JetBrains Mono', monospace;
-    font-size:12px; letter-spacing:0.08em;
-    color:var(--accent); text-transform:uppercase;
-    margin-bottom:18px;
-  }
   h1{
     font-weight:800;
     font-size:clamp(36px, 5.4vw, 60px);
@@ -171,16 +160,6 @@
   }
   .lead{ font-size:18px; color:var(--text-dim); max-width:46ch; margin:0 0 38px; position:relative; z-index:2; }
   .cta-row{ display:flex; gap:16px; flex-wrap:wrap; position:relative; z-index:2; }
-  .btn{
-    font-family:'JetBrains Mono', monospace;
-    font-size:13px; padding:14px 22px; border-radius:3px;
-    display:inline-flex; align-items:center; gap:8px;
-    transition:border-color .18s ease, color .18s ease, background .18s ease;
-    will-change:transform;
-  }
-  .btn-primary{ background:var(--accent); color:#160c05; }
-  .btn-ghost{ border:1px solid var(--line); color:var(--text); }
-  .btn-ghost:hover{ border-color:var(--accent); color:var(--accent); }
 
   /* stats */
   #stats{ padding:44px 0 56px; }
@@ -451,7 +430,6 @@
   .discord-copy:hover{ color:var(--accent-2); }
   .discord-copy.is-copied{ color:var(--accent); }
 
-  /* footer — now in shared.css */
 
   .privacy-notice{
     position:fixed; bottom:0; left:0; right:0; z-index:9999;
@@ -491,7 +469,7 @@
 </div>
 
 <div class="scroll-progress" aria-hidden="true"><div class="scroll-progress-fill" id="scrollFill"></div></div>
-<button class="back-to-top" id="backToTop" data-cursor="grow" aria-label="Späť na začiatok stránky">
+<button class="back-to-top" id="backToTop" aria-label="Späť na začiatok stránky">
   <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
     <path d="M12 4 L18 12 L14 12 L14 20 L10 20 L10 12 L6 12 Z" fill="var(--bg)" stroke="var(--accent)" stroke-width="2" stroke-linejoin="round"/>
   </svg>
@@ -499,7 +477,7 @@
 
 <header>
   <div class="wrap nav">
-    <button class="logo" type="button" data-cursor="grow" style="display:flex; align-items:center; gap:9px;">
+    <button class="logo" type="button" style="display:flex; align-items:center; gap:9px;">
       <span class="logo-avatar-wrap">
         <img class="logo-avatar" width="28" height="28" decoding="async" loading="lazy" referrerpolicy="no-referrer" alt="" src="https://yt3.googleusercontent.com/IRe7M6VjSCVH0dbUrsJGeDmC05sErJyWMw0k5yBMvI09WLcFtU4TAxEX2bKYYh9rlmsGD5xB4w=s160-c-k-c0x000c0b0a-no-rj" onerror="this.parentElement.classList.add('is-fallback')">
         <span class="logo-avatar-fallback">P</span>
@@ -547,8 +525,8 @@
       <h1 class="reveal">Z&nbsp;tvojich záberov vyťažím príbeh, ktorý si ľudia pozrú do konca.</h1>
       <p class="lead reveal">Strihám pre YouTuberov, rýchlo, s&nbsp;citom pre tempo a&nbsp;bez kompromisov v&nbsp;kvalite.</p>
       <div class="cta-row reveal">
-        <a href="#work" class="btn btn-primary magnetic" data-cursor="grow">▶ Pozrieť ukážky</a>
-        <a href="#contact" class="btn btn-ghost magnetic" data-cursor="grow">Kontaktuj ma</a>
+        <a href="#work" class="btn btn-primary magnetic">▶ Pozrieť ukážky</a>
+        <a href="#contact" class="btn btn-ghost magnetic">Kontaktuj ma</a>
       </div>
     </div>
   </section>
@@ -605,7 +583,7 @@
         <p class="work-group-label">Aktuálne spolupracujem s:</p>
         <div class="work-grid">
           <!-- Tary -->
-          <a class="work-card" data-cursor="grow" target="_blank" rel="noopener" href="https://www.youtube.com/watch?v=0a8XwbfYLt0&list=PL4bBdTQJ4Z-4F_72jvuYbMYY90vspEv4Q">
+          <a class="work-card" target="_blank" rel="noopener" href="https://www.youtube.com/watch?v=0a8XwbfYLt0&list=PL4bBdTQJ4Z-4F_72jvuYbMYY90vspEv4Q">
             <span class="work-info">
               <span class="work-avatar-wrap">
                 <img class="work-avatar" width="42" height="42" decoding="async" src="https://yt3.googleusercontent.com/Cfh9ySkW63tRXQ_UH9N3S4xFyFEzjQtupYF8v0mOcyIuT-Z8to5L3G4Bu0s0hYlW5reyO3lpG5U=s160-c-k-c0x000c0b0a-no-rj" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.parentElement.classList.add('is-fallback')">
@@ -616,7 +594,7 @@
             <span class="arrow"><svg class="ext-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><path d="M15 3h6v6"/><path d="M10 14L21 3"/></svg></span>
           </a>
           <!-- Tak jsme tu! -->
-          <a class="work-card" data-cursor="grow" target="_blank" rel="noopener" href="https://www.youtube.com/@Takjsmetu">
+          <a class="work-card" target="_blank" rel="noopener" href="https://www.youtube.com/@Takjsmetu">
             <span class="work-info">
               <span class="work-avatar-wrap">
                 <img class="work-avatar" width="42" height="42" decoding="async" src="https://yt3.googleusercontent.com/RRxn-7SWWfcTKR-D4KE7ETwRaFxOmvHChL13Los-ozcFoSvdaGGGno5emhCFC8fO0QD71y_V5g=s160-c-k-c0x000c0b0a-no-rj" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.parentElement.classList.add('is-fallback')">
@@ -632,7 +610,7 @@
         <p class="work-group-label">V&nbsp;minulosti som spolupracoval s:</p>
         <div class="work-grid">
           <!-- Duklock -->
-          <a class="work-card" data-cursor="grow" target="_blank" rel="noopener" href="https://www.youtube.com/watch?v=iC3j_YdIRLI&list=PL4bBdTQJ4Z-5PqyZIRK1HwoaireivINmm">
+          <a class="work-card" target="_blank" rel="noopener" href="https://www.youtube.com/watch?v=iC3j_YdIRLI&list=PL4bBdTQJ4Z-5PqyZIRK1HwoaireivINmm">
             <span class="work-info">
               <span class="work-avatar-wrap">
                 <img class="work-avatar" width="42" height="42" decoding="async" src="https://yt3.googleusercontent.com/TCl7u351pzOB9ERvwT6wnXXaRU062UN5lTKyloIQ5X89PBpKhaWNkwq73fKJueHom0YNXSY5Ug=s160-c-k-c0x000c0b0a-no-rj" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.parentElement.classList.add('is-fallback')">
@@ -643,7 +621,7 @@
             <span class="arrow"><svg class="ext-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><path d="M15 3h6v6"/><path d="M10 14L21 3"/></svg></span>
           </a>
           <!-- Fortuna -->
-          <a class="work-card" data-cursor="grow" target="_blank" rel="noopener" href="https://www.youtube.com/watch?v=TOqDF6qIt_s&list=PL4bBdTQJ4Z-4DOf31OeIPDE9dq8HEOhft">
+          <a class="work-card" target="_blank" rel="noopener" href="https://www.youtube.com/watch?v=TOqDF6qIt_s&list=PL4bBdTQJ4Z-4DOf31OeIPDE9dq8HEOhft">
             <span class="work-info">
               <span class="work-avatar-wrap">
                 <img class="work-avatar" width="42" height="42" decoding="async" src="https://yt3.googleusercontent.com/ytc/AIdro_lLvxogAYGUiT-Cc5AIYM4ErwmuWlrd70Ce9RS20Dyzlw=s160-c-k-c0x000c0b0a-no-rj" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.parentElement.classList.add('is-fallback')">
@@ -654,7 +632,7 @@
             <span class="arrow"><svg class="ext-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><path d="M15 3h6v6"/><path d="M10 14L21 3"/></svg></span>
           </a>
           <!-- Jancucik -->
-          <a class="work-card" data-cursor="grow" target="_blank" rel="noopener" href="https://www.youtube.com/watch?v=ClRGdc6ZxlE&list=PL4bBdTQJ4Z-7YjMPNsAj8Cf67kMPM8XIr">
+          <a class="work-card" target="_blank" rel="noopener" href="https://www.youtube.com/watch?v=ClRGdc6ZxlE&list=PL4bBdTQJ4Z-7YjMPNsAj8Cf67kMPM8XIr">
             <span class="work-info">
               <span class="work-avatar-wrap">
                 <img class="work-avatar" width="42" height="42" decoding="async" src="https://yt3.googleusercontent.com/X3Q0nkDnAAwnBWaTLh5gxKY-ywmKzAiIPDWsoJbOxKF5-oAU9dQNxVZJrPmXWzs0J4CDnfkK-Q=s160-c-k-c0x000c0b0a-no-rj" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.parentElement.classList.add('is-fallback')">
@@ -665,7 +643,7 @@
             <span class="arrow"><svg class="ext-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><path d="M15 3h6v6"/><path d="M10 14L21 3"/></svg></span>
           </a>
           <!-- vvudy -->
-          <a class="work-card" data-cursor="grow" target="_blank" rel="noopener" href="https://www.youtube.com/watch?v=fSxOb4X3Mxs&list=PL4bBdTQJ4Z-5GNMIGcVfV49SDWystbJMA">
+          <a class="work-card" target="_blank" rel="noopener" href="https://www.youtube.com/watch?v=fSxOb4X3Mxs&list=PL4bBdTQJ4Z-5GNMIGcVfV49SDWystbJMA">
             <span class="work-info">
               <span class="work-avatar-wrap">
                 <img class="work-avatar" width="42" height="42" decoding="async" src="https://yt3.googleusercontent.com/6P-nvfuT2MxorfifAjQwbVGa94bRsLEURofh0CbGtZzltmKCNbvu9nn2shWoHg1Ke3iTwI7r8Q=s160-c-k-c0x000c0b0a-no-rj" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.parentElement.classList.add('is-fallback')">
@@ -676,7 +654,7 @@
             <span class="arrow"><svg class="ext-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><path d="M15 3h6v6"/><path d="M10 14L21 3"/></svg></span>
           </a>
           <!-- Jesus -->
-          <a class="work-card" data-cursor="grow" target="_blank" rel="noopener" href="https://www.youtube.com/watch?v=1r7XRfIY1Yc&list=PL4bBdTQJ4Z-72Tq7tbO3cm2xHoZUh_ulh">
+          <a class="work-card" target="_blank" rel="noopener" href="https://www.youtube.com/watch?v=1r7XRfIY1Yc&list=PL4bBdTQJ4Z-72Tq7tbO3cm2xHoZUh_ulh">
             <span class="work-info">
               <span class="work-avatar-wrap">
                 <img class="work-avatar" width="42" height="42" decoding="async" src="https://yt3.googleusercontent.com/4xdEX1PDVlk1DVUyZNwcIjqviM8ErSE6Q70Pu9TPxLuHbKzg6WX-2Dptc0W0ERAgZcjGVvZQ=s160-c-k-c0x000c0b0a-no-rj" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.parentElement.classList.add('is-fallback')">
@@ -687,7 +665,7 @@
             <span class="arrow"><svg class="ext-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><path d="M15 3h6v6"/><path d="M10 14L21 3"/></svg></span>
           </a>
           <!-- Show More -->
-          <a class="work-card" data-cursor="grow" target="_blank" rel="noopener" href="https://www.youtube.com/watch?v=OhRTZyk5CoI&list=PL4bBdTQJ4Z-4gRJEVRDI1WJnAesYqVdFc">
+          <a class="work-card" target="_blank" rel="noopener" href="https://www.youtube.com/watch?v=OhRTZyk5CoI&list=PL4bBdTQJ4Z-4gRJEVRDI1WJnAesYqVdFc">
             <span class="work-info">
               <span class="work-avatar-wrap">
                 <img class="work-avatar" width="42" height="42" decoding="async" src="https://yt3.googleusercontent.com/9rPBFaV-uYZkelm8IgDG338-kBAXR265PZOE4Xoe6sOX_mBRkcGNYjilzIyCQJSByrvnyDP5Xg=s160-c-k-c0x000c0b0a-no-rj" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.parentElement.classList.add('is-fallback')">
@@ -698,7 +676,7 @@
             <span class="arrow"><svg class="ext-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><path d="M15 3h6v6"/><path d="M10 14L21 3"/></svg></span>
           </a>
           <!-- Korpo86 -->
-          <a class="work-card" data-cursor="grow" target="_blank" rel="noopener" href="https://www.youtube.com/@korpo86">
+          <a class="work-card" target="_blank" rel="noopener" href="https://www.youtube.com/@korpo86">
             <span class="work-info">
               <span class="work-avatar-wrap">
                 <img class="work-avatar" width="42" height="42" decoding="async" src="https://yt3.googleusercontent.com/0VamWRSeuZBXgFyLyC3y--CF8-SzGWVhNeNcuvlPpg5UZnAXSRntoS6VQtCoS_AJcC5ChgA8rw=s160-c-k-c0x000c0b0a-no-rj" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.parentElement.classList.add('is-fallback')">
@@ -709,7 +687,7 @@
             <span class="arrow"><svg class="ext-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><path d="M15 3h6v6"/><path d="M10 14L21 3"/></svg></span>
           </a>
           <!-- Vidadu -->
-          <a class="work-card" data-cursor="grow" target="_blank" rel="noopener" href="https://www.youtube.com/@vidaduTV">
+          <a class="work-card" target="_blank" rel="noopener" href="https://www.youtube.com/@vidaduTV">
             <span class="work-info">
               <span class="work-avatar-wrap">
                 <img class="work-avatar" width="42" height="42" decoding="async" src="https://yt3.googleusercontent.com/mw7eb7hkM8aqpUdif6cUru4V_6VNJRfsR3iihl2_D4xKwKA80F792gxUMbogBu3tyBhMsqaQ=s160-c-k-c0x000c0b0a-no-rj" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.parentElement.classList.add('is-fallback')">
@@ -956,7 +934,7 @@
     <div class="wrap">
       <div class="eyebrow reveal">Kontakt</div>
       <h2 class="reveal">Poďme na to.</h2>
-      <a href="mailto:donovanpeet@gmail.com" class="contact-email reveal magnetic" data-cursor="grow">donovanpeet@gmail.com<svg class="ext-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;margin-left:4px;vertical-align:middle;" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><path d="M15 3h6v6"/><path d="M10 14L21 3"/></svg></a>
+      <a href="mailto:donovanpeet@gmail.com" class="contact-email reveal magnetic">donovanpeet@gmail.com<svg class="ext-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;margin-left:4px;vertical-align:middle;" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><path d="M15 3h6v6"/><path d="M10 14L21 3"/></svg></a>
       <p class="contact-sub reveal">Napíš mi pár viet o&nbsp;projekte a&nbsp;dĺžke videa, odpovedám väčšinou do 24 hodín.</p>
       <div class="contact-links reveal">
         <a href="https://www.youtube.com/@ImJustPeet" target="_blank" rel="noopener">YouTube<svg class="ext-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;margin-left:4px;vertical-align:middle;" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><path d="M15 3h6v6"/><path d="M10 14L21 3"/></svg></a>
@@ -989,6 +967,20 @@
 
 <script src="shared.js"></script>
 <script>
+  // ---------- Seasonal hero path colors ----------
+  (function(){
+    var m = new Date().getMonth();
+    var c;
+    if (m >= 2 && m <= 4)      { c = { c1:'#8fd694', c2:'#c8e88f', c3:'#57c2c9' }; }
+    else if (m >= 5 && m <= 7) { c = { c1:'#ffb84d', c2:'#ff7a2f', c3:'#57c2c9' }; }
+    else if (m >= 8 && m <= 10){ c = { c1:'#c1502e', c2:'#a8762e', c3:'#ff7a2f' }; }
+    else                        { c = { c1:'#7ec8d6', c2:'#9fb8d4', c3:'#57c2c9' }; }
+    var r = document.documentElement.style;
+    r.setProperty('--season-c1', c.c1);
+    r.setProperty('--season-c2', c.c2);
+    r.setProperty('--season-c3', c.c3);
+  })();
+
   // ---------- Hidden console message ----------
   console.log('%c🎬 Hej, vidím že pozeráš pod kapotu.', 'color:#ff7a2f; font-size:16px; font-weight:bold;');
   console.log('%cAk hľadáš video editora (alebo si len zvedavý dev) — donovanpeet@gmail.com', 'color:#9b948c; font-size:13px;');
@@ -1164,7 +1156,6 @@
     });
   })();
 
-  // hamburger menu — now in shared.js
 
   // ---------- Scrollspy nav ----------
   var navLinks = document.querySelectorAll('[data-nav]');
@@ -1182,7 +1173,6 @@
     spySections.forEach(function(s){ spyIo.observe(s); });
   }
 
-  // reducedGlobal — now in shared.js
 
   // ---------- Intro loader ----------
   (function(){
@@ -1238,9 +1228,7 @@
     }
   })();
 
-  // showToast, spawnConfetti, spawnPawRain, click ripple — now in shared.js
 
-  // logo egg, max, hesoyam, Konami — now in shared.js
 
   // ---------- Discord ID copy-to-clipboard ----------
   document.querySelectorAll('[data-discord]').forEach(function(btn){

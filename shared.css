@@ -13,6 +13,10 @@
   --accent-soft: rgba(255,122,47,0.16);
   --accent-2:  #57c2c9;
   --accent-2-soft: rgba(87,194,201,0.16);
+  /* Hero path colors — overridden at runtime by seasonal JS in index.html */
+  --season-c1: #ffb84d;
+  --season-c2: #ff7a2f;
+  --season-c3: #57c2c9;
 }
 
 *{ box-sizing:border-box; }
