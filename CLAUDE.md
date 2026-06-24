@@ -1,87 +1,44 @@
-# CLAUDE.md — Peet Portfolio
+# CLAUDE.md — Peet Portfolio Project
 
-Toto je portfolio stránka video editora "Peet" (Donovan Peet).
+Trvalý kontextový súbor. Drž ho krátky — každý riadok sa načítava v PLNEJ veľkosti pri každej session (na rozdiel od MCP nástrojov, toto sa nelazyloaduje).
 
-## Projekt fakty
+## Tech stack — NEMENIŤ
 
-- **URL:** https://donovanpeet.com
-- **GitHub:** https://github.com/ImJustPeet/peet-portfolio (branch: main)
-- **Deployment:** Cloudflare Pages (auto-deploy pri push na main)
-- **Stack:** Čisto statický HTML/CSS/JS — žiadny framework, žiadny bundler
-- **Hlavné súbory:**
-  - `index.html` — hlavná stránka (všetok obsah)
-  - `shared.css` — zdieľané štýly pre všetky podstránky
-  - `shared.js` — zdieľaný JS (toast, konfeti, easter eggs, hamburger menu)
-  - `_headers` — Cloudflare Pages response headers (CSP, HSTS, atď.)
-  - `assets/tiktok-thumbs/` — lokálne WebP thumbnaily pre TikTok karty (tiktok-1.webp až tiktok-9.webp)
-  - `assets/og-banner.png` — OG/Twitter share banner (1200×630px)
-  - `blog.html`, `spoznaj-svojho-editora.html` — skeleton podstránky (noindex, skryté z nav)
+Čistý vanilla HTML/CSS/JS. ŽIADNY React/Vue/Tailwind/build proces. Toto je vedomé, opakovane potvrdené rozhodnutie — nenavrhuj framework/build tooling.
 
-## Kritické workflow pravidlá
+Hosting: Cloudflare Pages, doména `donovanpeet.com`. Repo: GitHub `ImJustPeet/peet-portfolio` (verejný). Deploy: `git push main` → GitHub Actions → Cloudflare Pages → auto cache purge. Secrets: `CLOUDFLARE_API_TOKEN` (trvalý, Pages Write + Cache Purge), `CLOUDFLARE_ACCOUNT_ID`, `CLOUDFLARE_ZONE_ID`.
 
-- **VŽDY commitni a pushni** po každej sérii zmien — Cloudflare Pages sa deplouje automaticky z main
-- **Pred akoukoľvek vizuálnou/funkčnou zmenou** over na localhost (port 3000 cez preview_start)
-- **Pred oznámením "hotovo"** pre produkčné zmeny — over na živej donovanpeet.com (nie len localhost)
-- **Jeden logický commit = jedna správa** — nerobí sa squash bez žiadosti
-- **Nikdy neupravuj `.claude/settings.local.json`** — to sú permissions pre túto inštaláciu
+Súbory: `index.html`, `shared.css`, `shared.js`, `blog.html` + jednotlivé `blog-*.html` články, `spoznaj-svojho-editora.html`, `robots.txt`, `sitemap.xml`, `_headers`, `404.html`, `/assets/`.
 
-## Technické rozhodnutia
+## KRITICKÉ pravidlá
 
-### Video belt mozaika
-- CSS Grid klaster: `grid-template-columns: 144px 175px; grid-template-rows: 213px 213px; gap: 10px`
-- TikTok tall karty: `grid-row: span 2`
-- Belt sa duplikuje dynamicky cez `innerHTML +=` pre nekonečný loop
-- Po duplikácii sa znovu attachujú click handlery na `.reel-thumb`
+1. **Vždy testuj na živej `donovanpeet.com`, nikdy len na localhoste.** CSP chyby, cache, Worker routing boli viditeľné LEN na produkcii. Použi skill `verify-live`.
+2. **"Žiadne console errors" ≠ dôkaz že to funguje.** Vyžaduj vizuálne potvrdenie (screenshot/skutočné prehratie), nie len technické signály.
+3. **Infinite scroll/marquee: NIKDY `-50%` na obaľujúcom kontajneri.** Použi: každý "set" element má vlastnú identickú animáciu `translateX(0) → translateX(-100%)` (vždy presne vlastná šírka, nemôže byť nepresné).
+4. **Po JS duplikácii obsahu (`innerHTML +=`) vždy znova napoj event listenery** na duplikované uzly.
+5. **Po pridaní externého zdroja (script/iframe/font/obrázok z cudzej domény) vždy aktualizuj `_headers` CSP.**
+6. **Zmeny rob v presne vymedzenom rozsahu** — nič mimo zadania.
+7. **Pred úpravou kódu over si aktuálny stav priamo v súbore** (nepredpokladaj obsah na základe predošlých správ — môže byť zastaraný).
 
-### Video prehrávanie
-- **YouTube:** IFrame API s lazy-load, `youtube-nocookie.com`, autoplay, volume 25, lightbox (focus trap, Escape, backdrop click)
-- **TikTok:** `window.open(url, '_blank', 'noopener,noreferrer')` — embed bol zamietnutý po CSP problémoch a zlom renderingu v headless Chrome
-- TikTok karty majú ext-link SVG ikonu (namiesto ▶) cez CSS `::after` pseudoelement
+## Technické gotchas (neopakovať skúmanie)
 
-### CSP (_headers)
-- `script-src`: self, unsafe-inline, cloudflareinsights, youtube, youtube-nocookie
-- `style-src`: self, unsafe-inline, fonts.googleapis
-- `frame-src`: youtube, youtube-nocookie (bez TikTok — embed odstránený)
-- `img-src`: self, data:, ytimg, yt3.googleusercontent (bez tiktokcdn — lokálne WebP)
-- Žiadne tiktokcdn domény, žiadne ttwstatic — vyčistené po prechode na window.open
+- Custom kurzor odstránený, systémový kurzor je finálny stav.
+- TikTok embed v lightboxe NEFUNGUJE spoľahlivo (CSP, ttwstatic.com, GPU rendering v headless) — finálne riešenie: `window.open(url, '_blank', 'noopener,noreferrer')`, NIE embed. Neskúšať znova bez silného dôvodu.
+- YouTube lightbox: `YT.Player`, doména `youtube-nocookie.com`, **`origin: window.location.origin` POVINNÉ v `playerVars`** (inak "content blocked").
+- YouTube thumbnaily: doména `i.ytimg.com` (nie `img.youtube.com`), musí sedieť s `<link rel="preconnect">`.
+- TikTok thumbnaily: TRVALÉ lokálne WebP v `/assets/tiktok-thumbs/` — nikdy nehotlinkovať CDN (expirujúce podpísané URL).
+- Video belt mozaika: CSS grid (`grid-template-columns/rows`, `grid-row: span 2`), NIE flexbox s `align-items:flex-end` (nerovnomerné medzery).
+- Cloudflare Worker s priamou "Worker Domain" väzbou môže OBÍSŤ Pages pipeline bez chyby — ak doména neukazuje nový obsah aj po úspešnom deployi, skontroluj DNS/Worker bindings, nie len cache.
+- Slovenská typografia: krátke predložky/spojky (k,s,z,v,o,a,i,u) → `&nbsp;` pred nasledujúcim slovom.
+- Vyhýbať sa em dash (—) vo VŠETKOM texte vrátane skrytých `<title>`/`<meta>` tagov — čítané ako "AI slop" signál. Čiarka/dvojbodka/rozdelenie vety.
+- Farby len cez CSS premenné v `:root`, nikdy natvrdo zapísaný hex mimo.
+- Lightbox accessibility: `role="dialog"`, `aria-modal`, `aria-hidden` prepínanie, focus trap, focus-return po zatvorení.
+- Google favicon v search results vyžaduje reálny PNG súbor (min. 48×48), nie inline SVG data-URI.
 
-### Shared CSS/JS architektúra
-- `shared.css` obsahuje: CSS premenné, reset, body, nav/header, footer, button štýly, animácie (confetti, paw-rain, egg-toast, click-ripple)
-- `shared.js` obsahuje: reducedGlobal, showToast, spawnConfetti, spawnPawRain, click ripple, hamburger menu, logo 5-klik, "max" easteregg, "hesoyam" easteregg, Konami kód
-- `index.html` má inline `<style>` len pre page-specific CSS a inline `<script>` len pre page-specific JS
+## Never do without asking (hook-enforced, pozri .claude/settings.json)
 
-### Naming konzistencia
-- Kanál sa volá **Duklock+** (nie "DuklockPlus") — všade v HTML, alt texty, reel-tagy
-
-## Obsahové rozhodnutia
-
-- **Jazyk:** Slovenčina pre UI text, Čeština/Slovenčina pre video titulky podľa originálu
-- **Štatistika:** "35 mil.+" zhliadnutí na long form videách (data-count="35")
-- **Aktuálni klienti:** Tary, Tak jsme tu!
-- **Minulí klienti:** Duklock+, Fortuna, Jancucik, vvudyho herné dobrodružstvá, Jesus, Show More, Vidadu
-- **Kontakt:** donovanpeet@gmail.com, Discord: imjustpeet, YouTube: @ImJustPeet, Instagram: @imjustpeet
-- **Dostupnosť:** Online 9:00–15:00 Europe/Bratislava
-
-## Osobné preferencie (Peet/Klaudia)
-
-- Krátke, konkrétne odpovede — bez zbytočných vysvetlení
-- Keď niečo overujem, chcem vidieť dôkaz (screenshot alebo konkrétne hodnoty), nie len "funguje"
-- Commity po každej logickej zmene, nie batch na konci
-- Audit findings riešiť naraz v jednom kole, nie po jednom
-- Nezačínať implementáciu bez potvrdenia plánu pri väčších zmenách
-
-## Otvorené veci
-
-- `blog.html` a `spoznaj-svojho-editora.html` sú skeleton stránky bez obsahu — skryté z nav, noindex; čakajú na obsah
-- `og-banner.png` je generovaný z `assets/og-banner-render.html` cez Playwright screenshot — pri zmene brandu regenerovať rovnakým spôsobom
-- `scrape_views.mjs`, `scrape_missing.mjs`, `scrape_results*.json` — helper skripty pre manuálnu aktualizáciu view countov; nie sú commitnuté (.gitignore)
-
-## Never do without asking (potrebuje explicitné potvrdenie od Peet/Klaudia)
-
-- `git push --force` alebo akýkoľvek prepis git histórie
-- Mazanie Cloudflare Worker alebo Pages projektu
+- `git push --force` / prepis git histórie
+- Mazanie Cloudflare Worker/Pages projektu
 - Zmena/mazanie DNS záznamov
-- Vytváranie alebo rotácia API tokenov
-- Force-replace celého `_headers` alebo `deploy.yml` súboru (úpravy áno, úplné prepísanie nie)
-
-Tieto akcie sú nižšie technicky vynútené hookmi (pozri `.claude/settings.json`) — hook ich zablokuje, ale vždy najprv skús získať potvrdenie v konverzácii, hook je len posledná poistka.
+- Vytváranie/rotácia API tokenov
+- Úplné prepísanie `_headers` alebo `deploy.yml` (úpravy áno, prepísanie nie)
