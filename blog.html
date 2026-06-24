@@ -58,11 +58,16 @@
       color:var(--text-dim); font-size:14px; line-height:1.7;
       flex:1; margin:0 0 20px;
     }
+    .blog-card{ position:relative; }
     .blog-card-link{
       font-family:'JetBrains Mono', monospace;
       font-size:12px; color:var(--accent);
       display:inline-flex; align-items:center; gap:6px;
       transition:gap .15s ease;
+    }
+    .blog-card-link::after{
+      content:'';
+      position:absolute; inset:0;
     }
     .blog-card:hover .blog-card-link{ gap:10px; }
   </style>
