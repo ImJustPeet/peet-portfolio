@@ -1,5 +1,13 @@
 /* Shared styles for all pages */
 html, body { overflow-x: hidden; }
+html{
+  scrollbar-width: thin;
+  scrollbar-color: #ff7a2f transparent;
+}
+html::-webkit-scrollbar{ width: 6px; }
+html::-webkit-scrollbar-track{ background: transparent; }
+html::-webkit-scrollbar-thumb{ background: #ff7a2f; border-radius: 3px; }
+html::-webkit-scrollbar-thumb:hover{ background: #ffb84d; }
 @import url('https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=JetBrains+Mono:wght@400&display=swap');
 
 :root{
