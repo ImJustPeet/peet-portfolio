@@ -11,6 +11,8 @@
 <meta name="description" content="Peet, video editor. Z tvojich záberov vyťažím príbeh, ktorý si ľudia pozrú do konca.">
 
 <meta property="og:type" content="website">
+<meta property="og:locale" content="sk_SK">
+<meta property="og:locale:alternate" content="en_US">
 <meta property="og:title" content="Peet, video editor">
 <meta property="og:description" content="Video editor pre YouTuberov. Strih, pacing a miniatúry, ktoré udržia divákov pri obraze.">
 <meta property="og:image" content="https://donovanpeet.com/assets/og-banner.png">
@@ -479,7 +481,7 @@
   <div class="wrap nav">
     <button class="logo" type="button" style="display:flex; align-items:center; gap:9px;">
       <span class="logo-avatar-wrap">
-        <img class="logo-avatar" width="28" height="28" decoding="async" loading="lazy" referrerpolicy="no-referrer" alt="" src="https://yt3.googleusercontent.com/IRe7M6VjSCVH0dbUrsJGeDmC05sErJyWMw0k5yBMvI09WLcFtU4TAxEX2bKYYh9rlmsGD5xB4w=s160-c-k-c0x000c0b0a-no-rj" onerror="this.parentElement.classList.add('is-fallback')">
+        <img class="logo-avatar" width="28" height="28" decoding="async" loading="eager" referrerpolicy="no-referrer" alt="" src="https://yt3.googleusercontent.com/IRe7M6VjSCVH0dbUrsJGeDmC05sErJyWMw0k5yBMvI09WLcFtU4TAxEX2bKYYh9rlmsGD5xB4w=s160-c-k-c0x000c0b0a-no-rj" onerror="this.parentElement.classList.add('is-fallback')">
         <span class="logo-avatar-fallback">P</span>
       </span>
       Peet<span style="color:var(--accent);margin-left:-8px">.</span>
@@ -569,7 +571,7 @@
           <span class="stat-label" data-i18n="stat_longform">odstrihaných long form videí</span>
         </div>
         <div class="stat reveal">
-          <span class="stat-num mono" data-count="35" data-suffix=" mil.+" data-suffix-en=" M+">0</span>
+          <span class="stat-num mono" data-count="35" data-suffix=" mil.+" data-suffix-en="M +">0</span>
           <span class="stat-label" data-i18n="stat_views">zhliadnutí na long form videách, a&nbsp;stále rastie</span>
         </div>
       </div>
@@ -905,7 +907,7 @@
 
   <section id="about">
     <div class="wrap">
-      <div class="eyebrow reveal" data-i18n="nav_about">O mne</div>
+      <h2 class="eyebrow reveal" data-i18n="nav_about">O mne</h2>
       <div class="about-grid">
         <div>
           <div class="about-avatar-row reveal">
@@ -1482,6 +1484,8 @@
     function detectLang(){
       var saved = localStorage.getItem('lang');
       if (saved === 'sk' || saved === 'en') return saved;
+      var ua = navigator.userAgent || '';
+      if (/bot|crawl|spider|googlebot|bingbot|slurp|duckduckbot|facebookexternalhit|linkedinbot|twitterbot/i.test(ua)) return 'sk';
       var bl = (navigator.language || navigator.userLanguage || '').toLowerCase();
       return (bl.indexOf('sk') === 0 || bl.indexOf('cs') === 0) ? 'sk' : 'en';
     }
