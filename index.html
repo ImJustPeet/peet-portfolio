@@ -485,22 +485,26 @@
       Peet<span style="color:var(--accent);margin-left:-8px">.</span>
     </button>
     <nav class="nav-links">
-      <a href="#services" data-nav>Čo robím</a>
-      <a href="#work" data-nav>Pracoval som na</a>
-      <a href="#about" data-nav>O mne</a>
-      <a href="#contact" data-nav>Kontakt</a>
-      <span class="status"><span class="dot" id="statusDot"></span> <span id="statusText">K dispozícii</span></span>
+      <a href="#services" data-nav data-i18n="nav_services">Čo robím</a>
+      <a href="#work" data-nav data-i18n="nav_work">Pracoval som na</a>
+      <a href="#about" data-nav data-i18n="nav_about">O mne</a>
+      <a href="#contact" data-nav data-i18n="nav_contact">Kontakt</a>
+      <span class="status"><span class="dot" id="statusDot"></span> <span id="statusText" data-i18n="status_available">K dispozícii</span></span>
     </nav>
+    <div class="lang-switch" id="langSwitch">
+      <button type="button" data-lang="sk" aria-label="Slovenčina">🇸🇰</button>
+      <button type="button" data-lang="en" aria-label="English">🇺🇸</button>
+    </div>
     <button class="hamburger" id="hamburgerBtn" aria-label="Otvoriť menu" aria-expanded="false">
       <span></span><span></span><span></span>
     </button>
   </div>
   <nav class="mobile-menu" id="mobileMenu">
     <div class="mobile-menu-inner">
-      <a href="#services">Čo robím</a>
-      <a href="#work">Pracoval som na</a>
-      <a href="#about">O mne</a>
-      <a href="#contact">Kontakt</a>
+      <a href="#services" data-i18n="nav_services">Čo robím</a>
+      <a href="#work" data-i18n="nav_work">Pracoval som na</a>
+      <a href="#about" data-i18n="nav_about">O mne</a>
+      <a href="#contact" data-i18n="nav_contact">Kontakt</a>
     </div>
   </nav>
 </header>
@@ -522,11 +526,11 @@
 
     <div class="wrap">
       <div class="eyebrow reveal">Video editor</div>
-      <h1 class="reveal">Z&nbsp;tvojich záberov vyťažím príbeh, ktorý si ľudia pozrú do konca.</h1>
-      <p class="lead reveal">Strihám pre YouTuberov, rýchlo, s&nbsp;citom pre tempo a&nbsp;bez kompromisov v&nbsp;kvalite.</p>
+      <h1 class="reveal" data-i18n="hero_h1">Z&nbsp;tvojich záberov vyťažím príbeh, ktorý si ľudia pozrú do konca.</h1>
+      <p class="lead reveal" data-i18n="hero_lead">Strihám pre YouTuberov, rýchlo, s&nbsp;citom pre tempo a&nbsp;bez kompromisov v&nbsp;kvalite.</p>
       <div class="cta-row reveal">
-        <a href="#work" class="btn btn-primary magnetic">▶ Pozrieť ukážky</a>
-        <a href="#contact" class="btn btn-ghost magnetic">Kontaktuj ma</a>
+        <a href="#work" class="btn btn-primary magnetic" data-i18n="cta_examples">▶ Pozrieť ukážky</a>
+        <a href="#contact" class="btn btn-ghost magnetic" data-i18n="cta_contact">Kontaktuj ma</a>
       </div>
     </div>
   </section>
@@ -536,19 +540,19 @@
       <div class="stats-grid">
         <div class="stat reveal">
           <span class="stat-num mono" data-count="4" data-suffix="+">0</span>
-          <span class="stat-label">roky ako video editor</span>
+          <span class="stat-label" data-i18n="stat_years">roky ako video editor</span>
         </div>
         <div class="stat reveal">
           <span class="stat-num mono" data-count="500" data-suffix="+">0</span>
-          <span class="stat-label">odstrihaných shorts</span>
+          <span class="stat-label" data-i18n="stat_shorts">odstrihaných shorts</span>
         </div>
         <div class="stat reveal">
           <span class="stat-num mono" data-count="200" data-suffix="+">0</span>
-          <span class="stat-label">odstrihaných long form videí</span>
+          <span class="stat-label" data-i18n="stat_longform">odstrihaných long form videí</span>
         </div>
         <div class="stat reveal">
-          <span class="stat-num mono" data-count="35" data-suffix=" mil.+">0</span>
-          <span class="stat-label">zhliadnutí na long form videách, a&nbsp;stále rastie</span>
+          <span class="stat-num mono" data-count="35" data-suffix=" mil.+" data-suffix-en=" M+">0</span>
+          <span class="stat-label" data-i18n="stat_views">zhliadnutí na long form videách, a&nbsp;stále rastie</span>
         </div>
       </div>
     </div>
@@ -556,20 +560,20 @@
 
   <section id="services">
     <div class="wrap">
-      <div class="eyebrow reveal">Čo robím</div>
-      <h2 class="reveal">Strih, ktorý má jasný cieľ</h2>
+      <div class="eyebrow reveal" data-i18n="nav_services">Čo robím</div>
+      <h2 class="reveal" data-i18n="services_h2">Strih, ktorý má jasný cieľ</h2>
       <div class="card-grid">
         <div class="card reveal">
-          <h3>Strih &amp; tempo</h3>
-          <p>Od surových záberov k&nbsp;hotovému videu, ktoré sedí v&nbsp;rytme a&nbsp;udrží pozornosť.</p>
+          <h3 data-i18n="card1_h3">Strih &amp; tempo</h3>
+          <p data-i18n="card1_p">Od surových záberov k&nbsp;hotovému videu, ktoré sedí v&nbsp;rytme a&nbsp;udrží pozornosť.</p>
         </div>
         <div class="card reveal">
-          <h3>Thumbnaily</h3>
-          <p>Vizuál, ktorý dostane klik. Navrhujem ich spolu so strihom, nie ako dodatok.</p>
+          <h3 data-i18n="card2_h3">Thumbnaily</h3>
+          <p data-i18n="card2_p">Vizuál, ktorý dostane klik. Navrhujem ich spolu so strihom, nie ako dodatok.</p>
         </div>
         <div class="card reveal">
-          <h3>Optimalizácia pre YouTube</h3>
-          <p>Štruktúra, titulky a&nbsp;pacing prispôsobené tomu, ako ľudia skutočne pozerajú.</p>
+          <h3 data-i18n="card3_h3">Optimalizácia pre YouTube</h3>
+          <p data-i18n="card3_p">Štruktúra, titulky a&nbsp;pacing prispôsobené tomu, ako ľudia skutočne pozerajú.</p>
         </div>
       </div>
     </div>
@@ -577,10 +581,10 @@
 
   <section id="work">
     <div class="wrap">
-      <div class="eyebrow reveal">Pracoval som na:</div>
-      <h2 class="reveal">Kanály, projekty a&nbsp;konkrétne ukážky</h2>
+      <div class="eyebrow reveal" data-i18n="work_eyebrow">Pracoval som na:</div>
+      <h2 class="reveal" data-i18n="work_h2">Kanály, projekty a&nbsp;konkrétne ukážky</h2>
       <div class="work-group reveal">
-        <p class="work-group-label">Aktuálne spolupracujem s:</p>
+        <p class="work-group-label" data-i18n="work_current">Aktuálne spolupracujem s:</p>
         <div class="work-grid">
           <!-- Tary -->
           <a class="work-card" target="_blank" rel="noopener" href="https://www.youtube.com/watch?v=0a8XwbfYLt0&list=PL4bBdTQJ4Z-4F_72jvuYbMYY90vspEv4Q">
@@ -607,7 +611,7 @@
         </div>
       </div>
       <div class="work-group reveal">
-        <p class="work-group-label">V&nbsp;minulosti som spolupracoval s:</p>
+        <p class="work-group-label" data-i18n="work_past">V&nbsp;minulosti som spolupracoval s:</p>
         <div class="work-grid">
           <!-- Duklock -->
           <a class="work-card" target="_blank" rel="noopener" href="https://www.youtube.com/watch?v=iC3j_YdIRLI&list=PL4bBdTQJ4Z-5PqyZIRK1HwoaireivINmm">
@@ -877,13 +881,13 @@
 
   <div class="marquee reveal">
     <div class="marquee-inner" id="marqueeScroller">
-      <span class="chip marquee-item">Vlogy</span><span class="chip marquee-item">Tutoriály</span><span class="chip marquee-item">Rozhovory</span><span class="chip marquee-item">Shorts</span><span class="chip marquee-item">Reakcie</span><span class="chip marquee-item">Gaming</span><span class="chip marquee-item">Cestovanie</span><span class="chip marquee-item">Recenzie</span><span class="chip marquee-item">Podcasty</span><span class="chip marquee-item">Unboxing</span>
+      <span class="chip marquee-item" data-i18n="pill_vlogy">Vlogy</span><span class="chip marquee-item" data-i18n="pill_tutorialy">Tutoriály</span><span class="chip marquee-item" data-i18n="pill_rozhovory">Rozhovory</span><span class="chip marquee-item" data-i18n="pill_shorts">Shorts</span><span class="chip marquee-item" data-i18n="pill_reakcie">Reakcie</span><span class="chip marquee-item" data-i18n="pill_gaming">Gaming</span><span class="chip marquee-item" data-i18n="pill_cestovanie">Cestovanie</span><span class="chip marquee-item" data-i18n="pill_recenzie">Recenzie</span><span class="chip marquee-item" data-i18n="pill_podcasty">Podcasty</span><span class="chip marquee-item" data-i18n="pill_unboxing">Unboxing</span>
     </div>
   </div>
 
   <section id="about">
     <div class="wrap">
-      <div class="eyebrow reveal">O mne</div>
+      <div class="eyebrow reveal" data-i18n="nav_about">O mne</div>
       <div class="about-grid">
         <div>
           <div class="about-avatar-row reveal">
@@ -893,10 +897,10 @@
             </span>
             <div>
               <div class="about-name">Peet</div>
-              <div class="about-tag mono">+ mačiak Max 🐾</div>
+              <div class="about-tag mono" data-i18n="about_tag">+ mačiak Max 🐾</div>
             </div>
           </div>
-          <p class="reveal">
+          <p class="reveal" data-i18n="about_p">
             Video strihu sa venujem dlhodobo a&nbsp;aktuálne pravidelne strihám pre etablovaného YouTubera.
             Rozumiem tomu, prečo divák niekde odpadne, a&nbsp;viem to opraviť ešte v&nbsp;strižni, nie až v&nbsp;analytike po publikovaní.
           </p>
@@ -904,12 +908,12 @@
         <div class="chips reveal">
           <div class="eyebrow" style="width:100%;margin-bottom:6px;">Skills</div>
           <span class="chip">Premiere Pro</span>
-          <span class="chip">Thumbnaily</span>
+          <span class="chip" data-i18n="chip_thumbnaily">Thumbnaily</span>
           <span class="chip">Pacing &amp; retention</span>
           <span class="chip">Sound design</span>
           <span class="chip">Color grading</span>
           <span class="chip">Storytelling</span>
-          <span class="chip">Titulky &amp; captions</span>
+          <span class="chip" data-i18n="chip_titulky">Titulky &amp; captions</span>
           <span class="chip">Optimalizácia pre YouTube</span>
         </div>
       </div>
@@ -918,24 +922,24 @@
 
   <section id="process">
     <div class="wrap">
-      <div class="eyebrow reveal">Ako prebieha spolupráca</div>
-      <h2 class="reveal">Štyri kroky od záberov k&nbsp;exportu</h2>
+      <div class="eyebrow reveal" data-i18n="process_eyebrow">Ako prebieha spolupráca</div>
+      <h2 class="reveal" data-i18n="process_h2">Štyri kroky od záberov k&nbsp;exportu</h2>
       <div class="steps">
         <div class="steps-line reveal"></div>
-        <div class="step reveal"><span class="num mono">01</span><h3>Brief</h3><p>Pošleš mi zábery a&nbsp;popíšeš, akým smerom sa má video uberať.</p></div>
-        <div class="step reveal"><span class="num mono">02</span><h3>Strih</h3><p>Pripravím prvý strih: štruktúra, tempo, výber najlepších momentov.</p></div>
-        <div class="step reveal"><span class="num mono">03</span><h3>Revízie</h3><p>Doladíme detaily podľa tvojej spätnej väzby.</p></div>
-        <div class="step reveal"><span class="num mono">04</span><h3>Export</h3><p>Dostaneš hotové video vo formáte, ktorý potrebuješ.</p></div>
+        <div class="step reveal"><span class="num mono">01</span><h3>Brief</h3><p data-i18n="step1_p">Pošleš mi zábery a&nbsp;popíšeš, akým smerom sa má video uberať.</p></div>
+        <div class="step reveal"><span class="num mono">02</span><h3 data-i18n="step2_h3">Strih</h3><p data-i18n="step2_p">Pripravím prvý strih: štruktúra, tempo, výber najlepších momentov.</p></div>
+        <div class="step reveal"><span class="num mono">03</span><h3 data-i18n="step3_h3">Revízie</h3><p data-i18n="step3_p">Doladíme detaily podľa tvojej spätnej väzby.</p></div>
+        <div class="step reveal"><span class="num mono">04</span><h3>Export</h3><p data-i18n="step4_p">Dostaneš hotové video vo formáte, ktorý potrebuješ.</p></div>
       </div>
     </div>
   </section>
 
   <section id="contact" class="cta-final">
     <div class="wrap">
-      <div class="eyebrow reveal">Kontakt</div>
-      <h2 class="reveal">Poďme na to.</h2>
+      <div class="eyebrow reveal" data-i18n="nav_contact">Kontakt</div>
+      <h2 class="reveal" data-i18n="contact_h2">Poďme na to.</h2>
       <a href="mailto:donovanpeet@gmail.com" class="contact-email reveal magnetic">donovanpeet@gmail.com<svg class="ext-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;margin-left:4px;vertical-align:middle;" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><path d="M15 3h6v6"/><path d="M10 14L21 3"/></svg></a>
-      <p class="contact-sub reveal">Napíš mi pár viet o&nbsp;projekte a&nbsp;dĺžke videa, odpovedám väčšinou do 24 hodín.</p>
+      <p class="contact-sub reveal" data-i18n="contact_p">Napíš mi pár viet o&nbsp;projekte a&nbsp;dĺžke videa, odpovedám väčšinou do 24 hodín.</p>
       <div class="contact-links reveal">
         <a href="https://www.youtube.com/@ImJustPeet" target="_blank" rel="noopener">YouTube<svg class="ext-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;margin-left:4px;vertical-align:middle;" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><path d="M15 3h6v6"/><path d="M10 14L21 3"/></svg></a>
         <a href="https://www.instagram.com/imjustpeet/" target="_blank" rel="noopener">Instagram<svg class="ext-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;margin-left:4px;vertical-align:middle;" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><path d="M15 3h6v6"/><path d="M10 14L21 3"/></svg></a>
@@ -954,8 +958,8 @@
 </footer>
 
 <div class="privacy-notice" id="privacyNotice">
-  <p>🔒 Táto stránka používa Cloudflare Web Analytics na základnú štatistiku návštevnosti. Spracúva sa len IP adresa (technicky nutné pri pripojení) — žiadne cookies, žiadne sledovanie medzi stránkami, žiadne osobné údaje sa neukladajú. Pri prehratí videa v&nbsp;náhľade sa pripojíš na YouTube (cez privacy-enhanced režim), čo môže nastaviť cookies podľa nastavení Google. Kliknutím na TikTok kartu sa otvorí TikTok v novom okne — ich podmienky ochrany súkromia sa riadia platformou TikTok.</p>
-  <button id="privacyNoticeClose">Rozumiem</button>
+  <p data-i18n="privacy_text">🔒 Táto stránka používa Cloudflare Web Analytics na základnú štatistiku návštevnosti. Spracúva sa len IP adresa (technicky nutné pri pripojení) — žiadne cookies, žiadne sledovanie medzi stránkami, žiadne osobné údaje sa neukladajú. Pri prehratí videa v&nbsp;náhľade sa pripojíš na YouTube (cez privacy-enhanced režim), čo môže nastaviť cookies podľa nastavení Google. Kliknutím na TikTok kartu sa otvorí TikTok v novom okne — ich podmienky ochrany súkromia sa riadia platformou TikTok.</p>
+  <button id="privacyNoticeClose" data-i18n="privacy_btn">Rozumiem</button>
 </div>
 
 <div class="lightbox" id="videoLightbox" role="dialog" aria-modal="true" aria-label="Video ukážka" aria-hidden="true">
@@ -1400,6 +1404,138 @@
     }
     requestAnimationFrame(loop);
   }
+
+  // ---------- Language switcher (SK / EN) ----------
+  (function(){
+    var EN_DICT = {
+      nav_services: 'What I do',
+      nav_work: 'Past work',
+      nav_about: 'About me',
+      nav_contact: 'Contact',
+      status_available: 'Available',
+
+      hero_h1: 'I turn your footage into a story people watch to the very end.',
+      hero_lead: 'I edit for YouTubers — fast, with a feel for pacing, no compromise on quality.',
+      cta_examples: '▶ See examples',
+      cta_contact: 'Contact me',
+
+      stat_years: 'years as a video editor',
+      stat_shorts: 'Shorts edited',
+      stat_longform: 'long-form videos edited',
+      stat_views: 'views on long-form videos, and counting',
+
+      services_h2: 'Editing with a clear purpose',
+      card1_h3: 'Editing &amp; pacing',
+      card1_p: 'From raw footage to a finished video that holds rhythm and keeps attention.',
+      card2_h3: 'Thumbnails',
+      card2_p: 'Visuals that earn the click. I design them alongside the edit, not as an afterthought.',
+      card3_h3: 'YouTube optimization',
+      card3_p: 'Structure, captions, and pacing built around how people actually watch.',
+
+      work_eyebrow: 'Past work:',
+      work_h2: 'Channels, projects, and real examples',
+      work_current: 'Currently working with:',
+      work_past: 'Previously worked with:',
+
+      pill_vlogy: 'Vlogs', pill_tutorialy: 'Tutorials', pill_rozhovory: 'Interviews',
+      pill_shorts: 'Shorts', pill_reakcie: 'Reactions', pill_gaming: 'Gaming',
+      pill_cestovanie: 'Travel', pill_recenzie: 'Reviews', pill_podcasty: 'Podcasts', pill_unboxing: 'Unboxing',
+
+      about_tag: '+ Max the cat 🐾',
+      about_p: 'I’ve been editing video for a long time, and I currently edit regularly for an established YouTuber. I understand why a viewer drops off at a given point, and I can fix it in the edit itself, not just after the fact in analytics.',
+      chip_thumbnaily: 'Thumbnails',
+      chip_titulky: 'Captions &amp; subtitles',
+
+      process_eyebrow: 'How we work together',
+      process_h2: 'Four steps from footage to export',
+      step1_p: 'You send me the footage and describe the direction the video should take.',
+      step2_h3: 'Edit',
+      step2_p: 'I prepare the first cut: structure, pacing, and the best moments selected.',
+      step3_h3: 'Revisions',
+      step3_p: 'We fine-tune the details based on your feedback.',
+      step4_p: 'You get the finished video in the format you need.',
+
+      contact_h2: 'Let’s do this.',
+      contact_p: 'Send me a few lines about the project and video length — I usually reply within 24 hours.',
+
+      privacy_text: '🔒 This site uses Cloudflare Web Analytics for basic visitor statistics. Only your IP address is processed (technically required for the connection) — no cookies, no cross-site tracking, no personal data is stored. Playing a video preview connects you to YouTube (in privacy-enhanced mode), which may set cookies according to your Google settings. Clicking a TikTok card opens TikTok in a new window — their privacy policy is governed by the TikTok platform.',
+      privacy_btn: 'Got it'
+    };
+
+    function detectLang(){
+      var saved = localStorage.getItem('lang');
+      if (saved === 'sk' || saved === 'en') return saved;
+      var bl = (navigator.language || navigator.userLanguage || '').toLowerCase();
+      return (bl.indexOf('sk') === 0 || bl.indexOf('cs') === 0) ? 'sk' : 'en';
+    }
+
+    // save SK originals after all JS duplication (marquee clones already exist at this point)
+    document.querySelectorAll('[data-i18n]').forEach(function(el){
+      el.setAttribute('data-i18n-sk', el.innerHTML);
+    });
+
+    // save subs/views originals
+    document.querySelectorAll('.subs.mono, .reel-views.mono').forEach(function(el){
+      if (!el.dataset.orig) el.dataset.orig = el.textContent;
+    });
+
+    function convertCountToEN(text){
+      return text
+        .replace(/ /g, ' ')
+        .replace(/,/g, '.')
+        .replace(/\s*mil\.\+?/, 'M')
+        .replace(/\s*tis\.\+?/, 'K')
+        .replace(/\s*odberateľov/, ' subscribers');
+    }
+
+    function applyLang(lang){
+      document.documentElement.lang = lang;
+
+      document.querySelectorAll('[data-i18n]').forEach(function(el){
+        var key = el.getAttribute('data-i18n');
+        el.innerHTML = (lang === 'sk')
+          ? (el.getAttribute('data-i18n-sk') || el.innerHTML)
+          : (EN_DICT[key] || el.getAttribute('data-i18n-sk') || el.innerHTML);
+      });
+
+      document.querySelectorAll('.subs.mono, .reel-views.mono').forEach(function(el){
+        if (lang === 'en'){
+          el.textContent = convertCountToEN(el.dataset.orig || el.textContent);
+        } else {
+          if (el.dataset.orig) el.textContent = el.dataset.orig;
+        }
+      });
+
+      // stat suffixes — update data-suffix so animateCount uses correct value if not yet fired,
+      // and update displayed text for already-animated stats
+      document.querySelectorAll('.stat-num[data-count]').forEach(function(el){
+        if (!el.dataset.suffixSk) el.dataset.suffixSk = el.dataset.suffix;
+        el.dataset.suffix = (lang === 'en' && el.dataset.suffixEn) ? el.dataset.suffixEn : el.dataset.suffixSk;
+        el.textContent = el.dataset.count + el.dataset.suffix;
+      });
+
+      var hbtn = document.getElementById('hamburgerBtn');
+      if (hbtn) hbtn.setAttribute('aria-label', lang === 'en' ? 'Open menu' : 'Otvoriť menu');
+
+      var lcBtn = document.getElementById('lightboxClose');
+      if (lcBtn) lcBtn.setAttribute('aria-label', lang === 'en' ? 'Close' : 'Zatvoriť');
+
+      document.querySelectorAll('#langSwitch button').forEach(function(btn){
+        btn.classList.toggle('is-active', btn.dataset.lang === lang);
+      });
+    }
+
+    var currentLang = detectLang();
+    applyLang(currentLang);
+
+    document.getElementById('langSwitch').addEventListener('click', function(e){
+      var btn = e.target.closest('button[data-lang]');
+      if (!btn) return;
+      var lang = btn.dataset.lang;
+      try { localStorage.setItem('lang', lang); } catch(ex){}
+      applyLang(lang);
+    });
+  })();
 
   // ---------- Privacy notice banner ----------
   (function(){
