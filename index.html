@@ -492,8 +492,26 @@
       <span class="status"><span class="dot" id="statusDot"></span> <span id="statusText" data-i18n="status_available">K dispozícii</span></span>
     </nav>
     <div class="lang-switch" id="langSwitch">
-      <button type="button" data-lang="sk" aria-label="Slovenčina">🇸🇰</button>
-      <button type="button" data-lang="en" aria-label="English">🇺🇸</button>
+      <button type="button" data-lang="sk" aria-label="Slovenčina">
+        <svg viewBox="0 0 640 480" xmlns="http://www.w3.org/2000/svg">
+          <path fill="#ee1c25" d="M0 0h640v480H0z"/>
+          <path fill="#0b4ea2" d="M0 0h640v320H0z"/>
+          <path fill="#fff" d="M0 0h640v160H0z"/>
+          <path fill="#fff" d="M233 370.8c-43-20.7-104.6-61.9-104.6-143.2 0-81.4 4-118.4 4-118.4h201.3s3.9 37 3.9 118.4S276 350 233 370.8"/>
+          <path fill="#ee1c25" d="M233 360c-39.5-19-96-56.8-96-131.4s3.6-108.6 3.6-108.6h184.8s3.5 34 3.5 108.6C329 303.3 272.5 341 233 360"/>
+          <path fill="#fff" d="M241.4 209c10.7.2 31.6.6 50.1-5.6 0 0-.4 6.7-.4 14.4s.5 14.4.5 14.4c-17-5.7-38.1-5.8-50.2-5.7v41.2h-16.8v-41.2c-12-.1-33.1 0-50.1 5.7 0 0 .5-6.7.5-14.4s-.5-14.4-.5-14.4c18.5 6.2 39.4 5.8 50 5.6v-25.9c-9.7 0-23.7.4-39.6 5.7 0 0 .5-6.6.5-14.4 0-7.7-.5-14.4-.5-14.4 15.9 5.3 29.9 5.8 39.6 5.7-.5-16.4-5.3-37-5.3-37s9.9.7 13.8.7 13.8-.7 13.8-.7-4.8 20.6-5.3 37c9.7.1 23.7-.4 39.6-5.7 0 0-.5 6.7-.5 14.4s.5 14.4.5 14.4a119 119 0 0 0-39.7-5.7v26z"/>
+          <path fill="#0b4ea2" d="M233 263.3c-19.9 0-30.5 27.5-30.5 27.5s-6-13-22.2-13c-11 0-19 9.7-24.2 18.8 20 31.7 51.9 51.3 76.9 63.4 25-12 57-31.7 76.9-63.4-5.2-9-13.2-18.8-24.2-18.8-16.2 0-22.2 13-22.2 13S253 263.3 233 263.3"/>
+        </svg>
+      </button>
+      <button type="button" data-lang="en" aria-label="English">
+        <svg viewBox="0 0 640 480" xmlns="http://www.w3.org/2000/svg">
+          <path fill="#bd3d44" d="M0 0h640v480H0"/>
+          <path stroke="#fff" stroke-width="37" d="M0 55.3h640M0 129h640M0 203h640M0 277h640M0 351h640M0 425h640"/>
+          <path fill="#192f5d" d="M0 0h364.8v258.5H0"/>
+          <marker id="us-a" markerHeight="30" markerWidth="30"><path fill="#fff" d="m14 0 9 27L0 10h28L5 27z"/></marker>
+          <path fill="none" marker-mid="url(#us-a)" d="m0 0 16 11h61 61 61 61 60L47 37h61 61 60 61L16 63h61 61 61 61 60L47 89h61 61 60 61L16 115h61 61 61 61 60L47 141h61 61 60 61L16 166h61 61 61 61 60L47 192h61 61 60 61L16 218h61 61 61 61 60z"/>
+        </svg>
+      </button>
     </div>
     <button class="hamburger" id="hamburgerBtn" aria-label="Otvoriť menu" aria-expanded="false">
       <span></span><span></span><span></span>
@@ -1409,13 +1427,13 @@
   (function(){
     var EN_DICT = {
       nav_services: 'What I do',
-      nav_work: 'Past work',
+      nav_work: 'Work',
       nav_about: 'About me',
       nav_contact: 'Contact',
       status_available: 'Available',
 
       hero_h1: 'I turn your footage into a story people watch to the very end.',
-      hero_lead: 'I edit for YouTubers — fast, with a feel for pacing, no compromise on quality.',
+      hero_lead: 'I edit for YouTubers, fast, with a feel for pacing and no compromise on quality.',
       cta_examples: '▶ See examples',
       cta_contact: 'Contact me',
 
@@ -1432,7 +1450,7 @@
       card3_h3: 'YouTube optimization',
       card3_p: 'Structure, captions, and pacing built around how people actually watch.',
 
-      work_eyebrow: 'Past work:',
+      work_eyebrow: 'Work:',
       work_h2: 'Channels, projects, and real examples',
       work_current: 'Currently working with:',
       work_past: 'Previously worked with:',
@@ -1444,21 +1462,21 @@
       about_tag: '+ Max the cat 🐾',
       about_p: 'I’ve been editing video for a long time, and I currently edit regularly for an established YouTuber. I understand why a viewer drops off at a given point, and I can fix it in the edit itself, not just after the fact in analytics.',
       chip_thumbnaily: 'Thumbnails',
-      chip_titulky: 'Captions &amp; subtitles',
+      chip_titulky: 'Subtitles &amp; captions',
 
       process_eyebrow: 'How we work together',
       process_h2: 'Four steps from footage to export',
       step1_p: 'You send me the footage and describe the direction the video should take.',
       step2_h3: 'Edit',
-      step2_p: 'I prepare the first cut: structure, pacing, and the best moments selected.',
+      step2_p: 'I prepare the first cut: structure, pacing, and a selection of the best moments.',
       step3_h3: 'Revisions',
       step3_p: 'We fine-tune the details based on your feedback.',
       step4_p: 'You get the finished video in the format you need.',
 
       contact_h2: 'Let’s do this.',
-      contact_p: 'Send me a few lines about the project and video length — I usually reply within 24 hours.',
+      contact_p: 'Send me a few lines about the project and video length. I usually reply within 24 hours.',
 
-      privacy_text: '🔒 This site uses Cloudflare Web Analytics for basic visitor statistics. Only your IP address is processed (technically required for the connection) — no cookies, no cross-site tracking, no personal data is stored. Playing a video preview connects you to YouTube (in privacy-enhanced mode), which may set cookies according to your Google settings. Clicking a TikTok card opens TikTok in a new window — their privacy policy is governed by the TikTok platform.',
+      privacy_text: '🔒 This site uses Cloudflare Web Analytics for basic visitor statistics. Only your IP address is processed, which is technically required for the connection. No cookies, no cross-site tracking, and no personal data is stored. Playing a video preview connects you to YouTube in privacy-enhanced mode, which may set cookies according to your Google settings. Clicking a TikTok card opens TikTok in a new window. Its privacy practices are governed by the TikTok platform itself.',
       privacy_btn: 'Got it'
     };
 
