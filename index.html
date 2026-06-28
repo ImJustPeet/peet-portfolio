@@ -491,7 +491,6 @@
       <a href="#work" data-nav data-i18n="nav_work">Pracoval som na</a>
       <a href="#about" data-nav data-i18n="nav_about">O mne</a>
       <a href="#contact" data-nav data-i18n="nav_contact">Kontakt</a>
-      <span class="status"><span class="dot" id="statusDot"></span> <span id="statusText">K dispozícii</span></span>
     </nav>
     <div class="lang-switch" id="langSwitch">
       <button type="button" data-lang="sk" aria-label="Slovenčina">
@@ -1121,22 +1120,6 @@
     revealEls.forEach(function(el){ el.classList.add('is-visible'); });
   }
 
-  // ---------- Dynamic online status ----------
-  (function(){
-    var dot = document.getElementById('statusDot');
-    var txt = document.getElementById('statusText');
-    if (!dot || !txt) return;
-    var hour = parseInt(new Intl.DateTimeFormat('sk', {
-      timeZone: 'Europe/Bratislava', hour: 'numeric', hour12: false
-    }).format(new Date()), 10);
-    var day = new Intl.DateTimeFormat('en-US', { timeZone: 'Europe/Bratislava', weekday: 'short' }).format(new Date());
-    var isWeekend = (day === 'Sat' || day === 'Sun');
-    if (!isWeekend && hour >= 9 && hour < 15) {
-      dot.classList.add('online'); txt.textContent = 'Online';
-    } else {
-      dot.classList.add('offline'); txt.textContent = 'Offline';
-    }
-  })();
 
   // ---------- Marquee dynamic duplication ----------
   (function(){
