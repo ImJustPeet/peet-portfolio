@@ -462,7 +462,7 @@ footer.credits{ border-top:1px solid var(--line); padding:26px 0; display:flex; 
     cutEls.forEach(function(el){
       if(el.classList.contains('in')) return;
       var r = el.getBoundingClientRect();
-      if(r.top < vh * 0.92 && r.bottom > 0){ el.classList.add('in'); }
+      if(r.top < vh * 0.92){ el.classList.add('in'); }
     });
   }
   revealVisible();
