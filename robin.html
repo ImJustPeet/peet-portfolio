@@ -1,0 +1,486 @@
+<!doctype html>
+<html lang="sk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Peet, video editor — koncept</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="canonical" href="https://donovanpeet.com/robin">
+<link rel="icon" type="image/png" sizes="96x96" href="/assets/favicon-96.png">
+<link rel="icon" type="image/png" sizes="48x48" href="/assets/favicon-48.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png">
+<style>
+:root{
+  --ink:#0a0d11;
+  --panel:#11161d;
+  --panel-2:#161c24;
+  --line:rgba(232,241,240,0.09);
+  --line-strong:rgba(232,241,240,0.18);
+  --paper:#eef1f0;
+  --dim:#6d7887;
+  --dim-2:#4a525e;
+  --yellow:#f2c53d;
+  --magenta:#e14f8a;
+  --cyan:#35c4d6;
+  --font-display: 'Arial Black', 'Arial Bold', Impact, sans-serif;
+  --font-body: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'IBM Plex Mono', 'SF Mono', Consolas, 'Courier New', monospace;
+}
+*{ box-sizing:border-box; }
+html,body{ margin:0; background:var(--ink); color:var(--paper); }
+body{ font-family:var(--font-body); font-size:16px; line-height:1.6; overflow-x:hidden; }
+a{ color:inherit; text-decoration:none; }
+::selection{ background:var(--yellow); color:var(--ink); }
+:focus-visible{ outline:2px solid var(--cyan); outline-offset:3px; }
+
+.mono{ font-family:var(--font-mono); }
+.wrap{ max-width:980px; margin:0 auto; padding:0 28px; }
+@media (max-width:640px){ .wrap{ padding:0 18px; } }
+
+/* ---------- leader / countdown intro ---------- */
+#leader{
+  position:fixed; inset:0; background:var(--ink); z-index:999;
+  display:flex; align-items:center; justify-content:center;
+  transition:opacity .4s ease;
+}
+#leader.hide{ opacity:0; pointer-events:none; }
+.leader-circle{
+  width:140px; height:140px; border-radius:50%;
+  border:1px solid var(--line-strong);
+  display:flex; align-items:center; justify-content:center;
+  position:relative;
+}
+.leader-circle::before, .leader-circle::after{
+  content:''; position:absolute; background:var(--line-strong);
+}
+.leader-circle::before{ width:1px; height:100%; left:50%; top:0; }
+.leader-circle::after{ width:100%; height:1px; top:50%; left:0; }
+#leader-num{ font-family:var(--font-display); font-size:52px; color:var(--yellow); position:relative; z-index:1; letter-spacing:-0.02em; }
+#leader-label{ position:absolute; bottom:64px; font-family:var(--font-mono); font-size:11px; letter-spacing:0.18em; color:var(--dim); text-transform:uppercase; }
+@media (prefers-reduced-motion: reduce){ #leader{ display:none; } }
+
+/* ---------- top transport bar ---------- */
+#tbar{
+  position:sticky; top:0; z-index:60;
+  background:rgba(10,13,17,0.86); backdrop-filter:blur(10px);
+  border-bottom:1px solid var(--line);
+}
+#tbar .in{ display:flex; align-items:center; justify-content:space-between; height:52px; }
+.tbar-left{ display:flex; align-items:center; gap:10px; }
+.rec-dot{ width:7px; height:7px; border-radius:50%; background:var(--magenta); flex-shrink:0; }
+@media (prefers-reduced-motion: no-preference){ .rec-dot{ animation:blink 1.6s step-start infinite; } }
+@keyframes blink{ 50%{ opacity:0.25; } }
+.proj-name{ font-family:var(--font-mono); font-size:12px; letter-spacing:0.08em; color:var(--dim); }
+.tbar-right{ display:flex; align-items:center; gap:18px; }
+#tc-readout{ font-family:var(--font-mono); font-size:13px; color:var(--yellow); letter-spacing:0.03em; font-variant-numeric:tabular-nums; }
+.tbar-cta{ font-family:var(--font-mono); font-size:12px; color:var(--paper); border:1px solid var(--line-strong); padding:6px 14px; border-radius:2px; transition:border-color .2s, color .2s; }
+.tbar-cta:hover{ border-color:var(--cyan); color:var(--cyan); }
+
+/* ---------- left ruler / scrubber ---------- */
+#ruler{
+  position:fixed; left:0; top:52px; bottom:0; width:34px; z-index:55;
+  border-right:1px solid var(--line);
+  display:none;
+}
+@media (min-width:900px){ #ruler{ display:block; } body{ padding-left:34px; } #tbar{ margin-left:-34px; padding-left:34px; } }
+.ruler-track{ position:absolute; left:0; top:0; bottom:0; width:100%; }
+.ruler-tick{ position:absolute; left:10px; width:14px; height:1px; background:var(--line-strong); }
+.ruler-tick.major{ width:22px; background:var(--dim-2); }
+#playhead{
+  position:absolute; left:2px; width:0; height:0;
+  border-top:6px solid transparent; border-bottom:6px solid transparent;
+  border-left:8px solid var(--yellow);
+  transform:translateY(-6px);
+}
+
+/* ---------- hero ---------- */
+#hero{ min-height:88vh; display:flex; flex-direction:column; justify-content:center; padding:120px 0 80px; position:relative; }
+.eyebrow-line{ display:flex; align-items:center; gap:10px; margin-bottom:22px; }
+.eyebrow-line .bar{ width:28px; height:2px; background:var(--yellow); }
+.eyebrow-line span{ font-family:var(--font-mono); font-size:12px; letter-spacing:0.16em; color:var(--dim); text-transform:uppercase; }
+h1.hero-h{
+  font-family:var(--font-display); font-weight:900;
+  font-size:clamp(40px, 8vw, 84px); line-height:0.98; letter-spacing:-0.01em;
+  margin:0 0 28px; max-width:11ch;
+}
+h1.hero-h .accent{ color:var(--yellow); }
+.hero-sub{ font-size:19px; color:var(--dim); max-width:46ch; margin:0 0 36px; line-height:1.65; }
+.hero-cta-row{ display:flex; gap:14px; flex-wrap:wrap; }
+.btn{ font-family:var(--font-mono); font-size:13px; letter-spacing:0.03em; padding:14px 26px; border-radius:2px; display:inline-flex; align-items:center; gap:10px; transition:all .2s ease; }
+.btn-primary{ background:var(--yellow); color:var(--ink); font-weight:700; }
+.btn-primary:hover{ background:var(--paper); }
+.btn-ghost{ border:1px solid var(--line-strong); color:var(--paper); }
+.btn-ghost:hover{ border-color:var(--cyan); color:var(--cyan); }
+
+.scope{ position:absolute; right:28px; top:120px; width:96px; height:96px; opacity:0.7; }
+@media (max-width:900px){ .scope{ display:none; } }
+
+/* ---------- jump-cut reveal ---------- */
+.cut{ opacity:0; transform:translateY(18px); position:relative; }
+.cut.in{ animation:cutIn .32s cubic-bezier(.2,.8,.2,1) forwards; }
+@keyframes cutIn{
+  0%{ opacity:0; transform:translateY(18px); }
+  55%{ opacity:1; transform:translateY(0); }
+  62%{ opacity:0.55; }
+  100%{ opacity:1; transform:translateY(0); }
+}
+@media (prefers-reduced-motion: reduce){ .cut{ opacity:1; transform:none; animation:none; } }
+
+/* ---------- section shell ---------- */
+.sect{ padding:96px 0; border-top:1px solid var(--line); }
+.sect-head{ display:flex; align-items:baseline; justify-content:space-between; margin-bottom:44px; flex-wrap:wrap; gap:12px; }
+.sect-label{ font-family:var(--font-mono); font-size:12px; letter-spacing:0.14em; color:var(--dim); text-transform:uppercase; }
+.sect-title{ font-family:var(--font-display); font-weight:900; font-size:clamp(26px,3.6vw,38px); letter-spacing:-0.01em; margin:6px 0 0; }
+.sect-count{ font-family:var(--font-mono); font-size:12px; color:var(--dim-2); }
+
+/* ---------- work / clip bin ---------- */
+.bin{ display:grid; grid-template-columns:repeat(2,1fr); gap:18px; }
+@media (max-width:700px){ .bin{ grid-template-columns:1fr; } }
+.clip{
+  background:var(--panel); border:1px solid var(--line); border-radius:3px; overflow:hidden;
+  transition:border-color .2s ease;
+}
+.clip:hover{ border-color:var(--line-strong); }
+.clip-thumb{
+  aspect-ratio:16/9; position:relative;
+  display:flex; align-items:center; justify-content:center;
+}
+.clip-thumb::before{
+  content:''; position:absolute; inset:0;
+  background-image:repeating-linear-gradient(115deg, transparent 0 18px, rgba(255,255,255,0.025) 18px 19px);
+}
+.clip-play{ width:46px; height:46px; border-radius:50%; border:1px solid var(--line-strong); display:flex; align-items:center; justify-content:center; position:relative; z-index:1; }
+.clip-play svg{ width:14px; height:14px; fill:var(--paper); margin-left:2px; }
+.clip-dur{ position:absolute; bottom:10px; right:10px; font-family:var(--font-mono); font-size:11px; background:rgba(10,13,17,0.75); padding:3px 7px; border-radius:2px; color:var(--paper); z-index:1; }
+.clip-meta{ padding:16px 18px 18px; }
+.clip-bin-label{ font-family:var(--font-mono); font-size:10.5px; letter-spacing:0.12em; text-transform:uppercase; margin:0 0 6px; }
+.clip-title{ font-size:17px; font-weight:600; margin:0 0 6px; }
+.clip-desc{ font-size:14px; color:var(--dim); margin:0; }
+
+/* ---------- track rows / services ---------- */
+.tracks{ display:flex; flex-direction:column; }
+.track{ display:grid; grid-template-columns:64px 1fr; border-top:1px solid var(--line); padding:26px 0; gap:20px; align-items:start; }
+.track:first-child{ border-top:none; }
+.track-id{ font-family:var(--font-mono); font-size:12px; color:var(--dim-2); padding-top:4px; }
+.track-body h3{ font-size:19px; font-weight:700; margin:0 0 8px; }
+.track-body p{ font-size:14.5px; color:var(--dim); margin:0; max-width:56ch; }
+.track-wave{ height:22px; margin-top:14px; display:flex; align-items:flex-end; gap:2px; opacity:0.5; }
+.track-wave i{ width:2px; background:var(--dim-2); flex-shrink:0; }
+
+/* ---------- edit log / process ---------- */
+.log{ font-family:var(--font-mono); font-size:13.5px; }
+.log-row{ display:grid; grid-template-columns:110px 1fr; gap:18px; padding:13px 0; border-top:1px solid var(--line); }
+.log-row:first-child{ border-top:none; }
+.log-tc{ color:var(--cyan); }
+.log-note{ color:var(--paper); }
+.log-note .sub{ color:var(--dim); display:block; font-family:var(--font-body); font-size:13.5px; margin-top:3px; }
+
+/* ---------- caption / quote ---------- */
+.caption-bar{
+  border-left:3px solid var(--yellow); background:var(--panel);
+  padding:26px 30px; margin:0;
+}
+.caption-bar p{ font-size:19px; line-height:1.5; margin:0 0 14px; }
+.caption-bar footer{ font-family:var(--font-mono); font-size:12px; color:var(--dim); }
+
+/* ---------- contact / footer ---------- */
+#end{ padding:100px 0 60px; text-align:center; }
+#end .sect-title{ font-size:clamp(30px,5vw,52px); }
+#end .hero-sub{ margin-left:auto; margin-right:auto; }
+.end-cta{ display:flex; justify-content:center; margin-top:34px; }
+footer.credits{ border-top:1px solid var(--line); padding:26px 0; display:flex; justify-content:space-between; align-items:center; font-family:var(--font-mono); font-size:11.5px; color:var(--dim-2); flex-wrap:wrap; gap:10px; }
+</style>
+</head>
+<body>
+
+<div id="leader" aria-hidden="true">
+  <div class="leader-circle"><span id="leader-num" class="mono">3</span></div>
+  <div id="leader-label" class="mono">PEET_EDIT.PRJ — NAČÍTAVAM STOPY</div>
+</div>
+
+<div id="ruler" aria-hidden="true">
+  <div class="ruler-track" id="ruler-track"></div>
+  <div id="playhead"></div>
+</div>
+
+<header id="tbar">
+  <div class="wrap in">
+    <div class="tbar-left">
+      <span class="rec-dot"></span>
+      <span class="proj-name mono">PEET_EDIT.PRJ</span>
+    </div>
+    <div class="tbar-right">
+      <span id="tc-readout" class="mono">00:00:00:00</span>
+      <a href="#end" class="tbar-cta">Napísať mi</a>
+    </div>
+  </div>
+</header>
+
+<main>
+  <section id="hero" class="wrap">
+    <svg class="scope" viewBox="0 0 100 100" aria-hidden="true">
+      <circle cx="50" cy="50" r="46" fill="none" stroke="var(--line-strong)" stroke-width="1"/>
+      <circle cx="50" cy="50" r="30" fill="none" stroke="var(--line)" stroke-width="1"/>
+      <line x1="4" y1="50" x2="96" y2="50" stroke="var(--line)" stroke-width="1"/>
+      <line x1="50" y1="4" x2="50" y2="96" stroke="var(--line)" stroke-width="1"/>
+      <circle cx="66" cy="34" r="3" fill="var(--yellow)"/>
+      <circle cx="30" cy="62" r="3" fill="var(--magenta)"/>
+      <circle cx="70" cy="66" r="3" fill="var(--cyan)"/>
+    </svg>
+    <div class="eyebrow-line"><span class="bar"></span><span>Peet — strih videa</span></div>
+    <h1 class="hero-h">Každý strih<br>má <span class="accent">dôvod.</span></h1>
+    <p class="hero-sub">Strihám krátke aj dlhé formáty pre tvorcov a značky. Nie mechanické orezávanie záberov, ale rozhodnutia o&nbsp;tempe, ktoré udržia diváka do&nbsp;poslednej sekundy.</p>
+    <div class="hero-cta-row">
+      <a href="#work" class="btn btn-primary">Pozrieť prácu</a>
+      <a href="#end" class="btn btn-ghost">Napísať mi</a>
+    </div>
+  </section>
+
+  <section id="work" class="sect">
+    <div class="wrap">
+      <div class="sect-head cut">
+        <div>
+          <span class="sect-label">Bin 01</span>
+          <h2 class="sect-title">Výber prác</h2>
+        </div>
+        <span class="sect-count">4 klipy</span>
+      </div>
+      <div class="bin">
+        <div class="clip cut">
+          <div class="clip-thumb" style="background:linear-gradient(160deg, #23303a, #131a20);">
+            <div class="clip-play"><svg viewBox="0 0 24 24"><path d="M6 4l14 8-14 8z"/></svg></div>
+            <span class="clip-dur mono">00:32</span>
+          </div>
+          <div class="clip-meta">
+            <p class="clip-bin-label mono" style="color:var(--yellow);">Social — reel</p>
+            <h3 class="clip-title">Rozbaľovačka, ktorá zastavila scroll</h3>
+            <p class="clip-desc">Rýchly rytmus, rez na beat, hook v prvej sekunde.</p>
+          </div>
+        </div>
+        <div class="clip cut">
+          <div class="clip-thumb" style="background:linear-gradient(160deg, #2f2432, #17131a);">
+            <div class="clip-play"><svg viewBox="0 0 24 24"><path d="M6 4l14 8-14 8z"/></svg></div>
+            <span class="clip-dur mono">01:14</span>
+          </div>
+          <div class="clip-meta">
+            <p class="clip-bin-label mono" style="color:var(--magenta);">Brand — reklama</p>
+            <h3 class="clip-title">Príbeh značky v jednej minúte</h3>
+            <p class="clip-desc">Farebná gradácia, hlas mimo obrazu, jasná výzva na&nbsp;akciu.</p>
+          </div>
+        </div>
+        <div class="clip cut">
+          <div class="clip-thumb" style="background:linear-gradient(160deg, #1e2f30, #101c1d);">
+            <div class="clip-play"><svg viewBox="0 0 24 24"><path d="M6 4l14 8-14 8z"/></svg></div>
+            <span class="clip-dur mono">03:02</span>
+          </div>
+          <div class="clip-meta">
+            <p class="clip-bin-label mono" style="color:var(--cyan);">Hudobné video</p>
+            <h3 class="clip-title">Strih na rytmus, nie na obraz</h3>
+            <p class="clip-desc">Montáž synchronizovaná s&nbsp;bicími, nie s&nbsp;kamerou.</p>
+          </div>
+        </div>
+        <div class="clip cut">
+          <div class="clip-thumb" style="background:linear-gradient(160deg, #302a1e, #1a1610);">
+            <div class="clip-play"><svg viewBox="0 0 24 24"><path d="M6 4l14 8-14 8z"/></svg></div>
+            <span class="clip-dur mono">00:48</span>
+          </div>
+          <div class="clip-meta">
+            <p class="clip-bin-label mono" style="color:var(--yellow);">Podcast — klip</p>
+            <h3 class="clip-title">Najlepšia veta z hodinového rozhovoru</h3>
+            <p class="clip-desc">Titulky, dôraz na strih reči, žiadna mŕtva váha.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="services" class="sect">
+    <div class="wrap">
+      <div class="sect-head cut">
+        <div>
+          <span class="sect-label">Timeline</span>
+          <h2 class="sect-title">Čo robím</h2>
+        </div>
+      </div>
+      <div class="tracks">
+        <div class="track cut">
+          <span class="track-id mono">V2</span>
+          <div class="track-body">
+            <h3>Strih a tempo</h3>
+            <p>Od hrubého strihu po finálny cut. Rozhodujem, kde sa video zrýchli a kde nechá dýchať.</p>
+            <div class="track-wave" id="wave1"></div>
+          </div>
+        </div>
+        <div class="track cut">
+          <span class="track-id mono">V1</span>
+          <div class="track-body">
+            <h3>Farebná korekcia</h3>
+            <p>Zjednotenie záberov z rôznych kamier, nálada obrazu, konzistencia naprieč celým videom.</p>
+            <div class="track-wave" id="wave2"></div>
+          </div>
+        </div>
+        <div class="track cut">
+          <span class="track-id mono">A1</span>
+          <div class="track-body">
+            <h3>Zvukový dizajn</h3>
+            <p>Mix hlasu, hudby a efektov tak, aby zvuk nesúperil s obrazom, ale ho podporoval.</p>
+            <div class="track-wave" id="wave3"></div>
+          </div>
+        </div>
+        <div class="track cut">
+          <span class="track-id mono">A2</span>
+          <div class="track-body">
+            <h3>Titulky a motion grafika</h3>
+            <p>Titulky, lower-thirds a jednoduché grafické prvky priamo v&nbsp;strihu, nie ako dodatočná vrstva.</p>
+            <div class="track-wave" id="wave4"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="process" class="sect">
+    <div class="wrap">
+      <div class="sect-head cut">
+        <div>
+          <span class="sect-label">Edit log</span>
+          <h2 class="sect-title">Ako prebieha spolupráca</h2>
+        </div>
+      </div>
+      <div class="log cut">
+        <div class="log-row">
+          <span class="log-tc">00:00:04:12</span>
+          <span class="log-note">Import záberov<span class="sub">Pošleš materiál, prejdem si ho a vypíšem najlepšie momenty.</span></span>
+        </div>
+        <div class="log-row">
+          <span class="log-tc">00:00:22:08</span>
+          <span class="log-note">Hrubý strih<span class="sub">Poskladám kostru videa, prvá verzia na schválenie štruktúry.</span></span>
+        </div>
+        <div class="log-row">
+          <span class="log-tc">00:01:10:00</span>
+          <span class="log-note">Jemný strih a tempo<span class="sub">Doladím rytmus, prechody a dĺžku jednotlivých záberov.</span></span>
+        </div>
+        <div class="log-row">
+          <span class="log-tc">00:01:44:16</span>
+          <span class="log-note">Farba, zvuk, titulky<span class="sub">Pridám poslednú vrstvu leštenia, video je pripravené na zverejnenie.</span></span>
+        </div>
+        <div class="log-row">
+          <span class="log-tc">00:02:03:00</span>
+          <span class="log-note">Export a odovzdanie<span class="sub">Dostaneš finálny súbor vo formáte, ktorý potrebuješ.</span></span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sect">
+    <div class="wrap">
+      <blockquote class="caption-bar cut">
+        <p>„Poslal som mu tri hodiny surového materiálu. Vrátil mi minútu, ktorú som pozeral trikrát za sebou.“</p>
+        <footer class="mono">— klient, hudobné video</footer>
+      </blockquote>
+    </div>
+  </section>
+
+  <section id="end" class="sect">
+    <div class="wrap">
+      <div class="cut">
+        <span class="sect-label">End of program</span>
+        <h2 class="sect-title">Máš materiál, ktorý<br>potrebuje strih?</h2>
+        <p class="hero-sub">Pošli mi ukážku alebo popis projektu. Odpoviem do&nbsp;dvoch pracovných dní s&nbsp;tým, či a&nbsp;ako to viem strihnúť.</p>
+        <div class="end-cta">
+          <a href="mailto:donovanpeet@gmail.com" class="btn btn-primary">Napísať mi</a>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="credits wrap">
+  <span>PEET_EDIT.PRJ &copy; 2026</span>
+  <span>Instagram — TikTok — YouTube</span>
+  <span>00:00:00:00 &mdash; END</span>
+</footer>
+
+<script>
+(function(){
+  var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var leader = document.getElementById('leader');
+  var num = document.getElementById('leader-num');
+  if(reduced){ leader.style.display='none'; }
+  else{
+    var seq=['3','2','1'];
+    var i=0;
+    var iv=setInterval(function(){
+      i++;
+      if(i<seq.length){ num.textContent=seq[i]; }
+      else{
+        clearInterval(iv);
+        leader.classList.add('hide');
+        setTimeout(function(){ leader.style.display='none'; }, 420);
+      }
+    }, 430);
+    leader.addEventListener('click', function(){
+      clearInterval(iv);
+      leader.classList.add('hide');
+      setTimeout(function(){ leader.style.display='none'; }, 420);
+    });
+  }
+
+  var ticks = document.getElementById('ruler-track');
+  if(ticks){
+    var html='';
+    for(var t=0; t<=40; t++){
+      var major = t % 5 === 0;
+      html += '<div class="ruler-tick'+(major?' major':'')+'" style="top:'+(t*2.5)+'%;"></div>';
+    }
+    ticks.innerHTML = html;
+  }
+
+  var tc = document.getElementById('tc-readout');
+  var playhead = document.getElementById('playhead');
+  var TOTAL_SEC = 225;
+  var FPS = 24;
+  function pad(n,len){ n=Math.floor(n); var s=String(n); while(s.length<(len||2)) s='0'+s; return s; }
+  function updateScrub(){
+    var doc = document.documentElement;
+    var max = (doc.scrollHeight - doc.clientHeight) || 1;
+    var frac = Math.min(1, Math.max(0, window.scrollY / max));
+    var totalFrames = frac * TOTAL_SEC * FPS;
+    var h = Math.floor(totalFrames/(FPS*3600));
+    var m = Math.floor(totalFrames/(FPS*60))%60;
+    var s = Math.floor(totalFrames/FPS)%60;
+    var f = Math.floor(totalFrames)%FPS;
+    if(tc) tc.textContent = pad(h)+':'+pad(m)+':'+pad(s)+':'+pad(f);
+    if(playhead) playhead.style.top = (frac*100)+'%';
+  }
+  document.addEventListener('scroll', updateScrub, {passive:true});
+  updateScrub();
+
+  var cutEls = Array.prototype.slice.call(document.querySelectorAll('.cut'));
+  function revealVisible(){
+    var vh = window.innerHeight;
+    cutEls.forEach(function(el){
+      if(el.classList.contains('in')) return;
+      var r = el.getBoundingClientRect();
+      if(r.top < vh * 0.92 && r.bottom > 0){ el.classList.add('in'); }
+    });
+  }
+  revealVisible();
+  document.addEventListener('scroll', revealVisible, {passive:true});
+  window.addEventListener('resize', revealVisible);
+
+  function drawWave(id, seed){
+    var el = document.getElementById(id);
+    if(!el) return;
+    var html='';
+    for(var i=0;i<70;i++){
+      var h = 20 + Math.round(Math.abs(Math.sin(i*0.4+seed)) * 60 + Math.abs(Math.sin(i*1.7+seed))*20);
+      html += '<i style="height:'+Math.min(100,h)+'%;"></i>';
+    }
+    el.innerHTML = html;
+  }
+  drawWave('wave1',0.4); drawWave('wave2',1.8); drawWave('wave3',3.1); drawWave('wave4',4.5);
+})();
+</script>
+</body>
+</html>
