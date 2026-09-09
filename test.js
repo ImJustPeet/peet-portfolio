@@ -318,34 +318,41 @@ function initScene() {
   screen.position.set(0, 1.075, 0.056);
   hinge.add(screen);
 
-  const LID_CLOSED = -Math.PI / 2 + 0.05;
-  const LID_OPEN = -Math.PI / 2 + 1.92;      // ~110 degrees
+  // rotation.x = 0  -> lid vertical, screen faces the viewer (+Z)
+  // rotation.x > 0  -> lid tips forward onto the keyboard (closed)
+  // rotation.x < 0  -> lid leans back past vertical (open working angle)
+  const LID_CLOSED = 1.44;    // ~7 degrees above the keyboard, almost shut
+  const LID_OPEN = -0.24;     // ~104 degrees, natural open angle toward viewer
   hinge.rotation.x = LID_CLOSED;
 
-  laptop.position.y = -0.35;
+  laptop.position.set(0, -0.1, 0);
   laptop.rotation.y = -0.5;
   scene.add(laptop);
 
-  // ---- floating file chips ----
+  // laptop drifts from lower-right (peeking) to centre as the lid opens
+  const LAP_FROM = new THREE.Vector3(1.7, -1.0, 0.4);
+  const LAP_TO = new THREE.Vector3(0, -0.1, 0);
+
+  // ---- floating file chips (anchored to the right, clear of the hero copy) ----
   const CHIP_TEXT = ['hook_v3.mp4', 'color_pass.png', 'voiceover_final.wav', 'export_4k.mp4'];
+  const CHIP_ANCHOR = [
+    { x: 2.55, y: 2.15, z: 0.6, ph: 0.0, depth: 0.16 },
+    { x: 3.30, y: 0.75, z: -0.5, ph: 1.7, depth: 0.10 },
+    { x: 2.70, y: -0.85, z: 0.9, ph: 3.1, depth: 0.20 },
+    { x: 3.35, y: -2.05, z: 0.0, ph: 4.6, depth: 0.13 }
+  ];
   const chips = CHIP_TEXT.map((txt, i) => {
     const cc = document.createElement('canvas');
-    cc.width = 512; cc.height = 150;
+    cc.width = 700; cc.height = 150;
     const tex = new THREE.CanvasTexture(cc);
     tex.colorSpace = THREE.SRGBColorSpace;
     const mesh = new THREE.Mesh(
-      new THREE.PlaneGeometry(1.75, 0.51),
+      new THREE.PlaneGeometry(2.0, 0.43),
       new THREE.MeshBasicMaterial({ map: tex, transparent: true })
     );
-    const a = (i / CHIP_TEXT.length) * Math.PI * 2 + 0.6;
-    mesh.userData = {
-      bx: Math.cos(a) * 3.7,
-      by: 1.15 + Math.sin(a) * 1.5,
-      bz: 1.4 + (i % 2) * 1.3,
-      ph: i * 1.7,
-      depth: 0.3 + (i % 3) * 0.22
-    };
-    mesh.position.set(mesh.userData.bx, mesh.userData.by, mesh.userData.bz);
+    const a = CHIP_ANCHOR[i];
+    mesh.userData = { bx: a.x, by: a.y, bz: a.z, ph: a.ph, depth: a.depth };
+    mesh.position.set(a.x, a.y, a.z);
     scene.add(mesh);
     return mesh;
   });
@@ -360,9 +367,9 @@ function initScene() {
     cx.fillStyle = SEASON[1];
     cx.fillRect(6, 6, 5, cc.height - 12);
     cx.fillStyle = '#f3efe9';
-    cx.font = '600 50px "JetBrains Mono", ui-monospace, monospace';
+    cx.font = '600 40px "JetBrains Mono", ui-monospace, monospace';
     cx.textBaseline = 'middle';
-    cx.fillText(txt, 40, cc.height / 2 + 2);
+    cx.fillText(txt, 34, cc.height / 2 + 2);
     mesh.material.map.needsUpdate = true;
   }
   chips.forEach((m, i) => paintChip(m, CHIP_TEXT[i]));
@@ -462,9 +469,12 @@ function initScene() {
     hinge.rotation.x = LID_CLOSED + (LID_OPEN - LID_CLOSED) * open;
 
     if (!reduced) {
-      laptop.rotation.y = -0.5 + Math.sin(t * 0.25) * 0.22 + ptr.x * 0.35;
-      laptop.rotation.x = 0.02 + ptr.y * 0.10;
-      laptop.position.y = -0.35 + Math.sin(t * 0.6) * 0.05;
+      // laptop glides from lower-right into the centre as the lid opens
+      laptop.position.x = LAP_FROM.x + (LAP_TO.x - LAP_FROM.x) * open;
+      laptop.position.z = LAP_FROM.z + (LAP_TO.z - LAP_FROM.z) * open;
+      laptop.position.y = LAP_FROM.y + (LAP_TO.y - LAP_FROM.y) * open + Math.sin(t * 0.6) * 0.05;
+      laptop.rotation.y = -0.5 + Math.sin(t * 0.25) * 0.2 + ptr.x * 0.3 + (1 - open) * 0.4;
+      laptop.rotation.x = 0.02 + ptr.y * 0.09;
 
       camera.position.z = 9 - heroProgress * 1.7;
       camera.position.y = 0.6 + heroProgress * 0.28;
@@ -476,15 +486,16 @@ function initScene() {
 
       for (const c of chips) {
         const u = c.userData;
-        c.position.x = u.bx + Math.sin(t * 0.3 + u.ph) * 0.24 + ptr.x * u.depth * 2;
-        c.position.y = u.by + Math.cos(t * 0.4 + u.ph) * 0.24 - ptr.y * u.depth * 1.4;
+        c.position.x = u.bx + Math.sin(t * 0.3 + u.ph) * 0.14 + ptr.x * u.depth;
+        c.position.y = u.by + Math.cos(t * 0.4 + u.ph) * 0.16 - ptr.y * u.depth * 0.8;
         c.lookAt(camera.position);
-        c.material.opacity = 0.28 + sceneFade * 0.72;
+        c.material.opacity = 0.3 + sceneFade * 0.65;
       }
 
       canvas.style.opacity = sceneFade.toFixed(3);
       drawScreen(t);
     } else {
+      laptop.position.copy(LAP_TO);
       for (const c of chips) c.lookAt(camera.position);
       drawScreen(0);
     }
