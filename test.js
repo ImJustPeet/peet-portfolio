@@ -607,9 +607,6 @@ function initScene() {
     io.observe(heroEl);
   }
 
-  // TEMP debug hook
-  window.__t3d = { renderer, scene, camera, get model() { return model; } };
-
   // ---- go ----
   function boot() {
     // repaint canvas textures once webfonts are ready so the mono font shows
