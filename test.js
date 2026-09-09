@@ -365,7 +365,7 @@ function initScene() {
   // ---- studio HDR environment (real IBL for the metal) ----
   const pmrem = new THREE.PMREMGenerator(renderer);
   pmrem.compileEquirectangularShader();
-  new RGBELoader().load('/assets/hdr/studio.hdr?v=1', (hdr) => {
+  new RGBELoader().load('/assets/hdr/studio.hdr?v=2', (hdr) => {
     hdr.mapping = THREE.EquirectangularReflectionMapping;
     scene.environment = pmrem.fromEquirectangular(hdr).texture;
     hdr.dispose(); pmrem.dispose();
@@ -451,7 +451,7 @@ function initScene() {
     const box = new THREE.Box3().setFromObject(model);
     const size = box.getSize(new THREE.Vector3());
     const ctr = box.getCenter(new THREE.Vector3());
-    const s = 3.5 / size.x;
+    const s = (isMobile ? 2.7 : 3.5) / size.x;   // smaller on phones so it isn't cramped
     model.scale.setScalar(s);
     model.position.set(-ctr.x * s, -ctr.y * s, -ctr.z * s);
 
