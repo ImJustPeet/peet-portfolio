@@ -45,8 +45,12 @@
     display:flex; align-items:center;
     padding:clamp(72px, 9vh, 120px) 0; position:relative;
   }
-  /* hero keeps a tall scroll runway so the laptop has room to open */
-  .t3d #hero{ min-height:132vh; min-height:132svh; padding-bottom:0; }
+  /* hero keeps a tall scroll runway so the laptop has room to open;
+     copy sits near the top, the extra height is scroll room below it */
+  .t3d #hero{
+    min-height:132vh; min-height:132svh;
+    align-items:flex-start; padding-top:19vh; padding-bottom:0;
+  }
   .t3d #contact{ padding-bottom:clamp(96px, 12vh, 150px); }
   .t3d .wrap{ position:relative; z-index:2; width:100%; }
 
@@ -478,6 +482,6 @@
 
 <script src="/assets/anime.min.js"></script>
 <script src="shared.js"></script>
-<script type="module" src="/test.js?v=7"></script>
+<script type="module" src="/test.js?v=8"></script>
 </body>
 </html>
