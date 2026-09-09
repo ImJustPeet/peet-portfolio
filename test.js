@@ -5,6 +5,7 @@
 // ============================================================================
 
 import * as THREE from '/assets/three/three.module.min.js';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 
 const anime = window.anime;
 const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -47,41 +48,6 @@ function timecode(t) {
   const m = Math.floor(t / 60) % 60;
   const p = (n) => String(n).padStart(2, '0');
   return p(m) + ':' + p(s) + ':' + p(f);
-}
-
-// rounded-rectangle THREE.Shape centred on the origin
-function roundedShape(w, h, r) {
-  r = Math.min(r, w / 2, h / 2);
-  const s = new THREE.Shape();
-  const x = -w / 2, y = -h / 2;
-  s.moveTo(x + r, y);
-  s.lineTo(x + w - r, y);
-  s.quadraticCurveTo(x + w, y, x + w, y + r);
-  s.lineTo(x + w, y + h - r);
-  s.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
-  s.lineTo(x + r, y + h);
-  s.quadraticCurveTo(x, y + h, x, y + h - r);
-  s.lineTo(x, y + r);
-  s.quadraticCurveTo(x, y, x + r, y);
-  return s;
-}
-
-// soft-edged panel: rounded rect extruded with a small bevel, then centred.
-// axis 'y' -> flat slab (thin on Y); axis 'z' -> upright panel (thin on Z)
-function roundedPanel(w, h, thick, radius, mat, axis) {
-  const geo = new THREE.ExtrudeGeometry(roundedShape(w, h, radius), {
-    depth: thick,
-    bevelEnabled: true,
-    bevelThickness: thick * 0.4,
-    bevelSize: thick * 0.4,
-    bevelSegments: 4,
-    curveSegments: 14
-  });
-  geo.center();
-  if (axis === 'y') geo.rotateX(-Math.PI / 2);
-  const mesh = new THREE.Mesh(geo, mat);
-  mesh.castShadow = mesh.receiveShadow = false;
-  return mesh;
 }
 
 // ---------------------------------------------------------------------------
@@ -334,116 +300,100 @@ function initScene() {
   rim.position.set(4, -2, 2);
   scene.add(rim);
 
-  // ---- laptop ----
+  // ---- laptop (real GLB model, MacBook Pro 14) ----
   const laptop = new THREE.Group();
-  const W = 3.5, D = 2.42;                         // body footprint
-  const aluMat = new THREE.MeshStandardMaterial({ color: 0x8b8781, metalness: 1.0, roughness: 0.44, envMapIntensity: 2.0 });
-  const wellMat = new THREE.MeshStandardMaterial({ color: 0x0d0c0b, metalness: 0.6, roughness: 0.7 });
-  const keyMat = new THREE.MeshStandardMaterial({ color: 0x1b1815, metalness: 0.35, roughness: 0.55 });
-  const padMat = new THREE.MeshStandardMaterial({ color: 0x211e1b, metalness: 0.8, roughness: 0.3, envMapIntensity: 1.4 });
-  const bezelMat = new THREE.MeshStandardMaterial({ color: 0x090807, metalness: 0.25, roughness: 0.45 });
-
-  // base slab
-  const base = roundedPanel(W, D, 0.16, 0.16, aluMat, 'y');
-  base.position.y = 0;
-  laptop.add(base);
-
-  // recessed keyboard well
-  const well = roundedPanel(W - 0.5, 1.28, 0.05, 0.08, wellMat, 'y');
-  well.position.set(0, 0.085, -0.36);
-  laptop.add(well);
-
-  // instanced keycaps
-  const KCOLS = 15, KROWS = 5, KGAP = 0.192, KSZ = 0.15;
-  const keyGeo = new THREE.BoxGeometry(KSZ, 0.05, KSZ);
-  const keys = new THREE.InstancedMesh(keyGeo, keyMat, KCOLS * KROWS + 1);
-  const dummy = new THREE.Object3D();
-  let ki = 0;
-  const kx0 = -((KCOLS - 1) * KGAP) / 2;
-  const kz0 = -0.36 - ((KROWS - 1) * KGAP) / 2;
-  for (let r = 0; r < KROWS; r++) {
-    for (let c = 0; c < KCOLS; c++) {
-      dummy.position.set(kx0 + c * KGAP, 0.115, kz0 + r * KGAP);
-      dummy.rotation.set(0, 0, 0); dummy.scale.set(1, 1, 1);
-      dummy.updateMatrix();
-      keys.setMatrixAt(ki++, dummy.matrix);
-    }
-  }
-  dummy.position.set(0, 0.115, kz0 + (KROWS - 0.15) * KGAP);   // spacebar
-  dummy.scale.set(4.6, 1, 1); dummy.updateMatrix();
-  keys.setMatrixAt(ki++, dummy.matrix);
-  keys.instanceMatrix.needsUpdate = true;
-  laptop.add(keys);
-
-  // trackpad
-  const trackpad = roundedPanel(1.28, 0.86, 0.02, 0.06, padMat, 'y');
-  trackpad.position.set(0, 0.084, 0.62);
-  laptop.add(trackpad);
-
-  // hinge barrel + pivot at the rear edge of the base
-  const hingeBar = new THREE.Mesh(
-    new THREE.CylinderGeometry(0.055, 0.055, W - 0.5, 20),
-    new THREE.MeshStandardMaterial({ color: 0x161311, metalness: 0.9, roughness: 0.5 })
-  );
-  hingeBar.rotation.z = Math.PI / 2;
-  hingeBar.position.set(0, 0.075, -D / 2 + 0.05);
-  laptop.add(hingeBar);
-
-  const hinge = new THREE.Group();
-  hinge.position.set(0, 0.075, -D / 2 + 0.05);
-  laptop.add(hinge);
-
-  // lid: upright rounded panel, thin on Z
-  const LID_H = 2.28;
-  const lid = roundedPanel(W, LID_H, 0.09, 0.12, aluMat, 'z');
-  lid.position.set(0, LID_H / 2, 0);
-  hinge.add(lid);
-
-  // black bezel frame just in front of the lid
-  const bezel = roundedPanel(W - 0.16, LID_H - 0.16, 0.02, 0.09, bezelMat, 'z');
-  bezel.position.set(0, LID_H / 2, 0.05);
-  hinge.add(bezel);
-
-  // camera notch
-  const notch = new THREE.Mesh(
-    new THREE.SphereGeometry(0.022, 12, 12),
-    new THREE.MeshStandardMaterial({ color: 0x05213a, metalness: 0.1, roughness: 0.2 })
-  );
-  notch.position.set(0, LID_H - 0.11, 0.075);
-  hinge.add(notch);
-
-  // ---- animated NLE screen (canvas texture) ----
-  const scr = document.createElement('canvas');
-  scr.width = 1024; scr.height = 600;
-  const sctx = scr.getContext('2d');
-  const scrTex = new THREE.CanvasTexture(scr);
-  scrTex.colorSpace = THREE.SRGBColorSpace;
-  const screen = new THREE.Mesh(
-    new THREE.PlaneGeometry(W - 0.42, (W - 0.42) * (scr.height / scr.width)),
-    new THREE.MeshBasicMaterial({ map: scrTex })
-  );
-  screen.position.set(0, LID_H / 2 + 0.02, 0.10);
-  hinge.add(screen);
-
-  // faint screen glow spilling onto the keyboard
-  const screenGlow = new THREE.PointLight(new THREE.Color(SEASON[2]), 0, 6, 2);
-  screenGlow.position.set(0, LID_H * 0.4, 0.5);
-  hinge.add(screenGlow);
-
-  // rotation.x = 0  -> lid vertical, screen faces the viewer (+Z)
-  // rotation.x > 0  -> lid tips forward onto the keyboard (closed)
-  // rotation.x < 0  -> lid leans back past vertical (open working angle)
-  const LID_CLOSED = 1.35;    // nearly shut
-  const LID_OPEN = -0.22;     // ~103 degrees, natural open angle toward viewer
-  hinge.rotation.x = LID_CLOSED;
-
-  laptop.position.set(0, -0.1, 0);
+  laptop.position.set(0, -0.15, 0);
   laptop.rotation.y = -0.5;
   scene.add(laptop);
 
-  // laptop drifts from lower-right (peeking) to centre as the lid opens
-  const LAP_FROM = new THREE.Vector3(1.7, -1.0, 0.4);
-  const LAP_TO = new THREE.Vector3(0, -0.1, 0);
+  // arrival: model glides from lower-right (angled) to centre (near front-on) on scroll
+  const LAP_FROM = new THREE.Vector3(1.9, -1.15, 0.1);
+  const LAP_TO = new THREE.Vector3(0, -0.15, 0);
+  const YAW_FROM = -0.95, YAW_TO = -0.12;
+
+  // screen surface: real Premiere timeline image if present, else a procedural NLE
+  const scr = document.createElement('canvas');
+  scr.width = 1600; scr.height = 1040;
+  const sctx = scr.getContext('2d');
+  const scrTex = new THREE.CanvasTexture(scr);
+  scrTex.colorSpace = THREE.SRGBColorSpace;
+  scrTex.flipY = false;                       // match glTF UV convention
+  scrTex.anisotropy = renderer.capabilities.getMaxAnisotropy();
+
+  let timelineImg = null;
+  (function loadTimeline() {
+    const im = new Image();
+    im.decoding = 'async';
+    im.onload = () => { timelineImg = im; drawScreen(0); };
+    im.onerror = () => {};
+    im.src = '/assets/premiere-timeline.webp';
+  })();
+
+  // point light that "turns on" with the screen and spills onto the keys
+  const screenGlow = new THREE.PointLight(new THREE.Color(SEASON[2]), 0, 8, 2);
+  screenGlow.position.set(0, 1.35, 0.0);
+  laptop.add(screenGlow);
+
+  // soft contact shadow on the ground
+  const shCanvas = document.createElement('canvas');
+  shCanvas.width = shCanvas.height = 256;
+  {
+    const g = shCanvas.getContext('2d');
+    const rg = g.createRadialGradient(128, 128, 6, 128, 128, 122);
+    rg.addColorStop(0, 'rgba(0,0,0,0.5)');
+    rg.addColorStop(1, 'rgba(0,0,0,0)');
+    g.fillStyle = rg;
+    g.beginPath(); g.ellipse(128, 128, 122, 80, 0, 0, Math.PI * 2); g.fill();
+  }
+  const contactShadow = new THREE.Mesh(
+    new THREE.PlaneGeometry(6.5, 4.4),
+    new THREE.MeshBasicMaterial({
+      map: new THREE.CanvasTexture(shCanvas),
+      transparent: true, depthWrite: false, opacity: 0
+    })
+  );
+  contactShadow.rotation.x = -Math.PI / 2;
+  contactShadow.position.y = -1.75;
+  scene.add(contactShadow);
+
+  // load the model
+  let model = null;
+  new GLTFLoader().load('/assets/models/macbook.glb?v=1', (gltf) => {
+    model = gltf.scene;
+    const box = new THREE.Box3().setFromObject(model);
+    const size = box.getSize(new THREE.Vector3());
+    const ctr = box.getCenter(new THREE.Vector3());
+    const s = 3.9 / size.x;
+    model.scale.setScalar(s);
+    model.position.set(-ctr.x * s, -ctr.y * s, -ctr.z * s);
+
+    let screenMesh = null;
+    model.traverse((o) => {
+      if (!o.isMesh) return;
+      o.frustumCulled = false;
+      const mn = o.material && o.material.name;
+      if (mn === 'HlQwFCAPWzetDQy' || o.name === 'tfTbkkzhxqpKRgC') screenMesh = o;
+      if (o.material && 'envMapIntensity' in o.material) {
+        o.material.envMapIntensity = 1.35;
+        o.material.needsUpdate = true;
+      }
+    });
+    if (screenMesh) {
+      screenMesh.material = new THREE.MeshBasicMaterial({ map: scrTex, toneMapped: false });
+      const wp = screenMesh.getWorldPosition(new THREE.Vector3());
+      laptop.worldToLocal(wp);
+      screenGlow.position.copy(wp);
+    }
+
+    laptop.add(model);
+    drawScreen(0);
+    finishLoader();
+    if (reduced) frame();
+  }, undefined, (err) => {
+    console.error('[test.js] GLB load failed, falling back to 2D:', err);
+    document.body.classList.add('no-webgl');
+    finishLoader();
+  });
 
   // ---- floating file chips (anchored to the right, clear of the hero copy) ----
   const CHIP_TEXT = ['hook_v3.mp4', 'color_pass.png', 'voiceover_final.wav', 'export_4k.mp4'];
@@ -486,54 +436,51 @@ function initScene() {
   }
   chips.forEach((m, i) => paintChip(m, CHIP_TEXT[i]));
 
-  // ---- screen painter ----
-  const CLIP_COLORS = ['#ff7a2f', '#57c2c9', '#8fd694', '#ffb84d', '#c1502e'];
-  const TRACK_Y = [92, 192, 300, 402, 500];
+  // ---- screen painter: real Premiere screenshot if loaded, else procedural NLE ----
+  const CLIP_COLORS = ['#7a4bd0', '#4b73d0', '#6f8f2e', '#8a6a2e', '#c1502e'];
   function drawScreen(t) {
     const w = scr.width, h = scr.height;
-    sctx.fillStyle = '#0c0b0a'; sctx.fillRect(0, 0, w, h);
 
-    sctx.fillStyle = '#161413'; sctx.fillRect(0, 0, w, 56);
-    sctx.fillStyle = SEASON[1]; sctx.fillRect(0, 0, 4, 56);
-    sctx.fillStyle = '#9b948c';
-    sctx.font = '22px "JetBrains Mono", ui-monospace, monospace';
-    sctx.textBaseline = 'alphabetic';
-    sctx.fillText('PEET_EDIT_v3.prproj', 22, 36);
-    sctx.fillStyle = '#f3efe9';
-    sctx.fillText(timecode(t), w - 150, 36);
-
-    for (let i = 0; i < TRACK_Y.length; i++) {
-      const ty = TRACK_Y[i];
-      sctx.fillStyle = '#131109'; sctx.fillRect(0, ty, w, 76);
-      sctx.strokeStyle = 'rgba(243,239,233,0.04)';
-      sctx.beginPath(); sctx.moveTo(0, ty); sctx.lineTo(w, ty); sctx.stroke();
-
-      let x = ((t * 34 * (i + 1)) % 260) - 260;
-      let k = 0;
-      while (x < w) {
-        const cw = 110 + ((i * 47 + k * 29) % 96);
-        sctx.fillStyle = CLIP_COLORS[(i + k) % CLIP_COLORS.length];
-        roundRect(sctx, x + 6, ty + 9, cw, 58, 8); sctx.fill();
-        if (i === 1 || i === 2) {
-          sctx.strokeStyle = 'rgba(12,11,10,0.45)'; sctx.lineWidth = 1;
-          sctx.beginPath();
-          for (let px = 0; px < cw; px += 5) {
-            const amp = Math.abs(Math.sin((x + px) * 0.12 + t * 3 + i)) * 20;
-            sctx.moveTo(x + 6 + px, ty + 38 - amp);
-            sctx.lineTo(x + 6 + px, ty + 38 + amp);
-          }
-          sctx.stroke();
+    if (timelineImg && timelineImg.naturalWidth) {
+      const iw = timelineImg.naturalWidth, ih = timelineImg.naturalHeight;
+      const sc = Math.max(w / iw, h / ih);
+      const dw = iw * sc, dh = ih * sc;
+      sctx.fillStyle = '#100e0c'; sctx.fillRect(0, 0, w, h);
+      sctx.drawImage(timelineImg, (w - dw) / 2, (h - dh) * 0.35, dw, dh);
+    } else {
+      sctx.fillStyle = '#0c0b0a'; sctx.fillRect(0, 0, w, h);
+      const scaleY = h / 600;
+      for (let i = 0; i < 6; i++) {
+        const ty = (150 + i * 130) * scaleY;
+        const th = 96 * scaleY;
+        sctx.fillStyle = '#131109'; sctx.fillRect(0, ty, w, th);
+        let x = ((t * 34 * (i + 1)) % 260) - 260, k = 0;
+        while (x < w) {
+          const cw = 150 + ((i * 47 + k * 29) % 130);
+          sctx.fillStyle = CLIP_COLORS[(i + k) % CLIP_COLORS.length];
+          roundRect(sctx, x + 8, ty + 12, cw, th - 24, 8); sctx.fill();
+          x += cw + 12; k++;
         }
-        x += cw + 10; k++;
       }
     }
 
-    const px = (Math.sin(t * 0.55) * 0.5 + 0.5) * w;
-    sctx.strokeStyle = '#f3efe9'; sctx.lineWidth = 2;
-    sctx.beginPath(); sctx.moveTo(px, 56); sctx.lineTo(px, h); sctx.stroke();
+    // Premiere-style top bar
+    sctx.fillStyle = 'rgba(20,18,16,0.96)'; sctx.fillRect(0, 0, w, 60);
+    sctx.fillStyle = SEASON[1]; sctx.fillRect(0, 0, 5, 60);
+    sctx.fillStyle = '#c9c3ba';
+    sctx.font = '600 26px "JetBrains Mono", ui-monospace, monospace';
+    sctx.textBaseline = 'middle';
+    sctx.fillText('PEET_EDIT_v3.prproj', 26, 31);
+    sctx.fillStyle = '#f3efe9';
+    sctx.fillText(timecode(t), w - 172, 31);
+
+    // slow sweeping playhead
+    const px = ((t * 0.055) % 1) * w;
+    sctx.strokeStyle = 'rgba(243,239,233,0.9)'; sctx.lineWidth = 2;
+    sctx.beginPath(); sctx.moveTo(px, 60); sctx.lineTo(px, h); sctx.stroke();
     sctx.fillStyle = '#f3efe9';
     sctx.beginPath();
-    sctx.moveTo(px - 7, 56); sctx.lineTo(px + 7, 56); sctx.lineTo(px, 70);
+    sctx.moveTo(px - 8, 60); sctx.lineTo(px + 8, 60); sctx.lineTo(px, 76);
     sctx.closePath(); sctx.fill();
 
     scrTex.needsUpdate = true;
@@ -579,9 +526,8 @@ function initScene() {
     ptr.x += (ptr.tx - ptr.x) * 0.05;
     ptr.y += (ptr.ty - ptr.y) * 0.05;
 
-    const open = reduced ? 1 : easeInOut(heroProgress);
-    hinge.rotation.x = LID_CLOSED + (LID_OPEN - LID_CLOSED) * open;
-    screenGlow.intensity = open * 3.4;
+    const p = reduced ? 1 : easeInOut(heroProgress);   // arrival progress
+    screenGlow.intensity = p * 3.2;
 
     // once the scene has faded out, skip the paint entirely (perf + no bleed-through)
     if (!reduced && sceneFade <= 0.02) {
@@ -591,20 +537,24 @@ function initScene() {
     }
 
     if (!reduced) {
-      // laptop glides from lower-right into the centre as the lid opens
-      laptop.position.x = LAP_FROM.x + (LAP_TO.x - LAP_FROM.x) * open;
-      laptop.position.z = LAP_FROM.z + (LAP_TO.z - LAP_FROM.z) * open;
-      laptop.position.y = LAP_FROM.y + (LAP_TO.y - LAP_FROM.y) * open + Math.sin(t * 0.6) * 0.05;
-      laptop.rotation.y = -0.5 + Math.sin(t * 0.25) * 0.2 + ptr.x * 0.3 + (1 - open) * 0.55;
-      laptop.rotation.x = 0.02 + ptr.y * 0.09;
+      // model glides from lower-right into the centre and turns to face us
+      laptop.position.x = LAP_FROM.x + (LAP_TO.x - LAP_FROM.x) * p;
+      laptop.position.z = LAP_FROM.z + (LAP_TO.z - LAP_FROM.z) * p;
+      laptop.position.y = LAP_FROM.y + (LAP_TO.y - LAP_FROM.y) * p + Math.sin(t * 0.6) * 0.04;
+      laptop.rotation.y = YAW_FROM + (YAW_TO - YAW_FROM) * p + Math.sin(t * 0.22) * 0.14 + ptr.x * 0.22;
+      laptop.rotation.x = 0.03 + ptr.y * 0.07 + (1 - p) * 0.06;
 
-      camera.position.z = 9 - heroProgress * 1.1;
-      camera.position.y = 0.6 + heroProgress * 0.24;
+      camera.position.z = 9 - heroProgress * 1.2;
+      camera.position.y = 0.55 + heroProgress * 0.22;
       camera.position.x += ((ptr.x * 0.5) - camera.position.x) * 0.04;
-      camera.lookAt(0, 0.15, 0);
+      camera.lookAt(0, 0.1, 0);
 
       accent.position.x = -3 + ptr.x * 4;
       accent.position.y = 2 - ptr.y * 3;
+
+      contactShadow.position.x = laptop.position.x;
+      contactShadow.position.z = laptop.position.z + 0.3;
+      contactShadow.material.opacity = 0.55 * p * sceneFade;
 
       for (const c of chips) {
         const u = c.userData;
@@ -618,6 +568,8 @@ function initScene() {
       drawScreen(t);
     } else {
       laptop.position.copy(LAP_TO);
+      laptop.rotation.y = YAW_TO;
+      contactShadow.material.opacity = 0.4;
       for (const c of chips) c.lookAt(camera.position);
       drawScreen(0);
     }
@@ -663,10 +615,10 @@ function initScene() {
         drawScreen(0);
       });
     }
-    renderer.render(scene, camera);   // first paint
-    finishLoader();
-    if (reduced) { hinge.rotation.x = LID_OPEN; frame(); }
-    else { startLoop(); }
+    renderer.render(scene, camera);   // first paint (bg + chips; model streams in)
+    // finishLoader() + the reduced-motion single render happen in the GLB callback.
+    // The module-level 4s timeout is the safety net if the model never loads.
+    if (!reduced) startLoop();
   }
   boot();
 }

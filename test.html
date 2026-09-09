@@ -482,6 +482,14 @@
 
 <script src="/assets/anime.min.js"></script>
 <script src="shared.js"></script>
-<script type="module" src="/test.js?v=8"></script>
+<script type="importmap">
+{
+  "imports": {
+    "three": "/assets/three/three.module.min.js",
+    "three/addons/": "/assets/three/addons/"
+  }
+}
+</script>
+<script type="module" src="/test.js?v=9"></script>
 </body>
 </html>
