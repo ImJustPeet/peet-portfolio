@@ -225,6 +225,101 @@ document.querySelectorAll('[data-discord]').forEach((btn) => {
 })();
 
 // ---------------------------------------------------------------------------
+//  Video lightbox (YouTube IFrame API) + TikTok open-in-new-tab
+// ---------------------------------------------------------------------------
+(function videoLightbox() {
+  const lightbox = document.getElementById('videoLightbox');
+  const slot = document.getElementById('lightboxVideo');
+  const closeBtn = document.getElementById('lightboxClose');
+  if (!lightbox || !slot || !closeBtn) return;
+
+  let apiLoading = false, apiReady = false, pendingId = null, player = null, returnFocus = null;
+
+  function loadApi() {
+    if (apiLoading || apiReady) return;
+    apiLoading = true;
+    const tag = document.createElement('script');
+    tag.src = 'https://www.youtube.com/iframe_api';
+    document.head.appendChild(tag);
+  }
+  const prevReady = window.onYouTubeIframeAPIReady;
+  window.onYouTubeIframeAPIReady = function () {
+    apiReady = true;
+    if (pendingId) { createPlayer(pendingId); pendingId = null; }
+    if (typeof prevReady === 'function') prevReady();
+  };
+  function createPlayer(id) {
+    slot.innerHTML = '<div id="ytLightboxPlayer"></div>';
+    player = new YT.Player('ytLightboxPlayer', {
+      host: 'https://www.youtube-nocookie.com',
+      videoId: id,
+      playerVars: { autoplay: 1, rel: 0, origin: window.location.origin },
+      events: { onReady: (e) => { e.target.setVolume(25); e.target.playVideo(); } }
+    });
+  }
+  function open(id) {
+    returnFocus = document.activeElement;
+    lightbox.classList.add('is-open');
+    lightbox.setAttribute('aria-hidden', 'false');
+    document.body.style.overflow = 'hidden';
+    if (apiReady) createPlayer(id); else { pendingId = id; loadApi(); }
+    setTimeout(() => closeBtn.focus(), 50);
+  }
+  function close() {
+    lightbox.classList.remove('is-open');
+    lightbox.setAttribute('aria-hidden', 'true');
+    document.body.style.overflow = '';
+    if (player && player.destroy) { player.destroy(); player = null; }
+    slot.innerHTML = '';
+    if (returnFocus && returnFocus.focus) { returnFocus.focus(); returnFocus = null; }
+  }
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && lightbox.classList.contains('is-open')) close();
+    if (e.key !== 'Tab' || !lightbox.classList.contains('is-open')) return;
+    const f = Array.from(lightbox.querySelectorAll('button, iframe, [tabindex]:not([tabindex="-1"])'));
+    if (!f.length) return;
+    const first = f[0], last = f[f.length - 1], a = document.activeElement;
+    if (e.shiftKey) { if (a === first || !lightbox.contains(a)) { e.preventDefault(); last.focus(); } }
+    else { if (a === last || !lightbox.contains(a)) { e.preventDefault(); first.focus(); } }
+  });
+  closeBtn.addEventListener('click', close);
+  lightbox.addEventListener('click', (e) => { if (e.target === lightbox) close(); });
+  window.openLightbox = open;
+})();
+
+// ---------------------------------------------------------------------------
+//  Video belt (rule-3 safe: two identical sets, each translateX(0) -> -100%)
+// ---------------------------------------------------------------------------
+(function videoBelt() {
+  const track = document.getElementById('beltTrack');
+  if (!track) return;
+  const sets = track.querySelectorAll('.belt-set');
+  if (sets.length < 2) return;
+  const first = sets[0];
+  const originals = Array.prototype.slice.call(first.children);
+  // repeat clusters until one set comfortably exceeds the viewport (seamless loop)
+  let guard = 0;
+  while (first.scrollWidth < window.innerWidth * 1.35 && guard++ < 12) {
+    originals.forEach((c) => first.appendChild(c.cloneNode(true)));
+  }
+  sets[1].innerHTML = first.innerHTML;
+
+  const speed = 42; // px/s
+  const dur = (first.scrollWidth / speed).toFixed(2) + 's';
+  sets.forEach((s) => { s.style.animationDuration = dur; });
+
+  track.querySelectorAll('.reel-thumb').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      if (btn.dataset.platform === 'tiktok') {
+        window.open(btn.dataset.tiktokUrl, '_blank', 'noopener,noreferrer');
+      } else if (window.openLightbox && btn.dataset.videoId) {
+        window.openLightbox(btn.dataset.videoId);
+      }
+    });
+  });
+})();
+
+// ---------------------------------------------------------------------------
 //  WebGL capability check + boot
 // ---------------------------------------------------------------------------
 const canvas = document.getElementById('scene');
@@ -398,11 +493,13 @@ function initScene() {
 
   // ---- floating file chips (anchored to the right, clear of the hero copy) ----
   const CHIP_TEXT = ['hook_v3.mp4', 'color_pass.png', 'voiceover_final.wav', 'export_4k.mp4'];
+  // far to the right and BEHIND the laptop (negative z) so a chip never crosses
+  // the model's screen; they also fade out as the model arrives centre-frame
   const CHIP_ANCHOR = [
-    { x: 2.55, y: 2.75, z: 0.2, ph: 0.0, depth: 0.12 },
-    { x: 3.05, y: 1.75, z: -0.5, ph: 1.7, depth: 0.08 },
-    { x: 2.70, y: -1.55, z: 0.5, ph: 3.1, depth: 0.14 },
-    { x: 3.15, y: -2.55, z: -0.2, ph: 4.6, depth: 0.10 }
+    { x: 3.5, y: 2.7, z: -1.2, ph: 0.0, depth: 0.12 },
+    { x: 4.0, y: 1.4, z: -1.6, ph: 1.7, depth: 0.09 },
+    { x: 3.6, y: -1.7, z: -1.3, ph: 3.1, depth: 0.13 },
+    { x: 4.1, y: -2.7, z: -1.7, ph: 4.6, depth: 0.10 }
   ];
   const chips = CHIP_TEXT.map((txt, i) => {
     const cc = document.createElement('canvas');
@@ -557,12 +654,14 @@ function initScene() {
       contactShadow.position.z = laptop.position.z + 0.3;
       contactShadow.material.opacity = 0.55 * p * sceneFade;
 
+      const chipAlpha = (0.25 + sceneFade * 0.6) * (1 - p * 0.8);   // recede as the laptop lands
       for (const c of chips) {
         const u = c.userData;
         c.position.x = u.bx + Math.sin(t * 0.3 + u.ph) * 0.14 + ptr.x * u.depth;
         c.position.y = u.by + Math.cos(t * 0.4 + u.ph) * 0.16 - ptr.y * u.depth * 0.8;
         c.lookAt(camera.position);
-        c.material.opacity = 0.3 + sceneFade * 0.65;
+        c.material.opacity = chipAlpha;
+        c.visible = chipAlpha > 0.02;
       }
 
       canvas.style.opacity = sceneFade.toFixed(3);

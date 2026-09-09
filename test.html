@@ -221,6 +221,89 @@
     padding:6px 9px; background:rgba(12,11,10,.6); -webkit-backdrop-filter:blur(4px); backdrop-filter:blur(4px);
   }
 
+  /* ---------- video belt (running showreel) ---------- */
+  .video-belt{
+    overflow:hidden; display:flex; position:relative;
+    width:100vw; margin-left:calc(-50vw + 50%); margin-top:34px;
+  }
+  .video-belt::before, .video-belt::after{
+    content:''; position:absolute; top:0; bottom:0; width:120px; z-index:2; pointer-events:none;
+  }
+  .video-belt::before{ left:0; background:linear-gradient(to right, var(--bg), transparent); }
+  .video-belt::after{ right:0; background:linear-gradient(to left, var(--bg), transparent); }
+  .belt-track{ display:flex; }
+  .belt-set{ display:flex; gap:16px; align-items:center; flex-shrink:0; animation:beltScroll 60s linear infinite; }
+  .belt-set + .belt-set{ margin-left:16px; }
+  .video-belt:hover .belt-set{ animation-play-state:paused; }
+  @keyframes beltScroll{ from{ transform:translateX(0); } to{ transform:translateX(-100%); } }
+
+  .cluster{
+    display:grid; grid-template-columns:144px 176px; grid-template-rows:212px 212px;
+    gap:10px; flex-shrink:0;
+  }
+  .cluster .tiktok-tall, .cluster .card-tall{ grid-row:span 2; }
+  .reel-frame{
+    position:relative; border-radius:6px; overflow:hidden;
+    border:1px solid var(--line); background:#000;
+    transition:transform .3s ease, box-shadow .3s ease, border-color .3s ease;
+  }
+  .reel-frame:hover{
+    transform:scale(1.035); z-index:5;
+    border-color:var(--accent-2); box-shadow:0 16px 40px rgba(0,0,0,.55);
+  }
+  .reel-thumb{
+    position:absolute; inset:0; width:100%; height:100%;
+    border:0; padding:0; margin:0; overflow:hidden;
+    background-color:var(--bg-elev-2); cursor:pointer;
+  }
+  .reel-thumb img{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; display:block; }
+  .reel-play-icon{
+    position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);
+    width:52px; height:52px; border-radius:50%;
+    background:rgba(12,11,10,.62); border:1px solid rgba(243,239,233,.32);
+    display:flex; align-items:center; justify-content:center;
+    color:var(--text); font-size:15px;
+    transition:background .2s ease, transform .2s ease, border-color .2s ease;
+  }
+  .reel-frame:hover .reel-play-icon{
+    background:var(--s2); border-color:var(--s2); color:#160c05;
+    transform:translate(-50%,-50%) scale(1.08);
+  }
+  .reel-tag{
+    position:absolute; bottom:8px; left:8px; font-size:11px; color:var(--text-dim);
+    background:rgba(12,11,10,.7); border:1px solid var(--line); border-radius:3px;
+    padding:3px 8px; opacity:0; transition:opacity .25s ease; pointer-events:none;
+  }
+  .reel-frame:hover .reel-tag{ opacity:1; }
+  .reel-views{
+    position:absolute; top:8px; right:8px; font-size:11px; color:var(--text-dim);
+    background:rgba(12,11,10,.75); border:1px solid var(--line); border-radius:3px;
+    padding:3px 8px; pointer-events:none; z-index:1;
+  }
+  [data-platform="tiktok"].reel-thumb .reel-play-icon{ font-size:0; }
+  [data-platform="tiktok"].reel-thumb .reel-play-icon::after{
+    content:''; display:block; width:16px; height:16px;
+    background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23f3efe9' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6'/%3E%3Cpath d='M15 3h6v6'/%3E%3Cpath d='M10 14L21 3'/%3E%3C/svg%3E") center/contain no-repeat;
+  }
+
+  /* ---------- video lightbox ---------- */
+  .lightbox{
+    position:fixed; inset:0; z-index:10001; background:rgba(5,4,3,.92);
+    display:flex; align-items:center; justify-content:center; padding:24px;
+    opacity:0; visibility:hidden; transition:opacity .25s ease, visibility .25s ease;
+  }
+  .lightbox.is-open{ opacity:1; visibility:visible; }
+  .lightbox-inner{ position:relative; width:min(960px, 100%); }
+  .lightbox-video{ position:relative; width:100%; padding-top:56.25%; background:#000; border-radius:8px; overflow:hidden; }
+  .lightbox-video iframe, .lightbox-video > div{ position:absolute; inset:0; width:100%; height:100%; border:0; }
+  .lightbox-close{
+    position:absolute; top:-46px; right:0; width:36px; height:36px; border-radius:50%;
+    background:none; border:1px solid var(--line); color:var(--text);
+    font:16px/1 'JetBrains Mono', monospace; cursor:pointer;
+    transition:border-color .2s ease, color .2s ease;
+  }
+  .lightbox-close:hover{ border-color:var(--s2); color:var(--s2); }
+
   /* ---------- responsive ---------- */
   @media (max-width:900px){
     .panel-grid{ grid-template-columns:1fr; }
@@ -402,6 +485,143 @@
           </a>
         </div>
       </div>
+
+      <p class="work-label reveal2" style="margin-top:8px;">Ukážky, videá a&nbsp;shorts:</p>
+    </div>
+
+    <div class="video-belt reveal2" aria-label="Bežiaci showreel ukážok">
+      <div class="belt-track" id="beltTrack">
+        <div class="belt-set">
+
+          <div class="cluster">
+            <div class="reel-frame tiktok-tall">
+              <button class="reel-thumb" data-platform="tiktok" data-tiktok-url="https://www.tiktok.com/@fortunasports/video/7369700388997434656" aria-label="Otvoriť TikTok — ATTILA VS VEMOLA (nová záložka)">
+                <img src="/assets/tiktok-thumbs/tiktok-1.webp" alt="Náhľad TikTok videa — ATTILA VS VEMOLA" loading="lazy" decoding="async"><span class="reel-play-icon">▶</span>
+              </button>
+              <span class="reel-tag mono">Fortuna Sports</span><span class="reel-views mono">👁 156 tis.</span>
+            </div>
+            <div class="reel-frame">
+              <button class="reel-thumb" data-video-id="FjbvvVQ1J3U" aria-label="Prehrať ukážku: Tary">
+                <img src="https://i.ytimg.com/vi/FjbvvVQ1J3U/hqdefault.jpg" alt="Náhľad videa: Tary, Poprvé v životě s rodinou v Londýně" loading="lazy" decoding="async"><span class="reel-play-icon">▶</span>
+              </button>
+              <span class="reel-tag mono">Tary</span><span class="reel-views mono">👁 95 tis.</span>
+            </div>
+            <div class="reel-frame">
+              <button class="reel-thumb" data-platform="tiktok" data-tiktok-url="https://www.tiktok.com/@fortunasports/video/7355542492906933537" aria-label="Otvoriť TikTok — TADEÁŠ ZASE VYSTRÁJA (nová záložka)">
+                <img src="/assets/tiktok-thumbs/tiktok-2.webp" alt="Náhľad TikTok videa — TADEÁŠ ZASE VYSTRÁJA?!" loading="lazy" decoding="async"><span class="reel-play-icon">▶</span>
+              </button>
+              <span class="reel-tag mono">Fortuna Sports</span><span class="reel-views mono">👁 122 tis.</span>
+            </div>
+          </div>
+
+          <div class="cluster">
+            <div class="reel-frame tiktok-tall">
+              <button class="reel-thumb" data-platform="tiktok" data-tiktok-url="https://www.tiktok.com/@fortunasports/video/7318409663601495328" aria-label="Otvoriť TikTok — GÁBOR v RFA (nová záložka)">
+                <img src="/assets/tiktok-thumbs/tiktok-3.webp" alt="Náhľad TikTok videa — GÁBOR v RFA" loading="lazy" decoding="async"><span class="reel-play-icon">▶</span>
+              </button>
+              <span class="reel-tag mono">Fortuna Sports</span><span class="reel-views mono">👁 114 tis.</span>
+            </div>
+            <div class="reel-frame">
+              <button class="reel-thumb" data-video-id="K8DPDth6yp0" aria-label="Prehrať ukážku: Duklock">
+                <img src="https://i.ytimg.com/vi/K8DPDth6yp0/hqdefault.jpg" alt="Náhľad videa: Duklock, herný stream" loading="lazy" decoding="async"><span class="reel-play-icon">▶</span>
+              </button>
+              <span class="reel-tag mono">Duklock</span><span class="reel-views mono">👁 731 tis.</span>
+            </div>
+            <div class="reel-frame">
+              <button class="reel-thumb" data-platform="tiktok" data-tiktok-url="https://www.tiktok.com/@fortunasports/video/7386367870655073568" aria-label="Otvoriť TikTok — MAKHACHEV vs McGregor (nová záložka)">
+                <img src="/assets/tiktok-thumbs/tiktok-4.webp" alt="Náhľad TikTok videa — MAKHACHEV vs McGregor" loading="lazy" decoding="async"><span class="reel-play-icon">▶</span>
+              </button>
+              <span class="reel-tag mono">Fortuna Sports</span><span class="reel-views mono">👁 87 tis.</span>
+            </div>
+          </div>
+
+          <div class="cluster">
+            <div class="reel-frame tiktok-tall">
+              <button class="reel-thumb" data-platform="tiktok" data-tiktok-url="https://www.tiktok.com/@fortunasports/video/7301751402471197984" aria-label="Otvoriť TikTok — MATÚŠ JURÁČEK na zápase SLAVIA PRAHA (nová záložka)">
+                <img src="/assets/tiktok-thumbs/tiktok-5.webp" alt="Náhľad TikTok videa — MATÚŠ JURÁČEK na zápase SLAVIA PRAHA" loading="lazy" decoding="async"><span class="reel-play-icon">▶</span>
+              </button>
+              <span class="reel-tag mono">Fortuna Sports</span><span class="reel-views mono">👁 79 tis.</span>
+            </div>
+            <div class="reel-frame">
+              <button class="reel-thumb" data-video-id="tgVPTnPNkCk" aria-label="Prehrať ukážku: Tary vs Jay">
+                <img src="https://i.ytimg.com/vi/tgVPTnPNkCk/hqdefault.jpg" alt="Náhľad videa: Tary vs. Jay" loading="lazy" decoding="async"><span class="reel-play-icon">▶</span>
+              </button>
+              <span class="reel-tag mono">Tary</span><span class="reel-views mono">👁 128 tis.</span>
+            </div>
+            <div class="reel-frame">
+              <button class="reel-thumb" data-platform="tiktok" data-tiktok-url="https://www.tiktok.com/@fortunasports/video/7311053090298367265" aria-label="Otvoriť TikTok — REDFACE a BIZÁR (nová záložka)">
+                <img src="/assets/tiktok-thumbs/tiktok-6.webp" alt="Náhľad TikTok videa — REDFACE a BIZÁR" loading="lazy" decoding="async"><span class="reel-play-icon">▶</span>
+              </button>
+              <span class="reel-tag mono">Fortuna Sports</span><span class="reel-views mono">👁 74 tis.</span>
+            </div>
+          </div>
+
+          <div class="cluster">
+            <div class="reel-frame card-tall">
+              <button class="reel-thumb" data-video-id="OhRTZyk5CoI" aria-label="Prehrať ukážku: 10 Insurance Scam Fails Caught on Camera!">
+                <img src="https://i.ytimg.com/vi/OhRTZyk5CoI/hqdefault.jpg" alt="Náhľad videa: 10 Insurance Scam Fails Caught on Camera!" loading="lazy" decoding="async"><span class="reel-play-icon">▶</span>
+              </button>
+              <span class="reel-tag mono">Show More</span><span class="reel-views mono">👁 3,8 mil.</span>
+            </div>
+            <div class="reel-frame">
+              <button class="reel-thumb" data-video-id="TcRU8dXlUQg" aria-label="Prehrať ukážku: Idiots Driving Boats Caught On Camera!">
+                <img src="https://i.ytimg.com/vi/TcRU8dXlUQg/hqdefault.jpg" alt="Náhľad videa: Idiots Driving Boats Caught On Camera!" loading="lazy" decoding="async"><span class="reel-play-icon">▶</span>
+              </button>
+              <span class="reel-tag mono">Show More</span><span class="reel-views mono">👁 1,9 mil.</span>
+            </div>
+            <div class="reel-frame">
+              <button class="reel-thumb" data-video-id="5oM-zw2eDU4" aria-label="Prehrať ukážku: Koupím Tarymu všechno, co unese!">
+                <img src="https://i.ytimg.com/vi/5oM-zw2eDU4/hqdefault.jpg" alt="Náhľad videa: Tary — Koupím Tarymu všechno, co unese!" loading="lazy" decoding="async"><span class="reel-play-icon">▶</span>
+              </button>
+              <span class="reel-tag mono">Tary</span><span class="reel-views mono">👁 237 tis.</span>
+            </div>
+          </div>
+
+          <div class="cluster">
+            <div class="reel-frame card-tall">
+              <button class="reel-thumb" data-video-id="VQGoHy8qzSw" aria-label="Prehrať ukážku: JÍME JÍDLO jen JEDNÉ BARVY!">
+                <img src="https://i.ytimg.com/vi/VQGoHy8qzSw/hqdefault.jpg" alt="Náhľad videa: Tary — JÍME JÍDLO jen JEDNÉ BARVY!" loading="lazy" decoding="async"><span class="reel-play-icon">▶</span>
+              </button>
+              <span class="reel-tag mono">Tary</span><span class="reel-views mono">👁 352 tis.</span>
+            </div>
+            <div class="reel-frame">
+              <button class="reel-thumb" data-video-id="X7DUSHGY-6E" aria-label="Prehrať ukážku: HODIL jsem Jaye do POPELNICE!">
+                <img src="https://i.ytimg.com/vi/X7DUSHGY-6E/hqdefault.jpg" alt="Náhľad videa: Tary — HODIL jsem Jaye do POPELNICE!" loading="lazy" decoding="async"><span class="reel-play-icon">▶</span>
+              </button>
+              <span class="reel-tag mono">Tary</span><span class="reel-views mono">👁 235 tis.</span>
+            </div>
+            <div class="reel-frame">
+              <button class="reel-thumb" data-video-id="0uF_DcvNVEg" aria-label="Prehrať ukážku: Hrám Minecraft, ale je prekliaty!">
+                <img src="https://i.ytimg.com/vi/0uF_DcvNVEg/hqdefault.jpg" alt="Náhľad videa: Duklock+ — Hrám Minecraft, ale je prekliaty!" loading="lazy" decoding="async"><span class="reel-play-icon">▶</span>
+              </button>
+              <span class="reel-tag mono">Duklock+</span><span class="reel-views mono">👁 549 tis.</span>
+            </div>
+          </div>
+
+          <div class="cluster">
+            <div class="reel-frame tiktok-tall">
+              <button class="reel-thumb" data-platform="tiktok" data-tiktok-url="https://www.tiktok.com/@fortunasports/video/7352208599436758304" aria-label="Otvoriť TikTok — ADAM RUZICKA SKONCIL?! (nová záložka)">
+                <img src="/assets/tiktok-thumbs/tiktok-7.webp" alt="Náhľad TikTok videa — ADAM RUZICKA SKONCIL?!" loading="lazy" decoding="async"><span class="reel-play-icon">▶</span>
+              </button>
+              <span class="reel-tag mono">Fortuna Sports</span><span class="reel-views mono">👁 68 tis.</span>
+            </div>
+            <div class="reel-frame">
+              <button class="reel-thumb" data-platform="tiktok" data-tiktok-url="https://www.tiktok.com/@fortunasports/video/7356300842753854752" aria-label="Otvoriť TikTok — HODNOTA OKTAGONU (nová záložka)">
+                <img src="/assets/tiktok-thumbs/tiktok-8.webp" alt="Náhľad TikTok videa — HODNOTA OKTAGONU" loading="lazy" decoding="async"><span class="reel-play-icon">▶</span>
+              </button>
+              <span class="reel-tag mono">Fortuna Sports</span><span class="reel-views mono">👁 57 tis.</span>
+            </div>
+            <div class="reel-frame">
+              <button class="reel-thumb" data-platform="tiktok" data-tiktok-url="https://www.tiktok.com/@fortunasports/video/7431262737939909921" aria-label="Otvoriť TikTok — GÁBOR končí v RFA (nová záložka)">
+                <img src="/assets/tiktok-thumbs/tiktok-9.webp" alt="Náhľad TikTok videa — GÁBOR končí v RFA" loading="lazy" decoding="async"><span class="reel-play-icon">▶</span>
+              </button>
+              <span class="reel-tag mono">Fortuna Sports</span><span class="reel-views mono">👁 54 tis.</span>
+            </div>
+          </div>
+
+        </div>
+        <div class="belt-set" aria-hidden="true"></div>
+      </div>
     </div>
   </section>
 
@@ -480,6 +700,13 @@
   <button id="privacyNoticeClose">Rozumiem</button>
 </div>
 
+<div class="lightbox" id="videoLightbox" role="dialog" aria-modal="true" aria-label="Video ukážka" aria-hidden="true">
+  <div class="lightbox-inner">
+    <button class="lightbox-close" id="lightboxClose" aria-label="Zatvoriť">✕</button>
+    <div class="lightbox-video" id="lightboxVideo"></div>
+  </div>
+</div>
+
 <script src="/assets/anime.min.js"></script>
 <script src="shared.js"></script>
 <script type="importmap">
@@ -490,6 +717,6 @@
   }
 }
 </script>
-<script type="module" src="/test.js?v=16"></script>
+<script type="module" src="/test.js?v=17"></script>
 </body>
 </html>
