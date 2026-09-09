@@ -42,10 +42,12 @@
   }
   .t3d main{ position:relative; z-index:10; }
   .t3d section{
-    min-height:100vh; min-height:100svh;
     display:flex; align-items:center;
-    padding:140px 0; position:relative;
+    padding:clamp(72px, 9vh, 120px) 0; position:relative;
   }
+  /* hero keeps a tall scroll runway so the laptop has room to open */
+  .t3d #hero{ min-height:132vh; min-height:132svh; padding-bottom:0; }
+  .t3d #contact{ padding-bottom:clamp(96px, 12vh, 150px); }
   .t3d .wrap{ position:relative; z-index:2; width:100%; }
 
   /* ---------- typography ---------- */
@@ -476,6 +478,6 @@
 
 <script src="/assets/anime.min.js"></script>
 <script src="shared.js"></script>
-<script type="module" src="/test.js?v=3"></script>
+<script type="module" src="/test.js?v=4"></script>
 </body>
 </html>

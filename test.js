@@ -49,6 +49,41 @@ function timecode(t) {
   return p(m) + ':' + p(s) + ':' + p(f);
 }
 
+// rounded-rectangle THREE.Shape centred on the origin
+function roundedShape(w, h, r) {
+  r = Math.min(r, w / 2, h / 2);
+  const s = new THREE.Shape();
+  const x = -w / 2, y = -h / 2;
+  s.moveTo(x + r, y);
+  s.lineTo(x + w - r, y);
+  s.quadraticCurveTo(x + w, y, x + w, y + r);
+  s.lineTo(x + w, y + h - r);
+  s.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+  s.lineTo(x + r, y + h);
+  s.quadraticCurveTo(x, y + h, x, y + h - r);
+  s.lineTo(x, y + r);
+  s.quadraticCurveTo(x, y, x + r, y);
+  return s;
+}
+
+// soft-edged panel: rounded rect extruded with a small bevel, then centred.
+// axis 'y' -> flat slab (thin on Y); axis 'z' -> upright panel (thin on Z)
+function roundedPanel(w, h, thick, radius, mat, axis) {
+  const geo = new THREE.ExtrudeGeometry(roundedShape(w, h, radius), {
+    depth: thick,
+    bevelEnabled: true,
+    bevelThickness: thick * 0.4,
+    bevelSize: thick * 0.4,
+    bevelSegments: 4,
+    curveSegments: 14
+  });
+  geo.center();
+  if (axis === 'y') geo.rotateX(-Math.PI / 2);
+  const mesh = new THREE.Mesh(geo, mat);
+  mesh.castShadow = mesh.receiveShadow = false;
+  return mesh;
+}
+
 // ---------------------------------------------------------------------------
 //  Intro loader
 // ---------------------------------------------------------------------------
@@ -263,66 +298,140 @@ function initScene() {
   camera.position.set(0, 0.6, 9);
   camera.lookAt(0, 0.15, 0);
 
+  // ---- soft studio reflections (procedural, no asset / no addon) ----
+  const envCanvas = document.createElement('canvas');
+  envCanvas.width = 32; envCanvas.height = 96;
+  {
+    const g = envCanvas.getContext('2d');
+    const grd = g.createLinearGradient(0, 0, 0, 96);
+    grd.addColorStop(0.00, '#4c463d');   // soft key from above
+    grd.addColorStop(0.45, '#1b1815');
+    grd.addColorStop(0.55, '#131110');
+    grd.addColorStop(1.00, '#000000');
+    g.fillStyle = grd; g.fillRect(0, 0, 32, 96);
+    g.fillStyle = 'rgba(255,150,80,0.30)'; g.fillRect(0, 4, 32, 12);   // warm strip
+    g.fillStyle = 'rgba(90,200,210,0.18)'; g.fillRect(0, 78, 32, 10);  // cool bounce
+  }
+  const envTex = new THREE.CanvasTexture(envCanvas);
+  envTex.mapping = THREE.EquirectangularReflectionMapping;
+  envTex.colorSpace = THREE.SRGBColorSpace;
+  const pmrem = new THREE.PMREMGenerator(renderer);
+  scene.environment = pmrem.fromEquirectangular(envTex).texture;
+  pmrem.dispose(); envTex.dispose();
+
   // ---- lights ----
-  scene.add(new THREE.AmbientLight(0xffffff, 0.7));
-  const key = new THREE.DirectionalLight(0xffffff, 2.0);
-  key.position.set(4, 6, 6);
+  scene.add(new THREE.AmbientLight(0xffffff, 0.35));
+  const key = new THREE.DirectionalLight(0xffffff, 1.5);
+  key.position.set(4, 7, 6);
   scene.add(key);
-  const accent = new THREE.PointLight(new THREE.Color(SEASON[1]), 40, 40, 2);
+  const accent = new THREE.PointLight(new THREE.Color(SEASON[1]), 34, 40, 2);
   accent.position.set(-3, 2, 4);
   scene.add(accent);
-  const rim = new THREE.PointLight(new THREE.Color(SEASON[2]), 22, 40, 2);
+  const rim = new THREE.PointLight(new THREE.Color(SEASON[2]), 20, 40, 2);
   rim.position.set(4, -2, 2);
   scene.add(rim);
 
   // ---- laptop ----
   const laptop = new THREE.Group();
-  const shell = new THREE.MeshStandardMaterial({ color: 0x24211e, metalness: 0.75, roughness: 0.34 });
+  const W = 3.5, D = 2.42;                         // body footprint
+  const aluMat = new THREE.MeshStandardMaterial({ color: 0x2c2926, metalness: 1.0, roughness: 0.42, envMapIntensity: 1.15 });
+  const wellMat = new THREE.MeshStandardMaterial({ color: 0x0d0c0b, metalness: 0.6, roughness: 0.7 });
+  const keyMat = new THREE.MeshStandardMaterial({ color: 0x1b1815, metalness: 0.35, roughness: 0.55 });
+  const padMat = new THREE.MeshStandardMaterial({ color: 0x211e1b, metalness: 0.8, roughness: 0.3, envMapIntensity: 1.4 });
+  const bezelMat = new THREE.MeshStandardMaterial({ color: 0x090807, metalness: 0.25, roughness: 0.45 });
 
-  const base = new THREE.Mesh(new THREE.BoxGeometry(3.4, 0.16, 2.3), shell);
+  // base slab
+  const base = roundedPanel(W, D, 0.16, 0.16, aluMat, 'y');
+  base.position.y = 0;
   laptop.add(base);
 
-  const deck = new THREE.Mesh(
-    new THREE.BoxGeometry(2.95, 0.02, 1.15),
-    new THREE.MeshStandardMaterial({ color: 0x14120f, metalness: 0.3, roughness: 0.85 })
-  );
-  deck.position.set(0, 0.09, -0.32);
-  laptop.add(deck);
+  // recessed keyboard well
+  const well = roundedPanel(W - 0.5, 1.28, 0.05, 0.08, wellMat, 'y');
+  well.position.set(0, 0.085, -0.36);
+  laptop.add(well);
 
-  const trackpad = new THREE.Mesh(
-    new THREE.BoxGeometry(1.15, 0.02, 0.78),
-    new THREE.MeshStandardMaterial({ color: 0x2c2825, metalness: 0.4, roughness: 0.55 })
-  );
-  trackpad.position.set(0, 0.09, 0.6);
+  // instanced keycaps
+  const KCOLS = 15, KROWS = 5, KGAP = 0.192, KSZ = 0.15;
+  const keyGeo = new THREE.BoxGeometry(KSZ, 0.05, KSZ);
+  const keys = new THREE.InstancedMesh(keyGeo, keyMat, KCOLS * KROWS + 1);
+  const dummy = new THREE.Object3D();
+  let ki = 0;
+  const kx0 = -((KCOLS - 1) * KGAP) / 2;
+  const kz0 = -0.36 - ((KROWS - 1) * KGAP) / 2;
+  for (let r = 0; r < KROWS; r++) {
+    for (let c = 0; c < KCOLS; c++) {
+      dummy.position.set(kx0 + c * KGAP, 0.115, kz0 + r * KGAP);
+      dummy.rotation.set(0, 0, 0); dummy.scale.set(1, 1, 1);
+      dummy.updateMatrix();
+      keys.setMatrixAt(ki++, dummy.matrix);
+    }
+  }
+  dummy.position.set(0, 0.115, kz0 + (KROWS - 0.15) * KGAP);   // spacebar
+  dummy.scale.set(4.6, 1, 1); dummy.updateMatrix();
+  keys.setMatrixAt(ki++, dummy.matrix);
+  keys.instanceMatrix.needsUpdate = true;
+  laptop.add(keys);
+
+  // trackpad
+  const trackpad = roundedPanel(1.28, 0.86, 0.02, 0.06, padMat, 'y');
+  trackpad.position.set(0, 0.084, 0.62);
   laptop.add(trackpad);
 
-  // hinge pivots at the rear edge of the base
+  // hinge barrel + pivot at the rear edge of the base
+  const hingeBar = new THREE.Mesh(
+    new THREE.CylinderGeometry(0.055, 0.055, W - 0.5, 20),
+    new THREE.MeshStandardMaterial({ color: 0x161311, metalness: 0.9, roughness: 0.5 })
+  );
+  hingeBar.rotation.z = Math.PI / 2;
+  hingeBar.position.set(0, 0.075, -D / 2 + 0.05);
+  laptop.add(hingeBar);
+
   const hinge = new THREE.Group();
-  hinge.position.set(0, 0.08, -1.14);
+  hinge.position.set(0, 0.075, -D / 2 + 0.05);
   laptop.add(hinge);
 
-  const lidBack = new THREE.Mesh(new THREE.BoxGeometry(3.4, 2.15, 0.1), shell);
-  lidBack.position.set(0, 1.075, 0);
-  hinge.add(lidBack);
+  // lid: upright rounded panel, thin on Z
+  const LID_H = 2.28;
+  const lid = roundedPanel(W, LID_H, 0.09, 0.12, aluMat, 'z');
+  lid.position.set(0, LID_H / 2, 0);
+  hinge.add(lid);
+
+  // black bezel frame just in front of the lid
+  const bezel = roundedPanel(W - 0.16, LID_H - 0.16, 0.02, 0.09, bezelMat, 'z');
+  bezel.position.set(0, LID_H / 2, 0.052);
+  hinge.add(bezel);
+
+  // camera notch
+  const notch = new THREE.Mesh(
+    new THREE.SphereGeometry(0.022, 12, 12),
+    new THREE.MeshStandardMaterial({ color: 0x05213a, metalness: 0.1, roughness: 0.2 })
+  );
+  notch.position.set(0, LID_H - 0.12, 0.055);
+  hinge.add(notch);
 
   // ---- animated NLE screen (canvas texture) ----
   const scr = document.createElement('canvas');
-  scr.width = 1024; scr.height = 640;
+  scr.width = 1024; scr.height = 600;
   const sctx = scr.getContext('2d');
   const scrTex = new THREE.CanvasTexture(scr);
   scrTex.colorSpace = THREE.SRGBColorSpace;
   const screen = new THREE.Mesh(
-    new THREE.PlaneGeometry(3.16, 1.96),
+    new THREE.PlaneGeometry(W - 0.42, (W - 0.42) * (scr.height / scr.width)),
     new THREE.MeshBasicMaterial({ map: scrTex })
   );
-  screen.position.set(0, 1.075, 0.056);
+  screen.position.set(0, LID_H / 2 + 0.02, 0.066);
   hinge.add(screen);
+
+  // faint screen glow spilling onto the keyboard
+  const screenGlow = new THREE.PointLight(new THREE.Color(SEASON[2]), 0, 6, 2);
+  screenGlow.position.set(0, LID_H * 0.4, 0.5);
+  hinge.add(screenGlow);
 
   // rotation.x = 0  -> lid vertical, screen faces the viewer (+Z)
   // rotation.x > 0  -> lid tips forward onto the keyboard (closed)
   // rotation.x < 0  -> lid leans back past vertical (open working angle)
-  const LID_CLOSED = 1.28;    // slightly ajar so the wedge still reads as a laptop
-  const LID_OPEN = -0.24;     // ~104 degrees, natural open angle toward viewer
+  const LID_CLOSED = 1.35;    // nearly shut
+  const LID_OPEN = -0.22;     // ~103 degrees, natural open angle toward viewer
   hinge.rotation.x = LID_CLOSED;
 
   laptop.position.set(0, -0.1, 0);
@@ -469,6 +578,7 @@ function initScene() {
 
     const open = reduced ? 1 : easeInOut(heroProgress);
     hinge.rotation.x = LID_CLOSED + (LID_OPEN - LID_CLOSED) * open;
+    screenGlow.intensity = open * 3.4;
 
     // once the scene has faded out, skip the paint entirely (perf + no bleed-through)
     if (!reduced && sceneFade <= 0.02) {
