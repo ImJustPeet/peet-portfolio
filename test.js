@@ -7,6 +7,7 @@
 import * as THREE from '/assets/three/three.module.min.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { RGBELoader } from 'three/addons/loaders/RGBELoader.js';
+import { MeshoptDecoder } from 'three/addons/libs/meshopt_decoder.module.js';
 
 const anime = window.anime;
 const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -446,7 +447,7 @@ function initScene() {
 
   // load the model
   let model = null;
-  new GLTFLoader().load('/assets/models/macbook/scene.gltf?v=1', (gltf) => {
+  new GLTFLoader().setMeshoptDecoder(MeshoptDecoder).load('/assets/models/macbook/scene.gltf?v=2', (gltf) => {
     model = gltf.scene;
     const box = new THREE.Box3().setFromObject(model);
     const size = box.getSize(new THREE.Vector3());
