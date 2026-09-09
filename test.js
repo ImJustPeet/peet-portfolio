@@ -321,10 +321,10 @@ function initScene() {
 
   // ---- lights ----
   scene.add(new THREE.AmbientLight(0xffffff, 0.55));
-  const key = new THREE.DirectionalLight(0xffffff, 2.6);
+  const key = new THREE.DirectionalLight(0xffffff, 3.1);
   key.position.set(4, 7, 6);
   scene.add(key);
-  const fill = new THREE.DirectionalLight(0xdfe6ff, 0.8);
+  const fill = new THREE.DirectionalLight(0xdfe6ff, 1.0);
   fill.position.set(-3, 1, 8);
   scene.add(fill);
   const accent = new THREE.PointLight(new THREE.Color(SEASON[1]), 34, 40, 2);
@@ -337,7 +337,7 @@ function initScene() {
   // ---- laptop ----
   const laptop = new THREE.Group();
   const W = 3.5, D = 2.42;                         // body footprint
-  const aluMat = new THREE.MeshStandardMaterial({ color: 0x3a3733, metalness: 1.0, roughness: 0.4, envMapIntensity: 1.7 });
+  const aluMat = new THREE.MeshStandardMaterial({ color: 0x8b8781, metalness: 1.0, roughness: 0.44, envMapIntensity: 2.0 });
   const wellMat = new THREE.MeshStandardMaterial({ color: 0x0d0c0b, metalness: 0.6, roughness: 0.7 });
   const keyMat = new THREE.MeshStandardMaterial({ color: 0x1b1815, metalness: 0.35, roughness: 0.55 });
   const padMat = new THREE.MeshStandardMaterial({ color: 0x211e1b, metalness: 0.8, roughness: 0.3, envMapIntensity: 1.4 });
@@ -448,10 +448,10 @@ function initScene() {
   // ---- floating file chips (anchored to the right, clear of the hero copy) ----
   const CHIP_TEXT = ['hook_v3.mp4', 'color_pass.png', 'voiceover_final.wav', 'export_4k.mp4'];
   const CHIP_ANCHOR = [
-    { x: 2.25, y: 2.05, z: 0.4, ph: 0.0, depth: 0.14 },
-    { x: 2.75, y: 0.70, z: -0.6, ph: 1.7, depth: 0.09 },
-    { x: 2.35, y: -0.80, z: 0.7, ph: 3.1, depth: 0.17 },
-    { x: 2.80, y: -1.95, z: -0.1, ph: 4.6, depth: 0.11 }
+    { x: 2.15, y: 2.05, z: 0.4, ph: 0.0, depth: 0.12 },
+    { x: 2.45, y: 0.70, z: -0.6, ph: 1.7, depth: 0.08 },
+    { x: 2.15, y: -0.80, z: 0.7, ph: 3.1, depth: 0.14 },
+    { x: 2.45, y: -1.95, z: -0.1, ph: 4.6, depth: 0.10 }
   ];
   const chips = CHIP_TEXT.map((txt, i) => {
     const cc = document.createElement('canvas');
@@ -556,7 +556,7 @@ function initScene() {
     heroProgress = clamp(window.scrollY / (hb * 0.82), 0, 1);
     // scene is fully opaque through the hero, then fades right out before the
     // next section arrives so the 2D content reads cleanly
-    sceneFade = 1 - clamp((window.scrollY - hb * 0.6) / (hb * 0.35), 0, 1);
+    sceneFade = 1 - clamp((window.scrollY - hb * 0.45) / (hb * 0.27), 0, 1);
   }
   window.addEventListener('scroll', readScroll, { passive: true });
   readScroll();
