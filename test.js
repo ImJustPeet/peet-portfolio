@@ -300,17 +300,17 @@ function initScene() {
 
   // ---- soft studio reflections (procedural, no asset / no addon) ----
   const envCanvas = document.createElement('canvas');
-  envCanvas.width = 32; envCanvas.height = 96;
+  envCanvas.width = 64; envCanvas.height = 160;
   {
     const g = envCanvas.getContext('2d');
-    const grd = g.createLinearGradient(0, 0, 0, 96);
-    grd.addColorStop(0.00, '#4c463d');   // soft key from above
-    grd.addColorStop(0.45, '#1b1815');
-    grd.addColorStop(0.55, '#131110');
-    grd.addColorStop(1.00, '#000000');
-    g.fillStyle = grd; g.fillRect(0, 0, 32, 96);
-    g.fillStyle = 'rgba(255,150,80,0.30)'; g.fillRect(0, 4, 32, 12);   // warm strip
-    g.fillStyle = 'rgba(90,200,210,0.18)'; g.fillRect(0, 78, 32, 10);  // cool bounce
+    const grd = g.createLinearGradient(0, 0, 0, 160);
+    grd.addColorStop(0.00, '#c9c2b4');   // bright soft key overhead
+    grd.addColorStop(0.35, '#6b6459');
+    grd.addColorStop(0.52, '#332f2a');
+    grd.addColorStop(1.00, '#0b0a09');
+    g.fillStyle = grd; g.fillRect(0, 0, 64, 160);
+    g.fillStyle = 'rgba(255,150,80,0.55)'; g.fillRect(0, 6, 64, 24);    // warm rim
+    g.fillStyle = 'rgba(90,200,210,0.30)'; g.fillRect(0, 128, 64, 18);  // cool bounce
   }
   const envTex = new THREE.CanvasTexture(envCanvas);
   envTex.mapping = THREE.EquirectangularReflectionMapping;
@@ -320,21 +320,24 @@ function initScene() {
   pmrem.dispose(); envTex.dispose();
 
   // ---- lights ----
-  scene.add(new THREE.AmbientLight(0xffffff, 0.35));
-  const key = new THREE.DirectionalLight(0xffffff, 1.5);
+  scene.add(new THREE.AmbientLight(0xffffff, 0.55));
+  const key = new THREE.DirectionalLight(0xffffff, 2.6);
   key.position.set(4, 7, 6);
   scene.add(key);
+  const fill = new THREE.DirectionalLight(0xdfe6ff, 0.8);
+  fill.position.set(-3, 1, 8);
+  scene.add(fill);
   const accent = new THREE.PointLight(new THREE.Color(SEASON[1]), 34, 40, 2);
   accent.position.set(-3, 2, 4);
   scene.add(accent);
-  const rim = new THREE.PointLight(new THREE.Color(SEASON[2]), 20, 40, 2);
+  const rim = new THREE.PointLight(new THREE.Color(SEASON[2]), 22, 40, 2);
   rim.position.set(4, -2, 2);
   scene.add(rim);
 
   // ---- laptop ----
   const laptop = new THREE.Group();
   const W = 3.5, D = 2.42;                         // body footprint
-  const aluMat = new THREE.MeshStandardMaterial({ color: 0x2c2926, metalness: 1.0, roughness: 0.42, envMapIntensity: 1.15 });
+  const aluMat = new THREE.MeshStandardMaterial({ color: 0x3a3733, metalness: 1.0, roughness: 0.4, envMapIntensity: 1.7 });
   const wellMat = new THREE.MeshStandardMaterial({ color: 0x0d0c0b, metalness: 0.6, roughness: 0.7 });
   const keyMat = new THREE.MeshStandardMaterial({ color: 0x1b1815, metalness: 0.35, roughness: 0.55 });
   const padMat = new THREE.MeshStandardMaterial({ color: 0x211e1b, metalness: 0.8, roughness: 0.3, envMapIntensity: 1.4 });
@@ -398,7 +401,7 @@ function initScene() {
 
   // black bezel frame just in front of the lid
   const bezel = roundedPanel(W - 0.16, LID_H - 0.16, 0.02, 0.09, bezelMat, 'z');
-  bezel.position.set(0, LID_H / 2, 0.052);
+  bezel.position.set(0, LID_H / 2, 0.05);
   hinge.add(bezel);
 
   // camera notch
@@ -406,7 +409,7 @@ function initScene() {
     new THREE.SphereGeometry(0.022, 12, 12),
     new THREE.MeshStandardMaterial({ color: 0x05213a, metalness: 0.1, roughness: 0.2 })
   );
-  notch.position.set(0, LID_H - 0.12, 0.055);
+  notch.position.set(0, LID_H - 0.11, 0.075);
   hinge.add(notch);
 
   // ---- animated NLE screen (canvas texture) ----
@@ -419,7 +422,7 @@ function initScene() {
     new THREE.PlaneGeometry(W - 0.42, (W - 0.42) * (scr.height / scr.width)),
     new THREE.MeshBasicMaterial({ map: scrTex })
   );
-  screen.position.set(0, LID_H / 2 + 0.02, 0.066);
+  screen.position.set(0, LID_H / 2 + 0.02, 0.10);
   hinge.add(screen);
 
   // faint screen glow spilling onto the keyboard
@@ -445,10 +448,10 @@ function initScene() {
   // ---- floating file chips (anchored to the right, clear of the hero copy) ----
   const CHIP_TEXT = ['hook_v3.mp4', 'color_pass.png', 'voiceover_final.wav', 'export_4k.mp4'];
   const CHIP_ANCHOR = [
-    { x: 2.55, y: 2.15, z: 0.6, ph: 0.0, depth: 0.16 },
-    { x: 3.30, y: 0.75, z: -0.5, ph: 1.7, depth: 0.10 },
-    { x: 2.70, y: -0.85, z: 0.9, ph: 3.1, depth: 0.20 },
-    { x: 3.35, y: -2.05, z: 0.0, ph: 4.6, depth: 0.13 }
+    { x: 2.25, y: 2.05, z: 0.4, ph: 0.0, depth: 0.14 },
+    { x: 2.75, y: 0.70, z: -0.6, ph: 1.7, depth: 0.09 },
+    { x: 2.35, y: -0.80, z: 0.7, ph: 3.1, depth: 0.17 },
+    { x: 2.80, y: -1.95, z: -0.1, ph: 4.6, depth: 0.11 }
   ];
   const chips = CHIP_TEXT.map((txt, i) => {
     const cc = document.createElement('canvas');
@@ -595,8 +598,8 @@ function initScene() {
       laptop.rotation.y = -0.5 + Math.sin(t * 0.25) * 0.2 + ptr.x * 0.3 + (1 - open) * 0.55;
       laptop.rotation.x = 0.02 + ptr.y * 0.09;
 
-      camera.position.z = 9 - heroProgress * 1.7;
-      camera.position.y = 0.6 + heroProgress * 0.28;
+      camera.position.z = 9 - heroProgress * 1.1;
+      camera.position.y = 0.6 + heroProgress * 0.24;
       camera.position.x += ((ptr.x * 0.5) - camera.position.x) * 0.04;
       camera.lookAt(0, 0.15, 0);
 
