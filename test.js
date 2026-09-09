@@ -7,7 +7,7 @@
 import * as THREE from '/assets/three/three.module.min.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { RGBELoader } from 'three/addons/loaders/RGBELoader.js';
-import { MeshoptDecoder } from 'three/addons/libs/meshopt_decoder.module.js';
+import { MeshoptDecoder } from 'three/addons/libs/meshopt_decoder.module.js?v=22';
 
 const anime = window.anime;
 const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
