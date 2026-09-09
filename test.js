@@ -281,6 +281,9 @@ function initScene() {
   const key = new THREE.DirectionalLight(0xffffff, 3.2);
   key.position.set(4, 7, 6);
   scene.add(key);
+  const fillTop = new THREE.DirectionalLight(0xffffff, 1.4);
+  fillTop.position.set(-2, 5, 8);
+  scene.add(fillTop);
   const accent = new THREE.PointLight(new THREE.Color(SEASON[1]), 26, 40, 2);
   accent.position.set(-3, 2, 4);
   scene.add(accent);
@@ -295,8 +298,8 @@ function initScene() {
   scene.add(laptop);
 
   // arrival: model glides from lower-right (angled) to centre (near front-on) on scroll
-  const LAP_FROM = new THREE.Vector3(1.9, -1.15, 0.1);
-  const LAP_TO = new THREE.Vector3(0, -0.15, 0);
+  const LAP_FROM = new THREE.Vector3(1.9, -1.05, 0.1);
+  const LAP_TO = new THREE.Vector3(0, 0.12, 0);
   const YAW_FROM = -0.95, YAW_TO = -0.12;
 
   // screen surface: real Premiere timeline image if present, else a procedural NLE
@@ -498,10 +501,10 @@ function initScene() {
   let sceneFade = 1;
   function readScroll() {
     const hb = heroEl ? heroEl.offsetHeight : window.innerHeight;
-    heroProgress = clamp(window.scrollY / (hb * 0.82), 0, 1);
-    // scene is fully opaque through the hero, then fades right out before the
-    // next section arrives so the 2D content reads cleanly
-    sceneFade = 1 - clamp((window.scrollY - hb * 0.45) / (hb * 0.27), 0, 1);
+    // the model finishes arriving well before the scene starts to fade, so it
+    // gets a clean beat centre-frame before the 2D sections come up
+    heroProgress = clamp(window.scrollY / (hb * 0.48), 0, 1);
+    sceneFade = 1 - clamp((window.scrollY - hb * 0.6) / (hb * 0.28), 0, 1);
   }
   window.addEventListener('scroll', readScroll, { passive: true });
   readScroll();
@@ -542,10 +545,10 @@ function initScene() {
       laptop.rotation.y = YAW_FROM + (YAW_TO - YAW_FROM) * p + Math.sin(t * 0.22) * 0.14 + ptr.x * 0.22;
       laptop.rotation.x = 0.03 + ptr.y * 0.07 + (1 - p) * 0.06;
 
-      camera.position.z = 9 - heroProgress * 1.2;
-      camera.position.y = 0.55 + heroProgress * 0.22;
+      camera.position.z = 9 - heroProgress * 1.5;
+      camera.position.y = 0.6 + heroProgress * 0.28;
       camera.position.x += ((ptr.x * 0.5) - camera.position.x) * 0.04;
-      camera.lookAt(0, 0.1, 0);
+      camera.lookAt(0, 0.28, 0);
 
       accent.position.x = -3 + ptr.x * 4;
       accent.position.y = 2 - ptr.y * 3;
