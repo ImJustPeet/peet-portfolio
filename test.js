@@ -321,7 +321,7 @@ function initScene() {
   // rotation.x = 0  -> lid vertical, screen faces the viewer (+Z)
   // rotation.x > 0  -> lid tips forward onto the keyboard (closed)
   // rotation.x < 0  -> lid leans back past vertical (open working angle)
-  const LID_CLOSED = 1.44;    // ~7 degrees above the keyboard, almost shut
+  const LID_CLOSED = 1.28;    // slightly ajar so the wedge still reads as a laptop
   const LID_OPEN = -0.24;     // ~104 degrees, natural open angle toward viewer
   hinge.rotation.x = LID_CLOSED;
 
@@ -442,7 +442,9 @@ function initScene() {
   function readScroll() {
     const hb = heroEl ? heroEl.offsetHeight : window.innerHeight;
     heroProgress = clamp(window.scrollY / (hb * 0.82), 0, 1);
-    sceneFade = 1 - clamp((window.scrollY - hb * 0.9) / window.innerHeight, 0, 0.82);
+    // scene is fully opaque through the hero, then fades right out before the
+    // next section arrives so the 2D content reads cleanly
+    sceneFade = 1 - clamp((window.scrollY - hb * 0.6) / (hb * 0.35), 0, 1);
   }
   window.addEventListener('scroll', readScroll, { passive: true });
   readScroll();
@@ -468,12 +470,19 @@ function initScene() {
     const open = reduced ? 1 : easeInOut(heroProgress);
     hinge.rotation.x = LID_CLOSED + (LID_OPEN - LID_CLOSED) * open;
 
+    // once the scene has faded out, skip the paint entirely (perf + no bleed-through)
+    if (!reduced && sceneFade <= 0.02) {
+      canvas.style.opacity = '0';
+      if (running) rafId = requestAnimationFrame(frame);
+      return;
+    }
+
     if (!reduced) {
       // laptop glides from lower-right into the centre as the lid opens
       laptop.position.x = LAP_FROM.x + (LAP_TO.x - LAP_FROM.x) * open;
       laptop.position.z = LAP_FROM.z + (LAP_TO.z - LAP_FROM.z) * open;
       laptop.position.y = LAP_FROM.y + (LAP_TO.y - LAP_FROM.y) * open + Math.sin(t * 0.6) * 0.05;
-      laptop.rotation.y = -0.5 + Math.sin(t * 0.25) * 0.2 + ptr.x * 0.3 + (1 - open) * 0.4;
+      laptop.rotation.y = -0.5 + Math.sin(t * 0.25) * 0.2 + ptr.x * 0.3 + (1 - open) * 0.55;
       laptop.rotation.x = 0.02 + ptr.y * 0.09;
 
       camera.position.z = 9 - heroProgress * 1.7;
