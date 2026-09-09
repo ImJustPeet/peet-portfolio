@@ -258,7 +258,7 @@ function initScene() {
   renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, isMobile ? 1.5 : 2));
   renderer.setSize(window.innerWidth, window.innerHeight, false);
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
-  renderer.toneMappingExposure = 1.05;
+  renderer.toneMappingExposure = 1.6;
 
   const scene = new THREE.Scene();
   scene.fog = new THREE.Fog(0x0c0b0a, 9, 24);
@@ -277,8 +277,8 @@ function initScene() {
   });
 
   // ---- lights (accents on top of the HDR) ----
-  scene.add(new THREE.AmbientLight(0xffffff, 0.35));
-  const key = new THREE.DirectionalLight(0xffffff, 1.8);
+  scene.add(new THREE.AmbientLight(0xffffff, 0.4));
+  const key = new THREE.DirectionalLight(0xffffff, 3.2);
   key.position.set(4, 7, 6);
   scene.add(key);
   const accent = new THREE.PointLight(new THREE.Color(SEASON[1]), 26, 40, 2);
@@ -361,12 +361,20 @@ function initScene() {
     model.traverse((o) => {
       if (!o.isMesh) return;
       o.frustumCulled = false;
-      const mn = o.material && o.material.name;
-      if (mn === 'HlQwFCAPWzetDQy' || o.name === 'tfTbkkzhxqpKRgC') screenMesh = o;
-      if (o.material && 'envMapIntensity' in o.material) {
-        o.material.envMapIntensity = 1.15;
-        o.material.needsUpdate = true;
+      const m = o.material;
+      const mn = m && m.name;
+      if (mn === 'HlQwFCAPWzetDQy' || o.name === 'tfTbkkzhxqpKRgC') { screenMesh = o; return; }
+      if (!m || m.isMeshBasicMaterial) return;
+      // the Sketchfab metals are authored fully-rough -> they only show a dim
+      // blurred env average. Sharpen them so aluminium catches the studio lights.
+      if (m.metalness >= 0.5) {
+        m.roughness = THREE.MathUtils.clamp((m.roughness || 1) * 0.32, 0.05, 0.38);
+        m.metalness = 0.92;
+        m.envMapIntensity = 2.6;
+      } else {
+        m.envMapIntensity = 1.6;
       }
+      m.needsUpdate = true;
     });
     if (screenMesh) {
       screenMesh.material = new THREE.MeshBasicMaterial({ map: scrTex, toneMapped: false });
