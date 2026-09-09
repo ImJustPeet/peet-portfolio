@@ -320,14 +320,16 @@ function initScene() {
   scrTex.flipY = false;                       // match glTF UV convention
   scrTex.anisotropy = renderer.capabilities.getMaxAnisotropy();
 
+  // set once the Premiere screenshot asset is in place; '' = use the procedural NLE
+  const TIMELINE_SRC = '';
   let timelineImg = null;
-  (function loadTimeline() {
+  if (TIMELINE_SRC) {
     const im = new Image();
     im.decoding = 'async';
     im.onload = () => { timelineImg = im; drawScreen(0); };
     im.onerror = () => {};
-    im.src = '/assets/premiere-timeline.webp';
-  })();
+    im.src = TIMELINE_SRC;
+  }
 
   // point light that "turns on" with the screen and spills onto the keys
   const screenGlow = new THREE.PointLight(new THREE.Color(SEASON[2]), 0, 8, 2);
@@ -358,7 +360,7 @@ function initScene() {
 
   // load the model
   let model = null;
-  new GLTFLoader().load('/assets/models/macbook.glb?v=1', (gltf) => {
+  new GLTFLoader().load('/assets/models/macbook/scene.gltf?v=1', (gltf) => {
     model = gltf.scene;
     const box = new THREE.Box3().setFromObject(model);
     const size = box.getSize(new THREE.Vector3());
