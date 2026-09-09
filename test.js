@@ -7,7 +7,7 @@
 import * as THREE from '/assets/three/three.module.min.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { RGBELoader } from 'three/addons/loaders/RGBELoader.js';
-import { MeshoptDecoder } from 'three/addons/libs/meshopt_decoder.module.js?v=120';
+import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
 
 const anime = window.anime;
 const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -447,7 +447,8 @@ function initScene() {
 
   // load the model
   let model = null;
-  new GLTFLoader().setMeshoptDecoder(MeshoptDecoder).load('/assets/models/macbook/scene.gltf?v=2', (gltf) => {
+  const draco = new DRACOLoader().setDecoderPath('/assets/three/addons/libs/draco/');
+  new GLTFLoader().setDRACOLoader(draco).load('/assets/models/macbook/scene.gltf?v=3', (gltf) => {
     model = gltf.scene;
     const box = new THREE.Box3().setFromObject(model);
     const size = box.getSize(new THREE.Vector3());
