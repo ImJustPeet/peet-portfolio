@@ -1,0 +1,481 @@
+<!doctype html>
+<html lang="sk">
+<head>
+<meta charset="utf-8">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Peet, 3D koncept</title>
+<link rel="icon" type="image/png" sizes="96x96" href="/assets/favicon-96.png">
+<link rel="icon" type="image/png" sizes="48x48" href="/assets/favicon-48.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png">
+<meta name="description" content="Interaktívny 3D koncept portfólia. Peet, video editor.">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="shared.css">
+
+<style>
+  /* ---------- layout shell ---------- */
+  .t3d{ --s1:#ffb84d; --s2:#ff7a2f; --s3:#57c2c9; }
+
+  #scene{
+    position:fixed; inset:0; width:100%; height:100%;
+    z-index:0; display:block; pointer-events:none;
+    transition:opacity .4s ease;
+  }
+  .bg-glow{
+    position:fixed; inset:0; z-index:-1;
+    background:
+      radial-gradient(60% 55% at 22% 18%, color-mix(in srgb, var(--s2) 20%, transparent), transparent 70%),
+      radial-gradient(55% 55% at 85% 82%, color-mix(in srgb, var(--s3) 15%, transparent), transparent 70%),
+      var(--bg);
+  }
+  .t3d.no-webgl #scene{ display:none; }
+
+  .t3d header{
+    position:fixed; top:0; left:0; right:0; z-index:60;
+    background:linear-gradient(180deg, rgba(12,11,10,.88), rgba(12,11,10,0));
+    -webkit-backdrop-filter:blur(6px); backdrop-filter:blur(6px);
+    border-bottom:1px solid var(--line);
+  }
+  .t3d main{ position:relative; z-index:10; }
+  .t3d section{
+    min-height:100vh; min-height:100svh;
+    display:flex; align-items:center;
+    padding:140px 0; position:relative;
+  }
+  .t3d .wrap{ position:relative; z-index:2; width:100%; }
+
+  /* ---------- typography ---------- */
+  .t3d h1{
+    font-size:clamp(34px, 6.2vw, 68px); line-height:1.04;
+    letter-spacing:-.02em; font-weight:800; margin:14px 0 20px;
+  }
+  .t3d h2{
+    font-size:clamp(24px, 3.4vw, 36px); font-weight:700;
+    letter-spacing:-.01em; margin:12px 0 34px; max-width:22ch;
+  }
+  .t3d .lead{
+    font-size:clamp(15px, 2vw, 19px); color:var(--text-dim);
+    max-width:54ch; line-height:1.7; margin:0;
+  }
+
+  /* ---------- hero ---------- */
+  .hero-inner{ max-width:760px; }
+  .cta-row{ display:flex; gap:14px; flex-wrap:wrap; margin-top:32px; }
+  .scroll-hint{
+    position:absolute; bottom:34px; left:28px;
+    font:12px/1 'JetBrains Mono', monospace; letter-spacing:.16em;
+    text-transform:uppercase; color:var(--text-dim);
+    display:flex; align-items:center; gap:12px;
+  }
+  .scroll-hint::before{
+    content:''; width:30px; height:1px; background:var(--s2);
+    animation:hintPulse 2.4s ease-in-out infinite;
+  }
+  @keyframes hintPulse{ 0%,100%{ opacity:.3; transform:scaleX(.6); } 50%{ opacity:1; transform:scaleX(1); } }
+
+  /* ---------- panels / cards ---------- */
+  .panel-grid{ display:grid; grid-template-columns:repeat(3, 1fr); gap:16px; }
+  .panel{
+    background:color-mix(in srgb, var(--bg-elev) 60%, transparent);
+    -webkit-backdrop-filter:blur(12px); backdrop-filter:blur(12px);
+    border:1px solid var(--line); border-radius:12px; padding:24px;
+    transition:transform .25s cubic-bezier(.2,.7,.2,1), border-color .25s ease;
+  }
+  .panel:hover{ transform:translateY(-4px); border-color:color-mix(in srgb, var(--s2) 55%, var(--line)); }
+  .panel h3{ font-size:16px; font-weight:700; margin:0 0 8px; }
+  .panel p{ margin:0; color:var(--text-dim); font-size:14px; line-height:1.7; }
+
+  /* ---------- stats ---------- */
+  .stat-grid{ display:grid; grid-template-columns:repeat(4, 1fr); gap:14px; }
+  .stat{
+    border:1px solid var(--line); border-radius:12px; padding:22px;
+    background:color-mix(in srgb, var(--bg-elev) 48%, transparent);
+    -webkit-backdrop-filter:blur(10px); backdrop-filter:blur(10px);
+  }
+  .stat b{ display:block; font:700 clamp(28px, 4vw, 44px)/1 'JetBrains Mono', monospace; }
+  .stat span{ display:block; margin-top:8px; font-size:12.5px; color:var(--text-dim); line-height:1.5; }
+
+  /* ---------- work ---------- */
+  .work-group{ margin-bottom:26px; }
+  .work-label{
+    font:11px/1 'JetBrains Mono', monospace; letter-spacing:.08em;
+    text-transform:uppercase; color:var(--text-dim); margin:0 0 12px;
+  }
+  .work-grid{ display:grid; grid-template-columns:repeat(auto-fill, minmax(240px, 1fr)); gap:12px; }
+  .work-card{
+    display:flex; align-items:center; justify-content:space-between; gap:12px;
+    padding:14px 16px; border:1px solid var(--line); border-radius:10px;
+    background:color-mix(in srgb, var(--bg-elev) 52%, transparent);
+    -webkit-backdrop-filter:blur(8px); backdrop-filter:blur(8px);
+    transition:transform .2s ease, border-color .2s ease;
+  }
+  .work-card:hover{ transform:translateY(-3px); border-color:color-mix(in srgb, var(--s3) 55%, var(--line)); }
+  .work-card .l{ display:flex; align-items:center; gap:12px; min-width:0; }
+  .work-card .wa{
+    width:38px; height:38px; border-radius:50%; object-fit:cover;
+    border:1px solid var(--line); flex-shrink:0; background:var(--bg-elev-2);
+  }
+  .work-card .nm{ font-size:14px; font-weight:600; }
+  .work-card .sub{ font:11px/1 'JetBrains Mono', monospace; color:var(--text-dim); display:block; margin-top:4px; }
+  .work-card .ar{ color:var(--text-dim); flex-shrink:0; }
+
+  /* ---------- about ---------- */
+  .about-grid{ display:grid; grid-template-columns:1.3fr 1fr; gap:44px; align-items:start; }
+  .about-row{ display:flex; align-items:center; gap:14px; margin-bottom:18px; }
+  .about-av{ width:60px; height:60px; border-radius:50%; object-fit:cover; border:1px solid var(--line); background:var(--bg-elev-2); }
+  .about-name{ font-weight:700; }
+  .about-tag{ font:12px/1 'JetBrains Mono', monospace; color:var(--text-dim); margin-top:4px; }
+  .about-grid p{ color:var(--text-dim); line-height:1.75; font-size:15px; }
+  .chips{ display:flex; flex-wrap:wrap; gap:8px; }
+  .chips .chip{
+    font:12px/1 'JetBrains Mono', monospace; padding:8px 12px;
+    border:1px solid var(--line); border-radius:4px; color:var(--text-dim);
+  }
+
+  /* ---------- process ---------- */
+  .steps{ display:grid; grid-template-columns:repeat(4, 1fr); gap:18px; position:relative; }
+  .steps::before{
+    content:''; position:absolute; top:7px; left:0; right:0; height:1px;
+    background:linear-gradient(90deg, var(--s2), color-mix(in srgb, var(--s3) 60%, transparent), transparent);
+    opacity:.5;
+  }
+  .step .n{ font:700 13px/1 'JetBrains Mono', monospace; color:var(--s2); }
+  .step h3{ font-size:15px; margin:12px 0 6px; }
+  .step p{ font-size:13px; color:var(--text-dim); line-height:1.6; margin:0; }
+
+  /* ---------- contact ---------- */
+  #contact .wrap{ text-align:center; }
+  #contact h2{ margin-left:auto; margin-right:auto; }
+  .contact-mail{
+    font-size:clamp(20px, 3.2vw, 32px); font-weight:700;
+    display:inline-flex; align-items:center; gap:8px;
+    border-bottom:2px solid color-mix(in srgb, var(--s2) 70%, transparent);
+    padding-bottom:4px;
+  }
+  .contact-sub{ color:var(--text-dim); margin:20px auto 0; max-width:46ch; font-size:14px; line-height:1.7; }
+  .contact-links{ display:flex; gap:22px; flex-wrap:wrap; justify-content:center; margin-top:24px; font:13px/1 'JetBrains Mono', monospace; }
+  .contact-links a, .contact-links button{ color:var(--text-dim); background:none; border:none; cursor:pointer; font:inherit; transition:color .18s ease; }
+  .contact-links a:hover, .contact-links button:hover{ color:var(--text); }
+
+  /* ---------- reveal ---------- */
+  .reveal2{
+    opacity:0; transform:translateY(24px);
+    transition:opacity .7s cubic-bezier(.2,.7,.2,1), transform .7s cubic-bezier(.2,.7,.2,1);
+  }
+  .reveal2.is-in{ opacity:1; transform:none; }
+
+  /* ---------- intro loader ---------- */
+  .intro-loader{
+    position:fixed; inset:0; z-index:10000; background:var(--bg);
+    display:flex; align-items:center; justify-content:center;
+    transition:opacity .5s ease, visibility .5s ease;
+  }
+  .intro-loader.is-done{ opacity:0; visibility:hidden; pointer-events:none; }
+  .intro-content{ display:flex; flex-direction:column; align-items:center; gap:14px; }
+  .intro-label{ font:12px/1 'JetBrains Mono', monospace; color:var(--text-dim); letter-spacing:.08em; text-transform:uppercase; }
+  .intro-bar{ width:220px; height:3px; background:var(--line); border-radius:2px; overflow:hidden; }
+  .intro-bar-fill{ height:100%; width:0%; background:var(--s2); transition:width .3s ease; }
+  .intro-pct{ font:13px/1 'JetBrains Mono', monospace; color:var(--s2); }
+
+  /* ---------- scroll progress + back to top ---------- */
+  .scroll-progress{ position:fixed; top:0; left:0; width:100%; height:3px; background:var(--line); z-index:9990; }
+  .scroll-progress-fill{ height:100%; width:100%; background:var(--s2); transform:scaleX(0); transform-origin:left; }
+  .back-to-top{
+    position:fixed; bottom:24px; right:24px; z-index:9989;
+    width:44px; height:44px; border-radius:50%;
+    background:var(--bg-elev-2); border:2px solid var(--text);
+    display:flex; align-items:center; justify-content:center; cursor:pointer;
+    opacity:0; pointer-events:none; transform:translateY(10px);
+    transition:opacity .25s ease, transform .25s ease, border-color .2s ease;
+  }
+  .back-to-top.is-visible{ opacity:1; pointer-events:auto; transform:translateY(0); }
+  .back-to-top:hover{ border-color:var(--s3); }
+
+  /* ---------- privacy notice ---------- */
+  .privacy-notice{
+    position:fixed; left:16px; right:16px; bottom:16px; max-width:640px; margin:0 auto;
+    background:var(--bg-elev-2); border:1px solid var(--line); border-radius:10px;
+    padding:16px 18px; font-size:12.5px; color:var(--text-dim); line-height:1.6; z-index:9000;
+  }
+  .privacy-notice button{
+    margin-top:10px; background:var(--bg-elev); border:1px solid var(--s2);
+    border-radius:6px; padding:8px 16px; font:13px/1 'JetBrains Mono', monospace;
+    color:var(--text); cursor:pointer;
+  }
+
+  /* ---------- concept badge ---------- */
+  .concept-badge{
+    position:fixed; left:16px; bottom:16px; z-index:8000;
+    font:10px/1 'JetBrains Mono', monospace; letter-spacing:.1em; text-transform:uppercase;
+    color:var(--text-dim); border:1px solid var(--line); border-radius:4px;
+    padding:6px 9px; background:rgba(12,11,10,.6); -webkit-backdrop-filter:blur(4px); backdrop-filter:blur(4px);
+  }
+
+  /* ---------- responsive ---------- */
+  @media (max-width:900px){
+    .panel-grid{ grid-template-columns:1fr; }
+    .stat-grid{ grid-template-columns:repeat(2, 1fr); }
+    .about-grid{ grid-template-columns:1fr; gap:28px; }
+    .steps{ grid-template-columns:1fr; }
+    .steps::before{ display:none; }
+  }
+  @media (max-width:640px){
+    .t3d section{ padding:110px 0; }
+    .scroll-hint{ left:20px; }
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    .t3d *, .reveal2{ transition:none !important; animation:none !important; }
+    .reveal2{ opacity:1; transform:none; }
+    .scroll-hint{ display:none; }
+  }
+</style>
+</head>
+<body class="t3d">
+
+<noscript><style>.intro-loader{ display:none !important; } .reveal2{ opacity:1 !important; transform:none !important; }</style></noscript>
+
+<div class="intro-loader" id="introLoader">
+  <div class="intro-content">
+    <span class="intro-label">Kompilujem scénu…</span>
+    <div class="intro-bar"><div class="intro-bar-fill" id="introBarFill"></div></div>
+    <span class="intro-pct" id="introPct">0%</span>
+  </div>
+</div>
+
+<div class="scroll-progress" aria-hidden="true"><div class="scroll-progress-fill" id="scrollFill"></div></div>
+<button class="back-to-top" id="backToTop" aria-label="Späť na začiatok stránky">
+  <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+    <path d="M12 4 L18 12 L14 12 L14 20 L10 20 L10 12 L6 12 Z" fill="var(--bg)" stroke="var(--s2)" stroke-width="2" stroke-linejoin="round"/>
+  </svg>
+</button>
+
+<div class="bg-glow" aria-hidden="true"></div>
+<canvas id="scene" aria-hidden="true"></canvas>
+<span class="concept-badge" aria-hidden="true">Koncept / test</span>
+
+<header>
+  <div class="wrap nav">
+    <button class="logo" type="button" style="display:flex; align-items:center; gap:9px;">
+      <span class="logo-avatar-wrap">
+        <img class="logo-avatar" width="28" height="28" decoding="async" loading="eager" referrerpolicy="no-referrer" alt="" src="https://yt3.googleusercontent.com/IRe7M6VjSCVH0dbUrsJGeDmC05sErJyWMw0k5yBMvI09WLcFtU4TAxEX2bKYYh9rlmsGD5xB4w=s160-c-k-c0x000c0b0a-no-rj" onerror="this.parentElement.classList.add('is-fallback')">
+        <span class="logo-avatar-fallback">P</span>
+      </span>
+      Peet<span style="color:var(--s2);margin-left:-8px">.</span>
+    </button>
+    <nav class="nav-links">
+      <a href="#services" data-nav>Čo robím</a>
+      <a href="#work" data-nav>Pracoval som na</a>
+      <a href="#about" data-nav>O mne</a>
+      <a href="#contact" data-nav>Kontakt</a>
+    </nav>
+    <button class="hamburger" id="hamburgerBtn" aria-label="Otvoriť menu" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+  <nav class="mobile-menu" id="mobileMenu">
+    <div class="mobile-menu-inner">
+      <a href="#services">Čo robím</a>
+      <a href="#work">Pracoval som na</a>
+      <a href="#about">O mne</a>
+      <a href="#contact">Kontakt</a>
+    </div>
+  </nav>
+</header>
+
+<main>
+
+  <section class="hero" id="hero">
+    <div class="wrap">
+      <div class="hero-inner">
+        <div class="eyebrow reveal2">Video editor / 3D</div>
+        <h1 class="reveal2">Z&nbsp;tvojich záberov vyťažím príbeh, ktorý si ľudia pozrú do konca.</h1>
+        <p class="lead reveal2">Strihám pre YouTuberov, influencerov a&nbsp;UGC tvorcov, rýchlo, s&nbsp;citom pre tempo a&nbsp;bez kompromisov v&nbsp;kvalite.</p>
+        <div class="cta-row reveal2">
+          <a href="#work" class="btn btn-primary">▶ Pozrieť ukážky</a>
+          <a href="#contact" class="btn btn-ghost">Kontaktuj ma</a>
+        </div>
+      </div>
+    </div>
+    <div class="scroll-hint" aria-hidden="true">Scrolluj a&nbsp;otvor workstation</div>
+  </section>
+
+  <section id="stats">
+    <div class="wrap">
+      <div class="stat-grid">
+        <div class="stat reveal2"><b data-count="4" data-suffix="+">0</b><span>roky ako video editor</span></div>
+        <div class="stat reveal2"><b data-count="500" data-suffix="+">0</b><span>odstrihaných shorts</span></div>
+        <div class="stat reveal2"><b data-count="200" data-suffix="+">0</b><span>odstrihaných long form videí</span></div>
+        <div class="stat reveal2"><b data-count="35" data-suffix=" mil.+">0</b><span>zhliadnutí na long form videách, a&nbsp;stále rastie</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="services">
+    <div class="wrap">
+      <div class="eyebrow reveal2">Čo robím</div>
+      <h2 class="reveal2">Strih, ktorý má jasný cieľ</h2>
+      <div class="panel-grid">
+        <div class="panel reveal2">
+          <h3>Strih &amp; tempo</h3>
+          <p>Od surových záberov k&nbsp;hotovému videu, ktoré sedí v&nbsp;rytme a&nbsp;udrží pozornosť.</p>
+        </div>
+        <div class="panel reveal2">
+          <h3>Thumbnaily</h3>
+          <p>Vizuál, ktorý dostane klik. Pripravené tak, aby to sedelo s&nbsp;obsahom videa.</p>
+        </div>
+        <div class="panel reveal2">
+          <h3>Optimalizácia pre YouTube</h3>
+          <p>Štruktúra, titulky a&nbsp;pacing prispôsobené tomu, aby každé video pôsobilo na človeka ako malý film.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="work">
+    <div class="wrap">
+      <div class="eyebrow reveal2">Pracoval som na:</div>
+      <h2 class="reveal2">Kanály, projekty a&nbsp;konkrétne ukážky</h2>
+
+      <div class="work-group reveal2">
+        <p class="work-label">Aktuálne spolupracujem s:</p>
+        <div class="work-grid">
+          <a class="work-card" target="_blank" rel="noopener" href="https://www.youtube.com/watch?v=0a8XwbfYLt0&list=PL4bBdTQJ4Z-4F_72jvuYbMYY90vspEv4Q">
+            <span class="l"><img class="wa" width="38" height="38" decoding="async" loading="lazy" referrerpolicy="no-referrer" alt="" src="https://yt3.googleusercontent.com/Cfh9ySkW63tRXQ_UH9N3S4xFyFEzjQtupYF8v0mOcyIuT-Z8to5L3G4Bu0s0hYlW5reyO3lpG5U=s160-c-k-c0x000c0b0a-no-rj"><span><span class="nm">Tary</span><span class="sub">1,73 mil. odberateľov</span></span></span>
+            <span class="ar">↗</span>
+          </a>
+          <a class="work-card" target="_blank" rel="noopener" href="https://www.youtube.com/@Takjsmetu">
+            <span class="l"><img class="wa" width="38" height="38" decoding="async" loading="lazy" referrerpolicy="no-referrer" alt="" src="https://yt3.googleusercontent.com/RRxn-7SWWfcTKR-D4KE7ETwRaFxOmvHChL13Los-ozcFoSvdaGGGno5emhCFC8fO0QD71y_V5g=s160-c-k-c0x000c0b0a-no-rj"><span><span class="nm">Tak jsme tu!</span><span class="sub">2,26 tis. odberateľov</span></span></span>
+            <span class="ar">↗</span>
+          </a>
+          <a class="work-card" target="_blank" rel="noopener" href="https://www.youtube.com/@stana29">
+            <span class="l"><img class="wa" width="38" height="38" decoding="async" loading="lazy" referrerpolicy="no-referrer" alt="" src="https://yt3.googleusercontent.com/do4tEA1UiDhVhlHgHNJdX4keB-hbHWWGZsOZi2z4C1pjo-RW4cvyaAa5N8fq6GNjpcyZYEpj=s160-c-k-c0x000c0b0a-no-rj"><span><span class="nm">Stáňa</span><span class="sub">410 tis. odberateľov</span></span></span>
+            <span class="ar">↗</span>
+          </a>
+        </div>
+      </div>
+
+      <div class="work-group reveal2">
+        <p class="work-label">V&nbsp;minulosti som spolupracoval s:</p>
+        <div class="work-grid">
+          <a class="work-card" target="_blank" rel="noopener" href="https://www.youtube.com/watch?v=iC3j_YdIRLI&list=PL4bBdTQJ4Z-5PqyZIRK1HwoaireivINmm">
+            <span class="l"><img class="wa" width="38" height="38" decoding="async" loading="lazy" referrerpolicy="no-referrer" alt="" src="https://yt3.googleusercontent.com/TCl7u351pzOB9ERvwT6wnXXaRU062UN5lTKyloIQ5X89PBpKhaWNkwq73fKJueHom0YNXSY5Ug=s160-c-k-c0x000c0b0a-no-rj"><span><span class="nm">Duklock+</span><span class="sub">473 tis. odberateľov</span></span></span>
+            <span class="ar">↗</span>
+          </a>
+          <a class="work-card" target="_blank" rel="noopener" href="https://www.youtube.com/watch?v=TOqDF6qIt_s&list=PL4bBdTQJ4Z-4DOf31OeIPDE9dq8HEOhft">
+            <span class="l"><img class="wa" width="38" height="38" decoding="async" loading="lazy" referrerpolicy="no-referrer" alt="" src="https://yt3.googleusercontent.com/ytc/AIdro_lLvxogAYGUiT-Cc5AIYM4ErwmuWlrd70Ce9RS20Dyzlw=s160-c-k-c0x000c0b0a-no-rj"><span><span class="nm">Fortuna</span><span class="sub">14 tis. odberateľov</span></span></span>
+            <span class="ar">↗</span>
+          </a>
+          <a class="work-card" target="_blank" rel="noopener" href="https://www.youtube.com/watch?v=ClRGdc6ZxlE&list=PL4bBdTQJ4Z-7YjMPNsAj8Cf67kMPM8XIr">
+            <span class="l"><img class="wa" width="38" height="38" decoding="async" loading="lazy" referrerpolicy="no-referrer" alt="" src="https://yt3.googleusercontent.com/X3Q0nkDnAAwnBWaTLh5gxKY-ywmKzAiIPDWsoJbOxKF5-oAU9dQNxVZJrPmXWzs0J4CDnfkK-Q=s160-c-k-c0x000c0b0a-no-rj"><span><span class="nm">Jancucik</span><span class="sub">109 tis. odberateľov</span></span></span>
+            <span class="ar">↗</span>
+          </a>
+          <a class="work-card" target="_blank" rel="noopener" href="https://www.youtube.com/watch?v=fSxOb4X3Mxs&list=PL4bBdTQJ4Z-5GNMIGcVfV49SDWystbJMA">
+            <span class="l"><img class="wa" width="38" height="38" decoding="async" loading="lazy" referrerpolicy="no-referrer" alt="" src="https://yt3.googleusercontent.com/6P-nvfuT2MxorfifAjQwbVGa94bRsLEURofh0CbGtZzltmKCNbvu9nn2shWoHg1Ke3iTwI7r8Q=s160-c-k-c0x000c0b0a-no-rj"><span><span class="nm">vvudyho herné dobrodružstvá</span><span class="sub">183 odberateľov</span></span></span>
+            <span class="ar">↗</span>
+          </a>
+          <a class="work-card" target="_blank" rel="noopener" href="https://www.youtube.com/watch?v=1r7XRfIY1Yc&list=PL4bBdTQJ4Z-72Tq7tbO3cm2xHoZUh_ulh">
+            <span class="l"><img class="wa" width="38" height="38" decoding="async" loading="lazy" referrerpolicy="no-referrer" alt="" src="https://yt3.googleusercontent.com/4xdEX1PDVlk1DVUyZNwcIjqviM8ErSE6Q70Pu9TPxLuHbKzg6WX-2Dptc0W0ERAgZcjGVvZQ=s160-c-k-c0x000c0b0a-no-rj"><span><span class="nm">Jesus</span><span class="sub">280 odberateľov</span></span></span>
+            <span class="ar">↗</span>
+          </a>
+          <a class="work-card" target="_blank" rel="noopener" href="https://www.youtube.com/watch?v=OhRTZyk5CoI&list=PL4bBdTQJ4Z-4gRJEVRDI1WJnAesYqVdFc">
+            <span class="l"><img class="wa" width="38" height="38" decoding="async" loading="lazy" referrerpolicy="no-referrer" alt="" src="https://yt3.googleusercontent.com/9rPBFaV-uYZkelm8IgDG338-kBAXR265PZOE4Xoe6sOX_mBRkcGNYjilzIyCQJSByrvnyDP5Xg=s160-c-k-c0x000c0b0a-no-rj"><span><span class="nm">Show More</span><span class="sub">100 tis. odberateľov</span></span></span>
+            <span class="ar">↗</span>
+          </a>
+          <a class="work-card" target="_blank" rel="noopener" href="https://www.youtube.com/@korpo86">
+            <span class="l"><img class="wa" width="38" height="38" decoding="async" loading="lazy" referrerpolicy="no-referrer" alt="" src="https://yt3.googleusercontent.com/0VamWRSeuZBXgFyLyC3y--CF8-SzGWVhNeNcuvlPpg5UZnAXSRntoS6VQtCoS_AJcC5ChgA8rw=s160-c-k-c0x000c0b0a-no-rj"><span><span class="nm">Korpo86</span><span class="sub">6,56 tis. odberateľov</span></span></span>
+            <span class="ar">↗</span>
+          </a>
+          <a class="work-card" target="_blank" rel="noopener" href="https://www.youtube.com/@vidaduTV">
+            <span class="l"><img class="wa" width="38" height="38" decoding="async" loading="lazy" referrerpolicy="no-referrer" alt="" src="https://yt3.googleusercontent.com/mw7eb7hkM8aqpUdif6cUru4V_6VNJRfsR3iihl2_D4xKwKA80F792gxUMbogBu3tyBhMsqaQ=s160-c-k-c0x000c0b0a-no-rj"><span><span class="nm">Vidadu</span><span class="sub">140 tis. odberateľov</span></span></span>
+            <span class="ar">↗</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="about">
+    <div class="wrap">
+      <div class="eyebrow reveal2">O mne</div>
+      <div class="about-grid">
+        <div>
+          <div class="about-row reveal2">
+            <img class="about-av" width="60" height="60" decoding="async" loading="lazy" referrerpolicy="no-referrer" alt="Peet s mačiakom Maxom" src="https://yt3.googleusercontent.com/IRe7M6VjSCVH0dbUrsJGeDmC05sErJyWMw0k5yBMvI09WLcFtU4TAxEX2bKYYh9rlmsGD5xB4w=s160-c-k-c0x000c0b0a-no-rj">
+            <div>
+              <div class="about-name">Peet</div>
+              <div class="about-tag">+ mačiak Max 🐾</div>
+            </div>
+          </div>
+          <p class="reveal2">
+            Video strihu sa venujem dlhodobo a&nbsp;aktuálne pravidelne strihám pre etablovaného YouTubera.
+            Rozumiem tomu, prečo divák niekde odpadne, a&nbsp;viem to opraviť ešte v&nbsp;strižni, nie až v&nbsp;analytike po publikovaní.
+          </p>
+        </div>
+        <div class="reveal2">
+          <div class="eyebrow" style="margin-bottom:12px;">Skills</div>
+          <div class="chips">
+            <span class="chip">Premiere Pro</span>
+            <span class="chip">Thumbnaily</span>
+            <span class="chip">Pacing &amp; retention</span>
+            <span class="chip">Sound design</span>
+            <span class="chip">Color grading</span>
+            <span class="chip">Storytelling</span>
+            <span class="chip">Titulky &amp; captions</span>
+            <span class="chip">Optimalizácia pre YouTube</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="process">
+    <div class="wrap">
+      <div class="eyebrow reveal2">Ako prebieha spolupráca</div>
+      <h2 class="reveal2">Štyri kroky od záberov k&nbsp;exportu</h2>
+      <div class="steps">
+        <div class="step reveal2"><span class="n">01</span><h3>Brief</h3><p>Pošleš mi zábery a&nbsp;popíšeš, aký vibe video má mať.</p></div>
+        <div class="step reveal2"><span class="n">02</span><h3>Strih</h3><p>Pripravím prvý strih: štruktúra, tempo, výber najlepších momentov.</p></div>
+        <div class="step reveal2"><span class="n">03</span><h3>Revízie</h3><p>Doladíme detaily podľa tvojej spätnej väzby.</p></div>
+        <div class="step reveal2"><span class="n">04</span><h3>Export</h3><p>Dostaneš hotové video vo formáte, ktorý potrebuješ.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="contact">
+    <div class="wrap">
+      <div class="eyebrow reveal2">Kontakt</div>
+      <h2 class="reveal2">Poďme na to.</h2>
+      <a href="mailto:donovanpeet@gmail.com" class="contact-mail reveal2">donovanpeet@gmail.com ↗</a>
+      <p class="contact-sub reveal2">Napíš mi pár viet o&nbsp;projekte a&nbsp;dĺžke videa, odpovedám väčšinou do 24 hodín.</p>
+      <div class="contact-links reveal2">
+        <a href="https://www.youtube.com/@ImJustPeet" target="_blank" rel="noopener">YouTube ↗</a>
+        <a href="https://www.instagram.com/imjustpeet/" target="_blank" rel="noopener">Instagram ↗</a>
+        <button type="button" class="discord-copy" data-discord="imjustpeet">Discord: imjustpeet ⧉</button>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>© 2026 Peet</span>
+    <span class="mono">3D koncept / <a href="/" style="color:var(--s2)">späť na hlavnú</a></span>
+  </div>
+</footer>
+
+<div class="privacy-notice" id="privacyNotice" hidden>
+  <p>🔒 Táto stránka používa Cloudflare Web Analytics na základnú štatistiku návštevnosti. Spracúva sa len IP adresa, čo je technicky nutné pri pripojení. Žiadne cookies, žiadne sledovanie medzi stránkami.</p>
+  <button id="privacyNoticeClose">Rozumiem</button>
+</div>
+
+<script src="/assets/anime.min.js"></script>
+<script src="shared.js"></script>
+<script type="module" src="/test.js"></script>
+</body>
+</html>
