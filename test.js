@@ -407,7 +407,7 @@ function initScene() {
   scrTex.anisotropy = renderer.capabilities.getMaxAnisotropy();
 
   // set once the Premiere screenshot asset is in place; '' = use the procedural NLE
-  const TIMELINE_SRC = '';
+  const TIMELINE_SRC = '/assets/premiere-timeline.webp?v=1';
   let timelineImg = null;
   if (TIMELINE_SRC) {
     const im = new Image();
@@ -540,11 +540,12 @@ function initScene() {
     const w = scr.width, h = scr.height;
 
     if (timelineImg && timelineImg.naturalWidth) {
+      // fit the full width of the timeline; Premiere's dark chrome fills the rest
       const iw = timelineImg.naturalWidth, ih = timelineImg.naturalHeight;
-      const sc = Math.max(w / iw, h / ih);
-      const dw = iw * sc, dh = ih * sc;
-      sctx.fillStyle = '#100e0c'; sctx.fillRect(0, 0, w, h);
-      sctx.drawImage(timelineImg, (w - dw) / 2, (h - dh) * 0.35, dw, dh);
+      const sc = w / iw;
+      const dw = w, dh = ih * sc;
+      sctx.fillStyle = '#0e0d0b'; sctx.fillRect(0, 0, w, h);
+      sctx.drawImage(timelineImg, 0, 58 + (h - 58 - dh) * 0.5, dw, dh);
     } else {
       sctx.fillStyle = '#0c0b0a'; sctx.fillRect(0, 0, w, h);
       const scaleY = h / 600;
