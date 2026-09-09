@@ -6,6 +6,7 @@
 
 import * as THREE from '/assets/three/three.module.min.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { RGBELoader } from 'three/addons/loaders/RGBELoader.js';
 
 const anime = window.anime;
 const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -257,7 +258,7 @@ function initScene() {
   renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, isMobile ? 1.5 : 2));
   renderer.setSize(window.innerWidth, window.innerHeight, false);
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
-  renderer.toneMappingExposure = 1.35;
+  renderer.toneMappingExposure = 1.05;
 
   const scene = new THREE.Scene();
   scene.fog = new THREE.Fog(0x0c0b0a, 9, 24);
@@ -266,40 +267,24 @@ function initScene() {
   camera.position.set(0, 0.6, 9);
   camera.lookAt(0, 0.15, 0);
 
-  // ---- soft studio reflections (procedural, no asset / no addon) ----
-  const envCanvas = document.createElement('canvas');
-  envCanvas.width = 64; envCanvas.height = 180;
-  {
-    const g = envCanvas.getContext('2d');
-    const grd = g.createLinearGradient(0, 0, 0, 180);
-    grd.addColorStop(0.00, '#ffffff');   // bright softbox overhead
-    grd.addColorStop(0.30, '#d8d2c6');
-    grd.addColorStop(0.52, '#514b43');
-    grd.addColorStop(0.72, '#232019');
-    grd.addColorStop(1.00, '#0b0a09');
-    g.fillStyle = grd; g.fillRect(0, 0, 64, 180);
-    g.fillStyle = 'rgba(255,150,80,0.7)';  g.fillRect(0, 8, 64, 30);    // warm rim
-    g.fillStyle = 'rgba(90,200,210,0.4)';  g.fillRect(0, 140, 64, 22);  // cool bounce
-  }
-  const envTex = new THREE.CanvasTexture(envCanvas);
-  envTex.mapping = THREE.EquirectangularReflectionMapping;
-  envTex.colorSpace = THREE.SRGBColorSpace;
+  // ---- studio HDR environment (real IBL for the metal) ----
   const pmrem = new THREE.PMREMGenerator(renderer);
-  scene.environment = pmrem.fromEquirectangular(envTex).texture;
-  pmrem.dispose(); envTex.dispose();
+  pmrem.compileEquirectangularShader();
+  new RGBELoader().load('/assets/hdr/studio.hdr?v=1', (hdr) => {
+    hdr.mapping = THREE.EquirectangularReflectionMapping;
+    scene.environment = pmrem.fromEquirectangular(hdr).texture;
+    hdr.dispose(); pmrem.dispose();
+  });
 
-  // ---- lights ----
-  scene.add(new THREE.AmbientLight(0xffffff, 1.1));
-  const key = new THREE.DirectionalLight(0xffffff, 4.5);
+  // ---- lights (accents on top of the HDR) ----
+  scene.add(new THREE.AmbientLight(0xffffff, 0.35));
+  const key = new THREE.DirectionalLight(0xffffff, 1.8);
   key.position.set(4, 7, 6);
   scene.add(key);
-  const fill = new THREE.DirectionalLight(0xe6ecff, 2.2);
-  fill.position.set(-4, 1, 8);
-  scene.add(fill);
-  const accent = new THREE.PointLight(new THREE.Color(SEASON[1]), 40, 40, 2);
+  const accent = new THREE.PointLight(new THREE.Color(SEASON[1]), 26, 40, 2);
   accent.position.set(-3, 2, 4);
   scene.add(accent);
-  const rim = new THREE.PointLight(new THREE.Color(SEASON[2]), 26, 40, 2);
+  const rim = new THREE.PointLight(new THREE.Color(SEASON[2]), 20, 40, 2);
   rim.position.set(4, -2, 2);
   scene.add(rim);
 
@@ -379,7 +364,7 @@ function initScene() {
       const mn = o.material && o.material.name;
       if (mn === 'HlQwFCAPWzetDQy' || o.name === 'tfTbkkzhxqpKRgC') screenMesh = o;
       if (o.material && 'envMapIntensity' in o.material) {
-        o.material.envMapIntensity = 2.2;
+        o.material.envMapIntensity = 1.15;
         o.material.needsUpdate = true;
       }
     });
