@@ -448,10 +448,10 @@ function initScene() {
   // ---- floating file chips (anchored to the right, clear of the hero copy) ----
   const CHIP_TEXT = ['hook_v3.mp4', 'color_pass.png', 'voiceover_final.wav', 'export_4k.mp4'];
   const CHIP_ANCHOR = [
-    { x: 2.15, y: 2.05, z: 0.4, ph: 0.0, depth: 0.12 },
-    { x: 2.45, y: 0.70, z: -0.6, ph: 1.7, depth: 0.08 },
-    { x: 2.15, y: -0.80, z: 0.7, ph: 3.1, depth: 0.14 },
-    { x: 2.45, y: -1.95, z: -0.1, ph: 4.6, depth: 0.10 }
+    { x: 2.55, y: 2.75, z: 0.2, ph: 0.0, depth: 0.12 },
+    { x: 3.05, y: 1.75, z: -0.5, ph: 1.7, depth: 0.08 },
+    { x: 2.70, y: -1.55, z: 0.5, ph: 3.1, depth: 0.14 },
+    { x: 3.15, y: -2.55, z: -0.2, ph: 4.6, depth: 0.10 }
   ];
   const chips = CHIP_TEXT.map((txt, i) => {
     const cc = document.createElement('canvas');
@@ -459,7 +459,7 @@ function initScene() {
     const tex = new THREE.CanvasTexture(cc);
     tex.colorSpace = THREE.SRGBColorSpace;
     const mesh = new THREE.Mesh(
-      new THREE.PlaneGeometry(2.0, 0.43),
+      new THREE.PlaneGeometry(1.7, 0.37),
       new THREE.MeshBasicMaterial({ map: tex, transparent: true })
     );
     const a = CHIP_ANCHOR[i];
