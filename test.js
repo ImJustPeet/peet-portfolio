@@ -256,6 +256,8 @@ function initScene() {
   });
   renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, isMobile ? 1.5 : 2));
   renderer.setSize(window.innerWidth, window.innerHeight, false);
+  renderer.toneMapping = THREE.ACESFilmicToneMapping;
+  renderer.toneMappingExposure = 1.35;
 
   const scene = new THREE.Scene();
   scene.fog = new THREE.Fog(0x0c0b0a, 9, 24);
@@ -266,17 +268,18 @@ function initScene() {
 
   // ---- soft studio reflections (procedural, no asset / no addon) ----
   const envCanvas = document.createElement('canvas');
-  envCanvas.width = 64; envCanvas.height = 160;
+  envCanvas.width = 64; envCanvas.height = 180;
   {
     const g = envCanvas.getContext('2d');
-    const grd = g.createLinearGradient(0, 0, 0, 160);
-    grd.addColorStop(0.00, '#c9c2b4');   // bright soft key overhead
-    grd.addColorStop(0.35, '#6b6459');
-    grd.addColorStop(0.52, '#332f2a');
+    const grd = g.createLinearGradient(0, 0, 0, 180);
+    grd.addColorStop(0.00, '#ffffff');   // bright softbox overhead
+    grd.addColorStop(0.30, '#d8d2c6');
+    grd.addColorStop(0.52, '#514b43');
+    grd.addColorStop(0.72, '#232019');
     grd.addColorStop(1.00, '#0b0a09');
-    g.fillStyle = grd; g.fillRect(0, 0, 64, 160);
-    g.fillStyle = 'rgba(255,150,80,0.55)'; g.fillRect(0, 6, 64, 24);    // warm rim
-    g.fillStyle = 'rgba(90,200,210,0.30)'; g.fillRect(0, 128, 64, 18);  // cool bounce
+    g.fillStyle = grd; g.fillRect(0, 0, 64, 180);
+    g.fillStyle = 'rgba(255,150,80,0.7)';  g.fillRect(0, 8, 64, 30);    // warm rim
+    g.fillStyle = 'rgba(90,200,210,0.4)';  g.fillRect(0, 140, 64, 22);  // cool bounce
   }
   const envTex = new THREE.CanvasTexture(envCanvas);
   envTex.mapping = THREE.EquirectangularReflectionMapping;
@@ -286,17 +289,17 @@ function initScene() {
   pmrem.dispose(); envTex.dispose();
 
   // ---- lights ----
-  scene.add(new THREE.AmbientLight(0xffffff, 0.55));
-  const key = new THREE.DirectionalLight(0xffffff, 3.1);
+  scene.add(new THREE.AmbientLight(0xffffff, 1.1));
+  const key = new THREE.DirectionalLight(0xffffff, 4.5);
   key.position.set(4, 7, 6);
   scene.add(key);
-  const fill = new THREE.DirectionalLight(0xdfe6ff, 1.0);
-  fill.position.set(-3, 1, 8);
+  const fill = new THREE.DirectionalLight(0xe6ecff, 2.2);
+  fill.position.set(-4, 1, 8);
   scene.add(fill);
-  const accent = new THREE.PointLight(new THREE.Color(SEASON[1]), 34, 40, 2);
+  const accent = new THREE.PointLight(new THREE.Color(SEASON[1]), 40, 40, 2);
   accent.position.set(-3, 2, 4);
   scene.add(accent);
-  const rim = new THREE.PointLight(new THREE.Color(SEASON[2]), 22, 40, 2);
+  const rim = new THREE.PointLight(new THREE.Color(SEASON[2]), 26, 40, 2);
   rim.position.set(4, -2, 2);
   scene.add(rim);
 
@@ -365,7 +368,7 @@ function initScene() {
     const box = new THREE.Box3().setFromObject(model);
     const size = box.getSize(new THREE.Vector3());
     const ctr = box.getCenter(new THREE.Vector3());
-    const s = 3.9 / size.x;
+    const s = 3.5 / size.x;
     model.scale.setScalar(s);
     model.position.set(-ctr.x * s, -ctr.y * s, -ctr.z * s);
 
@@ -376,7 +379,7 @@ function initScene() {
       const mn = o.material && o.material.name;
       if (mn === 'HlQwFCAPWzetDQy' || o.name === 'tfTbkkzhxqpKRgC') screenMesh = o;
       if (o.material && 'envMapIntensity' in o.material) {
-        o.material.envMapIntensity = 1.35;
+        o.material.envMapIntensity = 2.2;
         o.material.needsUpdate = true;
       }
     });
